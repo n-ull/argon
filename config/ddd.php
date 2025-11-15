@@ -43,8 +43,6 @@ return [
     */
     'layers' => [
         'Infrastructure' => 'src/Infrastructure',
-        // 'Integrations' => 'src/Integrations',
-        // 'Support' => 'src/Support',
     ],
 
     /*
@@ -94,8 +92,9 @@ return [
     | Base Model
     |--------------------------------------------------------------------------
     |
-    | The base model class which generated domain models should extend. If
-    | set to null, the generated models will extend Laravel's default.
+    | The base class which generated domain models should extend. By default,
+    | generated domain models will extend `Domain\Shared\Models\BaseModel`,
+    | which will be created if it doesn't already exist.
     |
     */
     'base_model' => null,
@@ -142,8 +141,8 @@ return [
     | Autoloading
     |--------------------------------------------------------------------------
     |
-    | Configure whether domain providers, commands, policies, factories,
-    | and migrations should be auto-discovered and registered.
+    | Configure whether domain providers, commands, policies, and factories
+    | should be auto-discovered and registered.
     |
     */
     'autoload' => [
