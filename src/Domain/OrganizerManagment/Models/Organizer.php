@@ -10,7 +10,8 @@ class Organizer extends Model
 {
     protected $guarded = [];
 
-    public function Events() : HasMany {
+    public function events(): HasMany
+    {
         return $this->hasMany(Event::class);
     }
 }
