@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
+            $table->string('title', 255);
+            $table->text('description')->nullable();
+            $table->json('location_info')->nullable();
+            $table->enum('status', ['draft', 'published', 'archived']);
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
+            $table->foreignId('organizer_id')->constrained('organizers')->cascadeOnDelete();
+            $table->boolean('is_featured')->default(false);
+            $table->string('slug')->unique();
             $table->timestamps();
         });
     }
