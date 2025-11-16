@@ -143,6 +143,9 @@ return [
 
     'model_locations' => [
         'app',
+        'src/Domain',
+        'src/Domain/*/Models',
+        'src/Infrastructure',
     ],
 
     /*
