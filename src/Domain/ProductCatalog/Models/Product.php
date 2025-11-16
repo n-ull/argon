@@ -2,6 +2,7 @@
 
 namespace Domain\ProductCatalog\Models;
 
+use Domain\ProductCatalog\Enums\ProductType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -20,6 +21,10 @@ class Product extends Model
         "start_sale_date",
         "end_sale_date",
         "event_id",
+    ];
+
+    protected $casts = [
+        "product_type" => ProductType::class
     ];
 
     public function product_prices(): HasMany

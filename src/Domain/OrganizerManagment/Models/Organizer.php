@@ -6,6 +6,7 @@ use Domain\EventManagment\Models\Event;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Organizer extends Model
 {
@@ -20,5 +21,9 @@ class Organizer extends Model
     public function events(): HasMany
     {
         return $this->hasMany(Event::class);
+    }
+
+    public function settings(): HasOne {
+        return $this->hasOne(OrganizerSettings::class);
     }
 }
