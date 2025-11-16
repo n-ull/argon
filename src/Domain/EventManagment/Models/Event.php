@@ -4,16 +4,19 @@ namespace Domain\EventManagment\Models;
 
 use Domain\EventManagment\Casts\LocationInfoJson;
 use Domain\EventManagment\Enums\EventStatus;
+use Domain\Ordering\Models\Order;
 use Domain\OrganizerManagment\Models\Organizer;
+use Domain\ProductCatalog\Models\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Event Model
  * 
  * Represents an event in the event management system.
- * 
+ *
  * @property int $id
  * @property string $title The title of the event
  * @property string|null $description The description of the event
@@ -26,12 +29,33 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $slug The URL slug for the event
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
- * 
- * @property-read Organizer $organizer The organizer of this event
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Order> $orders
+ * @property-read int|null $orders_count
+ * @property-read Organizer $organizer
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Product> $products
+ * @property-read int|null $products_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereIsFeatured($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereLocationInfo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereOrganizerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Event extends Model
 {
     use HasFactory;
+
+    protected $table = "events";
 
     protected $fillable = [
         "title",
@@ -55,5 +79,13 @@ class Event extends Model
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(Organizer::class);
+    }
+
+    public function products(): HasMany {
+        return $this->hasMany(Product::class);
+    }
+
+    public function orders(): HasMany {
+        return $this->hasMany(Order::class);
     }
 }
