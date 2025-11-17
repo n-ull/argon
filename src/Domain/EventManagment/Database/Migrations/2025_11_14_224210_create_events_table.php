@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->json('location_info')->nullable();
             $table->enum('status', ['draft', 'published', 'archived']);
-            $table->dateTime('start_date')->nullable();
+            $table->dateTime('start_date');
             $table->dateTime('end_date')->nullable();
             $table->foreignId('organizer_id')->constrained('organizers')->cascadeOnDelete();
             $table->boolean('is_featured')->default(false);

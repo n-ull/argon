@@ -28,12 +28,19 @@ class OrderValidatorService
             $eventProduct = $event->products->firstWhere('product_id', $product->productId);
             $selectedPrice = $eventProduct->product_prices->firstWhere('id', $product->selectedPriceId);
 
-            // check sales datetime
-            if ($eventProduct->start_sale_date->gt(now()) || $eventProduct->end_sale_date->lt(now())) {
+            // check sales date
+
+            $productStartSaleDate = $eventProduct->start_sale_date ?? $event->start_date;
+            $productEndSaleDate = $eventProduct->end_sale_date ?? $event->end_date;
+
+            if ($productStartSaleDate->gt(now()) || $productEndSaleDate->lt(now())) {
                 throw new \DomainException('Product sales are not available.');
             }
 
-            if ($selectedPrice->start_sale_date->gt(now()) || $selectedPrice->end_sale_date->lt(now())) {
+            $priceStartSaleDate = $selectedPrice->start_sale_date ?? $event->start_date;
+            $priceEndSaleDate = $selectedPrice->end_sale_date ?? $event->end_date;
+
+            if ($priceStartSaleDate->gt(now()) || $priceEndSaleDate->lt(now())) {
                 throw new \DomainException('Product with this price sales are not available');
             }
 
