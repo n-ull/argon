@@ -6,7 +6,7 @@ use Domain\EventManagement\ValueObjects\LocationInfo;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 
-class LocationInfoJson implements CastsAttributes
+final class LocationInfoJson implements CastsAttributes
 {
     /**
      * Cast the given value.
