@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Event Model
- * 
+ *
  * Represents an event in the event management system.
  *
  * @property int $id
@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read Organizer $organizer
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Product> $products
  * @property-read int|null $products_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event query()
@@ -49,31 +50,32 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Event extends Model
 {
     use HasFactory;
 
-    protected $table = "events";
+    protected $table = 'events';
 
     protected $fillable = [
-        "title",
-        "description",
-        "location_info",
-        "status",
-        "start_date",
-        "end_date",
-        "organizer_id",
-        "is_featured",
-        "slug",
+        'title',
+        'description',
+        'location_info',
+        'status',
+        'start_date',
+        'end_date',
+        'organizer_id',
+        'is_featured',
+        'slug',
     ];
 
     protected $casts = [
-        "start_date" => "datetime",
-        "end_date" => "datetime",
-        "status" => EventStatus::class,
-        "location_info" => LocationInfoJson::class,
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'status' => EventStatus::class,
+        'location_info' => LocationInfoJson::class,
     ];
 
     public function organizer(): BelongsTo
@@ -81,11 +83,13 @@ class Event extends Model
         return $this->belongsTo(Organizer::class);
     }
 
-    public function products(): HasMany {
+    public function products(): HasMany
+    {
         return $this->hasMany(Product::class);
     }
 
-    public function orders(): HasMany {
+    public function orders(): HasMany
+    {
         return $this->hasMany(Order::class);
     }
 }

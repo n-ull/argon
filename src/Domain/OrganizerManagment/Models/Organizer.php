@@ -2,7 +2,6 @@
 
 namespace Domain\OrganizerManagment\Models;
 
-use Domain\EventManagment\Models\Event;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, AEvent> $events
  * @property-read int|null $events_count
  * @property-read \Domain\OrganizerManagment\Models\OrganizerSettings|null $settings
+ *
  * @method static \Domain\OrganizerManagment\Database\Factories\OrganizerFactory factory($count = null, $state = [])
  * @method static \Illuminate\Eventse\Eloquent\Builder<static>|Organizer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer newQuery()
@@ -30,16 +30,18 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Organizer extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        "name",
-        "email",
-        "phone",
-        "logo",
+        'name',
+        'email',
+        'phone',
+        'logo',
     ];
 
     public function events(): HasMany
@@ -47,7 +49,8 @@ class Organizer extends Model
         return $this->hasMany(AEvent::class);
     }
 
-    public function settings(): HasOne {
+    public function settings(): HasOne
+    {
         return $this->hasOne(OrganizerSettings::class);
     }
 }

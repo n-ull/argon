@@ -12,10 +12,10 @@ class OrganizerFactory extends Factory
     public function definition()
     {
         return [
-            "name" => $this->faker->name,
-            "email"=> $this->faker->safeEmail,
-            "phone"=> $this->faker->phoneNumber,
-            "logo" => $this->faker->image
+            'name' => $this->faker->name,
+            'email' => $this->faker->safeEmail,
+            'phone' => $this->faker->phoneNumber,
+            'logo' => $this->faker->image,
         ];
     }
 }

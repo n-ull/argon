@@ -2,9 +2,9 @@
 
 namespace Domain\EventManagment\Enums;
 
-enum EventStatus : string
+enum EventStatus: string
 {
-    case DRAFT = "draft";
-    case PUBLISHED = "published";
-    case ARCHIVED = "archived";
+    case DRAFT = 'draft';
+    case PUBLISHED = 'published';
+    case ARCHIVED = 'archived';
 }
