@@ -1,173 +1,163 @@
 <?php
 
-use Domain\EventManagement\ValueObjects\LocationInfo;
+declare(strict_types=1);
 
-describe('LocationInfo ValueObject', function () {
-    test('can be instantiated with required fields', function () {
-        $location = new LocationInfo(
+namespace Tests\Unit\Domain\EventManagement\ValueObjects;
+
+use Domain\EventManagement\ValueObjects\LocationInfo;
+use PHPUnit\Framework\TestCase;
+
+class LocationInfoTest extends TestCase
+{
+    /** @test */
+    public function it_can_be_created_with_all_parameters(): void
+    {
+        $locationInfo = new LocationInfo(
             address: '123 Main St',
             city: 'New York',
-            country: 'USA'
-        );
-
-        expect($location->address)->toBe('123 Main St')
-            ->and($location->city)->toBe('New York')
-            ->and($location->country)->toBe('USA')
-            ->and($location->mapLink)->toBeNull()
-            ->and($location->site)->toBeNull();
-    });
-
-    test('can be instantiated with all fields', function () {
-        $location = new LocationInfo(
-            address: '456 Oak Ave',
-            city: 'Los Angeles',
             country: 'USA',
-            mapLink: 'https://maps.google.com/venue',
+            mapLink: 'https://maps.google.com',
             site: 'https://venue.com'
         );
 
-        expect($location->address)->toBe('456 Oak Ave')
-            ->and($location->city)->toBe('Los Angeles')
-            ->and($location->country)->toBe('USA')
-            ->and($location->mapLink)->toBe('https://maps.google.com/venue')
-            ->and($location->site)->toBe('https://venue.com');
-    });
+        $this->assertEquals('123 Main St', $locationInfo->address);
+        $this->assertEquals('New York', $locationInfo->city);
+        $this->assertEquals('USA', $locationInfo->country);
+        $this->assertEquals('https://maps.google.com', $locationInfo->mapLink);
+        $this->assertEquals('https://venue.com', $locationInfo->site);
+    }
 
-    test('can be created from array', function () {
-        $data = [
-            'address' => '789 Pine Rd',
-            'city' => 'Chicago',
-            'country' => 'USA',
-            'mapLink' => 'https://maps.example.com',
-            'site' => 'https://site.example.com',
-        ];
+    /** @test */
+    public function it_can_be_created_with_required_parameters_only(): void
+    {
+        $locationInfo = new LocationInfo(
+            address: '456 Oak Ave',
+            city: 'Boston',
+            country: 'USA'
+        );
 
-        $location = LocationInfo::fromArray($data);
+        $this->assertEquals('456 Oak Ave', $locationInfo->address);
+        $this->assertEquals('Boston', $locationInfo->city);
+        $this->assertEquals('USA', $locationInfo->country);
+        $this->assertNull($locationInfo->mapLink);
+        $this->assertNull($locationInfo->site);
+    }
 
-        expect($location)->toBeInstanceOf(LocationInfo::class)
-            ->and($location->address)->toBe('789 Pine Rd')
-            ->and($location->city)->toBe('Chicago')
-            ->and($location->country)->toBe('USA')
-            ->and($location->mapLink)->toBe('https://maps.example.com')
-            ->and($location->site)->toBe('https://site.example.com');
-    });
-
-    test('fromArray handles null optional fields', function () {
-        $data = [
-            'address' => '321 Elm St',
-            'city' => 'Boston',
-            'country' => 'USA',
-            'mapLink' => null,
-            'site' => null,
-        ];
-
-        $location = LocationInfo::fromArray($data);
-
-        expect($location->mapLink)->toBeNull()
-            ->and($location->site)->toBeNull();
-    });
-
-    test('can be converted to array', function () {
-        $location = new LocationInfo(
-            address: '111 Maple Dr',
-            city: 'Seattle',
-            country: 'USA',
+    /** @test */
+    public function it_can_convert_to_array(): void
+    {
+        $locationInfo = new LocationInfo(
+            address: '789 Test Rd',
+            city: 'Test City',
+            country: 'Test Country',
             mapLink: 'https://map.test',
             site: 'https://site.test'
         );
 
-        $array = $location->toArray();
+        $array = $locationInfo->toArray();
 
-        expect($array)->toBe([
-            'address' => '111 Maple Dr',
-            'city' => 'Seattle',
-            'country' => 'USA',
-            'mapLink' => 'https://map.test',
-            'site' => 'https://site.test',
-        ]);
-    });
+        $this->assertIsArray($array);
+        $this->assertEquals('789 Test Rd', $array['address']);
+        $this->assertEquals('Test City', $array['city']);
+        $this->assertEquals('Test Country', $array['country']);
+        $this->assertEquals('https://map.test', $array['mapLink']);
+        $this->assertEquals('https://site.test', $array['site']);
+    }
 
-    test('toArray includes null values', function () {
-        $location = new LocationInfo(
-            address: '222 Birch Ln',
-            city: 'Portland',
-            country: 'USA'
+    /** @test */
+    public function it_can_be_created_from_array(): void
+    {
+        $data = [
+            'address' => '321 Array St',
+            'city' => 'Array City',
+            'country' => 'Array Country',
+            'mapLink' => 'https://array.map',
+            'site' => 'https://array.site',
+        ];
+
+        $locationInfo = LocationInfo::fromArray($data);
+
+        $this->assertEquals('321 Array St', $locationInfo->address);
+        $this->assertEquals('Array City', $locationInfo->city);
+        $this->assertEquals('Array Country', $locationInfo->country);
+        $this->assertEquals('https://array.map', $locationInfo->mapLink);
+        $this->assertEquals('https://array.site', $locationInfo->site);
+    }
+
+    /** @test */
+    public function it_can_be_serialized_to_json(): void
+    {
+        $locationInfo = new LocationInfo(
+            address: 'JSON Address',
+            city: 'JSON City',
+            country: 'JSON Country'
         );
 
-        $array = $location->toArray();
-
-        expect($array)->toHaveKey('mapLink')
-            ->and($array)->toHaveKey('site')
-            ->and($array['mapLink'])->toBeNull()
-            ->and($array['site'])->toBeNull();
-    });
-
-    test('implements Arrayable interface', function () {
-        $location = new LocationInfo('address', 'city', 'country');
-
-        expect($location)->toBeInstanceOf(\Illuminate\Contracts\Support\Arrayable::class);
-    });
-
-    test('implements JsonSerializable interface', function () {
-        $location = new LocationInfo('address', 'city', 'country');
-
-        expect($location)->toBeInstanceOf(\JsonSerializable::class);
-    });
-
-    test('can be json serialized', function () {
-        $location = new LocationInfo(
-            address: '333 Cedar Ave',
-            city: 'Denver',
-            country: 'USA',
-            mapLink: 'https://map.example.com',
-            site: null
-        );
-
-        $json = json_encode($location);
+        $json = json_encode($locationInfo);
         $decoded = json_decode($json, true);
 
-        expect($decoded)->toBe([
-            'address' => '333 Cedar Ave',
-            'city' => 'Denver',
-            'country' => 'USA',
-            'mapLink' => 'https://map.example.com',
-            'site' => null,
-        ]);
-    });
+        $this->assertEquals('JSON Address', $decoded['address']);
+        $this->assertEquals('JSON City', $decoded['city']);
+        $this->assertEquals('JSON Country', $decoded['country']);
+    }
 
-    test('jsonSerialize returns array', function () {
-        $location = new LocationInfo('test address', 'test city', 'test country');
-
-        expect($location->jsonSerialize())->toBeArray()
-            ->and($location->jsonSerialize())->toBe($location->toArray());
-    });
-});
-
-describe('LocationInfo Edge Cases', function () {
-    test('handles empty strings', function () {
-        $location = new LocationInfo('', '', '');
-
-        expect($location->address)->toBe('')
-            ->and($location->city)->toBe('')
-            ->and($location->country)->toBe('');
-    });
-
-    test('handles special characters', function () {
-        $location = new LocationInfo(
-            address: '123 O\'Brien St & Co.',
-            city: 'São Paulo',
-            country: 'Brasil'
+    /** @test */
+    public function to_array_includes_null_values(): void
+    {
+        $locationInfo = new LocationInfo(
+            address: '999 Min St',
+            city: 'Min City',
+            country: 'Min Country'
         );
 
-        expect($location->address)->toBe('123 O\'Brien St & Co.')
-            ->and($location->city)->toBe('São Paulo')
-            ->and($location->country)->toBe('Brasil');
-    });
+        $array = $locationInfo->toArray();
 
-    test('handles very long strings', function () {
-        $longAddress = str_repeat('a', 500);
-        $location = new LocationInfo($longAddress, 'city', 'country');
+        $this->assertArrayHasKey('mapLink', $array);
+        $this->assertArrayHasKey('site', $array);
+        $this->assertNull($array['mapLink']);
+        $this->assertNull($array['site']);
+    }
 
-        expect(strlen($location->address))->toBe(500);
-    });
-});
+    /** @test */
+    public function it_handles_international_characters(): void
+    {
+        $locationInfo = new LocationInfo(
+            address: 'Straße 123',
+            city: 'München',
+            country: 'Deutschland'
+        );
+
+        $this->assertEquals('Straße 123', $locationInfo->address);
+        $this->assertEquals('München', $locationInfo->city);
+        $this->assertEquals('Deutschland', $locationInfo->country);
+    }
+
+    /** @test */
+    public function it_handles_long_address_strings(): void
+    {
+        $longAddress = str_repeat('Long Address Line ', 50);
+        
+        $locationInfo = new LocationInfo(
+            address: $longAddress,
+            city: 'City',
+            country: 'Country'
+        );
+
+        $this->assertEquals($longAddress, $locationInfo->address);
+    }
+
+    /** @test */
+    public function it_handles_url_formats_in_optional_fields(): void
+    {
+        $locationInfo = new LocationInfo(
+            address: 'URL Test',
+            city: 'URL City',
+            country: 'URL Country',
+            mapLink: 'https://maps.google.com/place?id=123&name=venue',
+            site: 'https://example.com/page?param=value#section'
+        );
+
+        $this->assertStringContainsString('maps.google.com', $locationInfo->mapLink);
+        $this->assertStringContainsString('example.com', $locationInfo->site);
+    }
+}

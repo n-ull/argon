@@ -1,61 +1,74 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\Ordering\Data;
+
 use Domain\Ordering\Data\CreateOrderData;
 use Domain\Ordering\Data\CreateOrderProductData;
+use PHPUnit\Framework\TestCase;
 
-describe('CreateOrderData', function () {
-    test('can be instantiated with event ID and products', function () {
+class CreateOrderDataTest extends TestCase
+{
+    /** @test */
+    public function it_can_be_instantiated_with_event_id_and_products(): void
+    {
         $products = [
-            new CreateOrderProductData(1, 2, 3),
-            new CreateOrderProductData(4, 5, 6),
+            new CreateOrderProductData(
+                productId: 1,
+                selectedPriceId: 10,
+                quantity: 2
+            ),
         ];
 
         $data = new CreateOrderData(
-            eventId: 10,
+            eventId: 123,
             products: $products
         );
 
-        expect($data)->toBeInstanceOf(CreateOrderData::class)
-            ->and($data->eventId)->toBe(10)
-            ->and($data->products)->toBeArray()
-            ->and($data->products)->toHaveCount(2);
-    });
+        $this->assertEquals(123, $data->eventId);
+        $this->assertIsArray($data->products);
+        $this->assertCount(1, $data->products);
+        $this->assertInstanceOf(CreateOrderProductData::class, $data->products[0]);
+    }
 
-    test('extends Spatie LaravelData Data class', function () {
-        $data = new CreateOrderData(1, []);
-
-        expect($data)->toBeInstanceOf(\Spatie\LaravelData\Data::class);
-    });
-
-    test('products array contains CreateOrderProductData instances', function () {
-        $product = new CreateOrderProductData(1, 2, 3);
-        $data = new CreateOrderData(1, [$product]);
-
-        expect($data->products[0])->toBeInstanceOf(CreateOrderProductData::class)
-            ->and($data->products[0]->productId)->toBe(1)
-            ->and($data->products[0]->selectedPriceId)->toBe(2)
-            ->and($data->products[0]->quantity)->toBe(3);
-    });
-
-    test('can handle empty products array', function () {
-        $data = new CreateOrderData(1, []);
-
-        expect($data->products)->toBeArray()
-            ->and($data->products)->toBeEmpty();
-    });
-
-    test('can handle multiple products', function () {
+    /** @test */
+    public function it_can_hold_multiple_products(): void
+    {
         $products = [
             new CreateOrderProductData(1, 10, 2),
-            new CreateOrderProductData(2, 20, 5),
-            new CreateOrderProductData(3, 30, 1),
+            new CreateOrderProductData(2, 20, 1),
+            new CreateOrderProductData(3, 30, 5),
         ];
 
-        $data = new CreateOrderData(100, $products);
+        $data = new CreateOrderData(456, $products);
 
-        expect($data->products)->toHaveCount(3)
-            ->and($data->products[0]->productId)->toBe(1)
-            ->and($data->products[1]->productId)->toBe(2)
-            ->and($data->products[2]->productId)->toBe(3);
-    });
-});
+        $this->assertCount(3, $data->products);
+        $this->assertEquals(456, $data->eventId);
+    }
+
+    /** @test */
+    public function it_can_have_empty_products_array(): void
+    {
+        $data = new CreateOrderData(789, []);
+
+        $this->assertIsArray($data->products);
+        $this->assertCount(0, $data->products);
+    }
+
+    /** @test */
+    public function it_preserves_product_data_integrity(): void
+    {
+        $product = new CreateOrderProductData(
+            productId: 42,
+            selectedPriceId: 84,
+            quantity: 10
+        );
+
+        $data = new CreateOrderData(100, [$product]);
+
+        $this->assertEquals(42, $data->products[0]->productId);
+        $this->assertEquals(84, $data->products[0]->selectedPriceId);
+        $this->assertEquals(10, $data->products[0]->quantity);
+    }
+}

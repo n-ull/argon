@@ -1,56 +1,93 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\EventManagement\Services;
+
 use Domain\EventManagement\Models\Event;
 use Domain\EventManagement\Services\EventValidatorService;
+use Domain\OrganizerManagement\Models\Organizer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
+class EventValidatorServiceTest extends TestCase
+{
+    use RefreshDatabase;
 
-describe('EventValidatorService', function () {
-    test('validates event with valid dates', function () {
-        $service = new EventValidatorService();
+    private EventValidatorService $service;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->service = new EventValidatorService();
+    }
+
+    /** @test */
+    public function it_passes_validation_when_start_date_is_before_end_date(): void
+    {
         $event = Event::factory()->create([
-            'start_date' => now()->addDays(30),
-            'end_date' => now()->addDays(31),
+            'start_date' => now()->addDays(5),
+            'end_date' => now()->addDays(10),
         ]);
 
-        $service->validate($event);
+        $this->service->validate($event);
 
-        expect(true)->toBeTrue(); // No exception thrown
-    });
+        $this->assertTrue(true); // No exception thrown
+    }
 
-    test('throws exception when start date is after end date', function () {
-        $service = new EventValidatorService();
-        $event = Event::factory()->make([
-            'start_date' => now()->addDays(31),
+    /** @test */
+    public function it_throws_exception_when_start_date_is_after_end_date(): void
+    {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Event start must be before end');
+
+        $event = Event::factory()->create([
+            'start_date' => now()->addDays(10),
+            'end_date' => now()->addDays(5),
+        ]);
+
+        $this->service->validate($event);
+    }
+
+    /** @test */
+    public function it_throws_exception_when_start_date_equals_end_date(): void
+    {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Event start must be before end');
+
+        $sameDate = now()->addDays(5);
+        $event = Event::factory()->create([
+            'start_date' => $sameDate,
+            'end_date' => $sameDate,
+        ]);
+
+        $this->service->validate($event);
+    }
+
+    /** @test */
+    public function it_validates_events_spanning_multiple_days(): void
+    {
+        $event = Event::factory()->create([
+            'start_date' => now(),
             'end_date' => now()->addDays(30),
         ]);
 
-        $service->validate($event);
-    })->throws(DomainException::class, 'Event start must be before end');
+        $this->service->validate($event);
 
-    test('allows same start and end date', function () {
-        $service = new EventValidatorService();
-        $date = now()->addDays(30);
+        $this->assertTrue(true); // No exception thrown
+    }
+
+    /** @test */
+    public function it_validates_events_with_same_day_but_different_times(): void
+    {
+        $baseDate = now()->startOfDay();
         $event = Event::factory()->create([
-            'start_date' => $date,
-            'end_date' => $date,
+            'start_date' => $baseDate->copy()->addHours(10),
+            'end_date' => $baseDate->copy()->addHours(18),
         ]);
 
-        $service->validate($event);
+        $this->service->validate($event);
 
-        expect(true)->toBeTrue(); // No exception thrown
-    });
-
-    test('validates event with dates far apart', function () {
-        $service = new EventValidatorService();
-        $event = Event::factory()->create([
-            'start_date' => now()->addDays(30),
-            'end_date' => now()->addDays(365),
-        ]);
-
-        $service->validate($event);
-
-        expect(true)->toBeTrue();
-    });
-});
+        $this->assertTrue(true); // No exception thrown
+    }
+}

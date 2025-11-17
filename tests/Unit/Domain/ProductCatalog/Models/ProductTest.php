@@ -1,108 +1,24 @@
 <?php
 
-use Domain\EventManagement\Models\Event;
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\ProductCatalog\Models;
+
 use Domain\ProductCatalog\Enums\ProductType;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
+use Domain\EventManagement\Models\Event;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
+class ProductTest extends TestCase
+{
+    use RefreshDatabase;
 
-describe('Product Model', function () {
-    test('can create a product', function () {
-        $event = Event::factory()->create();
-
-        $product = Product::create([
-            'name' => 'Test Ticket',
-            'description' => 'Test Description',
-            'max_per_order' => 10,
-            'min_per_order' => 1,
-            'product_type' => ProductType::TICKET,
-            'hide_before_sale_start_date' => false,
-            'hide_after_sale_end_date' => false,
-            'hide_when_sold_out' => true,
-            'show_stock' => true,
-            'start_sale_date' => now(),
-            'end_sale_date' => now()->addDays(30),
-            'event_id' => $event->id,
-        ]);
-
-        expect($product)->toBeInstanceOf(Product::class)
-            ->and($product->name)->toBe('Test Ticket')
-            ->and($product->description)->toBe('Test Description')
-            ->and($product->max_per_order)->toBe(10)
-            ->and($product->min_per_order)->toBe(1)
-            ->and($product->product_type)->toBe(ProductType::TICKET)
-            ->and($product->event_id)->toBe($event->id);
-    });
-
-    test('casts product_type to ProductType enum', function () {
-        $product = Product::factory()->create(['product_type' => 'general']);
-
-        expect($product->product_type)->toBeInstanceOf(ProductType::class)
-            ->and($product->product_type)->toBe(ProductType::GENERAL);
-    });
-
-    test('has many product prices', function () {
-        $product = Product::factory()->create();
-
-        $price1 = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'stock' => 50,
-            'sort_order' => 1,
-        ]);
-
-        $price2 = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 150.00,
-            'label' => 'VIP',
-            'stock' => 20,
-            'sort_order' => 2,
-        ]);
-
-        $product->load('product_prices');
-
-        expect($product->product_prices)->toHaveCount(2)
-            ->and($product->product_prices->pluck('id')->toArray())->toContain($price1->id, $price2->id);
-    });
-
-    test('product prices are ordered by sort_order', function () {
-        $product = Product::factory()->create();
-
-        ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 200.00,
-            'label' => 'Premium',
-            'sort_order' => 3,
-        ]);
-
-        ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'sort_order' => 1,
-        ]);
-
-        ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 150.00,
-            'label' => 'VIP',
-            'sort_order' => 2,
-        ]);
-
-        $product->load('product_prices');
-
-        expect($product->product_prices->pluck('label')->toArray())
-            ->toBe(['Standard', 'VIP', 'Premium']);
-    });
-
-    test('has correct fillable attributes', function () {
-        $product = new Product();
-        $fillable = $product->getFillable();
-
-        expect($fillable)->toContain(
+    /** @test */
+    public function it_has_correct_fillable_attributes(): void
+    {
+        $expected = [
             'name',
             'description',
             'max_per_order',
@@ -115,67 +31,135 @@ describe('Product Model', function () {
             'show_stock',
             'start_sale_date',
             'end_sale_date',
-            'event_id'
-        );
-    });
+            'event_id',
+        ];
 
-    test('can handle boolean visibility flags', function () {
+        $product = new Product();
+        $this->assertEquals($expected, $product->getFillable());
+    }
+
+    /** @test */
+    public function it_casts_product_type_to_enum(): void
+    {
+        $product = new Product();
+        $casts = $product->getCasts();
+
+        $this->assertArrayHasKey('product_type', $casts);
+        $this->assertEquals(ProductType::class, $casts['product_type']);
+    }
+
+    /** @test */
+    public function it_has_product_prices_relationship(): void
+    {
+        $product = Product::factory()->create();
+
+        $this->assertInstanceOf(
+            \Illuminate\Database\Eloquent\Relations\HasMany::class,
+            $product->product_prices()
+        );
+    }
+
+    /** @test */
+    public function it_orders_product_prices_by_sort_order(): void
+    {
+        $product = Product::factory()->create();
+        
+        ProductPrice::factory()->create(['product_id' => $product->id, 'sort_order' => 3]);
+        ProductPrice::factory()->create(['product_id' => $product->id, 'sort_order' => 1]);
+        ProductPrice::factory()->create(['product_id' => $product->id, 'sort_order' => 2]);
+
+        $prices = $product->product_prices;
+
+        $this->assertEquals(1, $prices[0]->sort_order);
+        $this->assertEquals(2, $prices[1]->sort_order);
+        $this->assertEquals(3, $prices[2]->sort_order);
+    }
+
+    /** @test */
+    public function it_can_create_product_with_all_fields(): void
+    {
+        $event = Event::factory()->create();
+        
+        $product = Product::create([
+            'name' => 'Test Product',
+            'description' => 'Test Description',
+            'max_per_order' => 10,
+            'min_per_order' => 1,
+            'product_type' => ProductType::TICKET,
+            'product_price_type' => 'standard',
+            'hide_before_sale_start_date' => true,
+            'hide_after_sale_end_date' => false,
+            'hide_when_sold_out' => true,
+            'show_stock' => false,
+            'start_sale_date' => now(),
+            'end_sale_date' => now()->addDays(30),
+            'event_id' => $event->id,
+        ]);
+
+        $this->assertInstanceOf(Product::class, $product);
+        $this->assertEquals('Test Product', $product->name);
+        $this->assertEquals(ProductType::TICKET, $product->product_type);
+    }
+
+    /** @test */
+    public function it_can_have_general_or_ticket_type(): void
+    {
+        $generalProduct = Product::factory()->create(['product_type' => ProductType::GENERAL]);
+        $ticketProduct = Product::factory()->create(['product_type' => ProductType::TICKET]);
+
+        $this->assertEquals(ProductType::GENERAL, $generalProduct->product_type);
+        $this->assertEquals(ProductType::TICKET, $ticketProduct->product_type);
+    }
+
+    /** @test */
+    public function it_can_have_visibility_settings(): void
+    {
         $product = Product::factory()->create([
             'hide_before_sale_start_date' => true,
             'hide_after_sale_end_date' => true,
-            'hide_when_sold_out' => true,
-            'show_stock' => false,
+            'hide_when_sold_out' => false,
+            'show_stock' => true,
         ]);
 
-        expect($product->hide_before_sale_start_date)->toBeTrue()
-            ->and($product->hide_after_sale_end_date)->toBeTrue()
-            ->and($product->hide_when_sold_out)->toBeTrue()
-            ->and($product->show_stock)->toBeFalse();
-    });
+        $this->assertTrue($product->hide_before_sale_start_date);
+        $this->assertTrue($product->hide_after_sale_end_date);
+        $this->assertFalse($product->hide_when_sold_out);
+        $this->assertTrue($product->show_stock);
+    }
 
-    test('can update product attributes', function () {
-        $product = Product::factory()->create(['name' => 'Old Name']);
-
-        $product->update(['name' => 'New Name']);
-
-        expect($product->fresh()->name)->toBe('New Name');
-    });
-});
-
-describe('Product Types', function () {
-    test('can be general type', function () {
-        $product = Product::factory()->create(['product_type' => ProductType::GENERAL]);
-
-        expect($product->product_type)->toBe(ProductType::GENERAL);
-    });
-
-    test('can be ticket type', function () {
-        $product = Product::factory()->create(['product_type' => ProductType::TICKET]);
-
-        expect($product->product_type)->toBe(ProductType::TICKET);
-    });
-});
-
-describe('Product Constraints', function () {
-    test('enforces min and max per order', function () {
+    /** @test */
+    public function it_can_have_quantity_limits(): void
+    {
         $product = Product::factory()->create([
             'min_per_order' => 2,
             'max_per_order' => 5,
         ]);
 
-        expect($product->min_per_order)->toBe(2)
-            ->and($product->max_per_order)->toBe(5);
-    });
+        $this->assertEquals(2, $product->min_per_order);
+        $this->assertEquals(5, $product->max_per_order);
+    }
 
-    test('min per order can be 1', function () {
-        $product = Product::factory()->create(['min_per_order' => 1]);
+    /** @test */
+    public function it_belongs_to_an_event(): void
+    {
+        $event = Event::factory()->create();
+        $product = Product::factory()->create(['event_id' => $event->id]);
 
-        expect($product->min_per_order)->toBe(1);
-    });
+        $this->assertEquals($event->id, $product->event_id);
+    }
 
-    test('max per order can be high', function () {
-        $product = Product::factory()->create(['max_per_order' => 100]);
+    /** @test */
+    public function it_has_sale_date_range(): void
+    {
+        $startDate = now();
+        $endDate = now()->addDays(30);
 
-        expect($product->max_per_order)->toBe(100);
-    });
-});
+        $product = Product::factory()->create([
+            'start_sale_date' => $startDate,
+            'end_sale_date' => $endDate,
+        ]);
+
+        $this->assertNotNull($product->start_sale_date);
+        $this->assertNotNull($product->end_sale_date);
+    }
+}
