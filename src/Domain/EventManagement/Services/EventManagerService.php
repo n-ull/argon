@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\EventManagment\Services;
+namespace Domain\EventManagement\Services;
 
 class EventManagerService
 {

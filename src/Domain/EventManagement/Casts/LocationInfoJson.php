@@ -1,8 +1,8 @@
 <?php
 
-namespace Domain\EventManagment\Casts;
+namespace Domain\EventManagement\Casts;
 
-use Domain\EventManagment\ValueObjects\LocationInfo;
+use Domain\EventManagement\ValueObjects\LocationInfo;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 

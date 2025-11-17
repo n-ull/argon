@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\EventManagment\ValueObjects;
+namespace Domain\EventManagement\ValueObjects;
 
 use Illuminate\Contracts\Support\Arrayable;
 use JsonSerializable;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Domain\EventManagment\Database\Factories;
+namespace Domain\EventManagement\Database\Factories;
 
 use DateInterval;
-use Domain\EventManagment\Models\Event;
-use Domain\OrganizerManagment\Models\Organizer;
+use Domain\EventManagement\Models\Event;
+use Domain\OrganizerManagement\Models\Organizer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EventFactory extends Factory

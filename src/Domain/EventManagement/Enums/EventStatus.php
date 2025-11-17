@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\EventManagment\Enums;
+namespace Domain\EventManagement\Enums;
 
 enum EventStatus: string
 {

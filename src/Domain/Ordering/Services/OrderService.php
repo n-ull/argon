@@ -2,7 +2,7 @@
 
 namespace Domain\Ordering\Services;
 
-use Domain\EventManagment\Models\Event;
+use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Data\CreateOrderData;
 use Domain\Ordering\Models\Order;
 
@@ -23,7 +23,7 @@ class OrderService
         $event = Event::find($orderData->eventId);
 
         if (! $event) {
-            throw new \DomainException("Event doesn't exists.");
+            throw new \DomainException("Event doesn't exist.");
         }
 
         // validate order

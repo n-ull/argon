@@ -1,8 +1,8 @@
 <?php
 
-namespace Domain\OrganizerManagment\Database\Factories;
+namespace Domain\OrganizerManagement\Database\Factories;
 
-use Domain\OrganizerManagment\Models\Organizer;
+use Domain\OrganizerManagement\Models\Organizer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class OrganizerFactory extends Factory

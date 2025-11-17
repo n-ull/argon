@@ -1,12 +1,12 @@
 <?php
 
-namespace Domain\OrganizerManagment\Models;
+namespace Domain\OrganizerManagement\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property-read \Domain\OrganizerManagment\Models\Organizer|null $organizer
+ * @property-read \Domain\OrganizerManagement\Models\Organizer|null $organizer
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings newQuery()
@@ -23,7 +23,6 @@ class OrganizerSettings extends Model
         'is_modo_active',
         'is_mercadopago_active',
     ];
-
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(Organizer::class);

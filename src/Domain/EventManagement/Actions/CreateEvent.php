@@ -1,9 +1,9 @@
 <?php
 
-namespace Domain\EventManagment\Actions;
+namespace Domain\EventManagement\Actions;
 
-use App\Modules\EventManagment\Requests\CreateEventRequest;
-use Domain\EventManagment\Services\EventManagerService;
+use App\Modules\EventManagement\Requests\CreateEventRequest;
+use Domain\EventManagement\Services\EventManagerService;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class CreateEvent

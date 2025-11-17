@@ -2,8 +2,8 @@
 
 namespace Domain\Ordering\Services;
 
-use Domain\EventManagment\Enums\EventStatus;
-use Domain\EventManagment\Models\Event;
+use Domain\EventManagement\Enums\EventStatus;
+use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Data\CreateOrderData;
 
 class OrderValidatorService
@@ -16,7 +16,7 @@ class OrderValidatorService
         //
     }
 
-    public function validateOrder(CreateOrderData $orderData)
+    public function validateOrder(CreateOrderData $orderData): void
     {
         $event = Event::findOrFail($orderData->eventId);
 
@@ -26,7 +26,16 @@ class OrderValidatorService
 
         foreach ($orderData->products as $product) {
             $eventProduct = $event->products->firstWhere('product_id', $product->productId);
+
+            if ($eventProduct == null) {
+                throw new \DomainException('Event product doesn\'t exist');
+            }
+
             $selectedPrice = $eventProduct->product_prices->firstWhere('id', $product->selectedPriceId);
+
+            if ($selectedPrice == null) {
+                throw new \DomainException('Selected price doesn\'t exist');
+            }
 
             // check sales date
 
