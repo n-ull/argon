@@ -1,99 +1,111 @@
 <?php
 
-use Domain\EventManagement\Models\Event;
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\Ordering\Models;
+
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
+use Domain\EventManagement\Models\Event;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
+class OrderTest extends TestCase
+{
+    use RefreshDatabase;
 
-describe('Order Model', function () {
-    test('can create an order', function () {
+    /** @test */
+    public function it_has_order_items_relationship(): void
+    {
+        $order = Order::factory()->create();
+
+        $this->assertInstanceOf(
+            \Illuminate\Database\Eloquent\Relations\HasMany::class,
+            $order->order_items()
+        );
+    }
+
+    /** @test */
+    public function it_can_create_order_with_all_fields(): void
+    {
         $event = Event::factory()->create();
         
         $order = Order::create([
             'event_id' => $event->id,
             'total_before_additions' => '100.00',
-            'total_gross' => '120.00',
+            'total_gross' => '115.00',
             'status' => 'pending',
-            'expires_at' => now()->addMinutes(15),
+            'expires_at' => now()->addHours(2)->toDateTimeString(),
         ]);
 
-        expect($order)->toBeInstanceOf(Order::class)
-            ->and($order->event_id)->toBe($event->id)
-            ->and($order->total_before_additions)->toBe('100.00')
-            ->and($order->total_gross)->toBe('120.00')
-            ->and($order->status)->toBe('pending');
-    });
+        $this->assertInstanceOf(Order::class, $order);
+        $this->assertEquals($event->id, $order->event_id);
+        $this->assertEquals('100.00', $order->total_before_additions);
+        $this->assertEquals('115.00', $order->total_gross);
+        $this->assertEquals('pending', $order->status);
+    }
 
-    test('has many order items', function () {
-        $event = Event::factory()->create();
-        $order = Order::create(['event_id' => $event->id]);
+    /** @test */
+    public function it_allows_mass_assignment_with_guarded_empty(): void
+    {
+        $data = [
+            'event_id' => 1,
+            'total_before_additions' => '50.00',
+            'total_gross' => '57.50',
+            'status' => 'completed',
+        ];
+
+        $order = new Order($data);
+
+        $this->assertEquals(1, $order->event_id);
+        $this->assertEquals('50.00', $order->total_before_additions);
+        $this->assertEquals('57.50', $order->total_gross);
+        $this->assertEquals('completed', $order->status);
+    }
+
+    /** @test */
+    public function it_can_have_multiple_order_items(): void
+    {
+        $order = Order::factory()->create();
         
-        $item1 = OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => 1,
-            'quantity' => 2,
-        ]);
-        
-        $item2 = OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => 2,
-            'quantity' => 3,
-        ]);
+        OrderItem::factory()->count(3)->create(['order_id' => $order->id]);
 
-        $order->load('order_items');
+        $this->assertEquals(3, $order->order_items()->count());
+    }
 
-        expect($order->order_items)->toHaveCount(2)
-            ->and($order->order_items->pluck('id')->toArray())->toContain($item1->id, $item2->id);
-    });
-
-    test('has no guarded attributes', function () {
-        $order = new Order();
-
-        expect($order->getGuarded())->toBe(['*']);
-    });
-
-    test('can update order status', function () {
-        $event = Event::factory()->create();
+    /** @test */
+    public function it_stores_monetary_values_as_strings(): void
+    {
         $order = Order::create([
-            'event_id' => $event->id,
+            'event_id' => Event::factory()->create()->id,
+            'total_before_additions' => '1234.56',
+            'total_gross' => '1400.00',
             'status' => 'pending',
         ]);
 
-        $order->update(['status' => 'completed']);
+        $this->assertIsString($order->total_before_additions);
+        $this->assertIsString($order->total_gross);
+        $this->assertEquals('1234.56', $order->total_before_additions);
+        $this->assertEquals('1400.00', $order->total_gross);
+    }
 
-        expect($order->fresh()->status)->toBe('completed');
-    });
+    /** @test */
+    public function it_has_timestamps(): void
+    {
+        $order = Order::factory()->create();
 
-    test('can update order totals', function () {
-        $event = Event::factory()->create();
-        $order = Order::create([
-            'event_id' => $event->id,
-            'total_before_additions' => '100.00',
-            'total_gross' => '120.00',
-        ]);
+        $this->assertNotNull($order->created_at);
+        $this->assertNotNull($order->updated_at);
+    }
 
-        $order->update([
-            'total_before_additions' => '150.00',
-            'total_gross' => '180.00',
-        ]);
+    /** @test */
+    public function it_can_have_different_statuses(): void
+    {
+        $statuses = ['pending', 'confirmed', 'completed', 'cancelled', 'expired'];
 
-        expect($order->fresh()->total_before_additions)->toBe('150.00')
-            ->and($order->fresh()->total_gross)->toBe('180.00');
-    });
-});
-
-describe('Order Relationships', function () {
-    test('order items belong to order', function () {
-        $event = Event::factory()->create();
-        $order = Order::create(['event_id' => $event->id]);
-        $item = OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => 1,
-        ]);
-
-        expect($item->order)->toBeInstanceOf(Order::class)
-            ->and($item->order->id)->toBe($order->id);
-    });
-});
+        foreach ($statuses as $status) {
+            $order = Order::factory()->create(['status' => $status]);
+            $this->assertEquals($status, $order->status);
+        }
+    }
+}

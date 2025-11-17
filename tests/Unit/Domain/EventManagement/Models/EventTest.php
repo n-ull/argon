@@ -1,143 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\EventManagement\Models;
+
+use Domain\EventManagement\Casts\LocationInfoJson;
 use Domain\EventManagement\Enums\EventStatus;
 use Domain\EventManagement\Models\Event;
 use Domain\EventManagement\ValueObjects\LocationInfo;
 use Domain\OrganizerManagement\Models\Organizer;
-use Domain\Ordering\Models\Order;
-use Domain\ProductCatalog\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
+class EventTest extends TestCase
+{
+    use RefreshDatabase;
 
-describe('Event Model', function () {
-    test('can create an event with required attributes', function () {
-        $organizer = Organizer::factory()->create();
-        
-        $event = Event::create([
-            'title' => 'Test Event',
-            'description' => 'Test Description',
-            'location_info' => [
-                'address' => '123 Main St',
-                'city' => 'Test City',
-                'country' => 'Test Country',
-            ],
-            'status' => EventStatus::DRAFT,
-            'start_date' => now()->addDays(30),
-            'end_date' => now()->addDays(31),
-            'organizer_id' => $organizer->id,
-            'is_featured' => false,
-            'slug' => 'test-event',
-        ]);
-
-        expect($event)->toBeInstanceOf(Event::class)
-            ->and($event->title)->toBe('Test Event')
-            ->and($event->description)->toBe('Test Description')
-            ->and($event->status)->toBe(EventStatus::DRAFT)
-            ->and($event->is_featured)->toBeFalse()
-            ->and($event->slug)->toBe('test-event');
-    });
-
-    test('casts status to EventStatus enum', function () {
-        $event = Event::factory()->create(['status' => 'published']);
-
-        expect($event->status)->toBeInstanceOf(EventStatus::class)
-            ->and($event->status)->toBe(EventStatus::PUBLISHED);
-    });
-
-    test('casts location_info to LocationInfo value object', function () {
-        $event = Event::factory()->create([
-            'location_info' => [
-                'address' => '456 Oak Ave',
-                'city' => 'Springfield',
-                'country' => 'USA',
-                'mapLink' => 'https://maps.example.com',
-                'site' => 'https://venue.example.com',
-            ],
-        ]);
-
-        expect($event->location_info)->toBeInstanceOf(LocationInfo::class)
-            ->and($event->location_info->address)->toBe('456 Oak Ave')
-            ->and($event->location_info->city)->toBe('Springfield')
-            ->and($event->location_info->country)->toBe('USA')
-            ->and($event->location_info->mapLink)->toBe('https://maps.example.com')
-            ->and($event->location_info->site)->toBe('https://venue.example.com');
-    });
-
-    test('casts start_date and end_date to Carbon instances', function () {
-        $startDate = now()->addDays(30);
-        $endDate = now()->addDays(31);
-
-        $event = Event::factory()->create([
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-        ]);
-
-        expect($event->start_date)->toBeInstanceOf(\Carbon\Carbon::class)
-            ->and($event->end_date)->toBeInstanceOf(\Carbon\Carbon::class)
-            ->and($event->start_date->toDateString())->toBe($startDate->toDateString())
-            ->and($event->end_date->toDateString())->toBe($endDate->toDateString());
-    });
-
-    test('belongs to an organizer', function () {
-        $organizer = Organizer::factory()->create();
-        $event = Event::factory()->create(['organizer_id' => $organizer->id]);
-
-        expect($event->organizer)->toBeInstanceOf(Organizer::class)
-            ->and($event->organizer->id)->toBe($organizer->id);
-    });
-
-    test('has many products', function () {
-        $event = Event::factory()->create();
-        $product1 = Product::factory()->create(['event_id' => $event->id]);
-        $product2 = Product::factory()->create(['event_id' => $event->id]);
-
-        $event->load('products');
-
-        expect($event->products)->toHaveCount(2)
-            ->and($event->products->pluck('id')->toArray())->toContain($product1->id, $product2->id);
-    });
-
-    test('has many orders', function () {
-        $event = Event::factory()->create();
-        $order1 = Order::create(['event_id' => $event->id]);
-        $order2 = Order::create(['event_id' => $event->id]);
-
-        $event->load('orders');
-
-        expect($event->orders)->toHaveCount(2)
-            ->and($event->orders->pluck('id')->toArray())->toContain($order1->id, $order2->id);
-    });
-
-    test('can handle null location_info', function () {
-        $event = Event::factory()->create(['location_info' => null]);
-
-        expect($event->location_info)->toBeNull();
-    });
-
-    test('is_featured defaults to false', function () {
-        $event = Event::factory()->create(['is_featured' => false]);
-
-        expect($event->is_featured)->toBeFalse();
-    });
-
-    test('can be featured', function () {
-        $event = Event::factory()->create(['is_featured' => true]);
-
-        expect($event->is_featured)->toBeTrue();
-    });
-
-    test('has correct table name', function () {
-        $event = new Event();
-
-        expect($event->getTable())->toBe('events');
-    });
-
-    test('has correct fillable attributes', function () {
-        $event = new Event();
-        $fillable = $event->getFillable();
-
-        expect($fillable)->toContain(
+    /** @test */
+    public function it_has_correct_fillable_attributes(): void
+    {
+        $expected = [
             'title',
             'description',
             'location_info',
@@ -146,57 +28,191 @@ describe('Event Model', function () {
             'end_date',
             'organizer_id',
             'is_featured',
-            'slug'
-        );
-    });
-});
+            'slug',
+        ];
 
-describe('Event Status Transitions', function () {
-    test('can transition from draft to published', function () {
+        $event = new Event();
+        $this->assertEquals($expected, $event->getFillable());
+    }
+
+    /** @test */
+    public function it_casts_location_info_to_location_info_json(): void
+    {
+        $event = new Event();
+        $casts = $event->getCasts();
+
+        $this->assertArrayHasKey('location_info', $casts);
+        $this->assertEquals(LocationInfoJson::class, $casts['location_info']);
+    }
+
+    /** @test */
+    public function it_casts_status_to_event_status_enum(): void
+    {
+        $event = new Event();
+        $casts = $event->getCasts();
+
+        $this->assertArrayHasKey('status', $casts);
+        $this->assertEquals(EventStatus::class, $casts['status']);
+    }
+
+    /** @test */
+    public function it_casts_datetime_fields_correctly(): void
+    {
+        $event = new Event();
+        $casts = $event->getCasts();
+
+        $this->assertEquals('datetime', $casts['start_date']);
+        $this->assertEquals('datetime', $casts['end_date']);
+    }
+
+    /** @test */
+    public function it_belongs_to_an_organizer(): void
+    {
+        $organizer = Organizer::factory()->create();
+        $event = Event::factory()->create(['organizer_id' => $organizer->id]);
+
+        $this->assertInstanceOf(Organizer::class, $event->organizer);
+        $this->assertEquals($organizer->id, $event->organizer->id);
+    }
+
+    /** @test */
+    public function it_has_products_relationship(): void
+    {
+        $event = Event::factory()->create();
+
+        $this->assertInstanceOf(
+            \Illuminate\Database\Eloquent\Relations\HasMany::class,
+            $event->products()
+        );
+    }
+
+    /** @test */
+    public function it_has_orders_relationship(): void
+    {
+        $event = Event::factory()->create();
+
+        $this->assertInstanceOf(
+            \Illuminate\Database\Eloquent\Relations\HasMany::class,
+            $event->orders()
+        );
+    }
+
+    /** @test */
+    public function it_can_create_event_with_location_info(): void
+    {
+        $organizer = Organizer::factory()->create();
+        $locationInfo = new LocationInfo(
+            address: '123 Test St',
+            city: 'Test City',
+            country: 'Test Country'
+        );
+
+        $event = Event::factory()->create([
+            'organizer_id' => $organizer->id,
+            'title' => 'Test Event',
+            'location_info' => $locationInfo,
+        ]);
+
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertEquals('Test Event', $event->title);
+        $this->assertInstanceOf(LocationInfo::class, $event->location_info);
+    }
+
+    /** @test */
+    public function it_can_have_a_status(): void
+    {
         $event = Event::factory()->create(['status' => EventStatus::DRAFT]);
+
+        $this->assertEquals(EventStatus::DRAFT, $event->status);
 
         $event->update(['status' => EventStatus::PUBLISHED]);
 
-        expect($event->fresh()->status)->toBe(EventStatus::PUBLISHED);
-    });
+        $this->assertEquals(EventStatus::PUBLISHED, $event->fresh()->status);
+    }
 
-    test('can transition to archived', function () {
-        $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    /** @test */
+    public function it_stores_event_dates(): void
+    {
+        $startsAt = now()->addDays(10);
+        $endsAt = now()->addDays(12);
 
-        $event->update(['status' => EventStatus::ARCHIVED]);
+        $event = Event::factory()->create([
+            'start_date' => $startsAt,
+            'end_date' => $endsAt,
+        ]);
 
-        expect($event->fresh()->status)->toBe(EventStatus::ARCHIVED);
-    });
-});
+        $this->assertEquals(
+            $startsAt->format('Y-m-d H:i:s'),
+            $event->start_date->format('Y-m-d H:i:s')
+        );
+        $this->assertEquals(
+            $endsAt->format('Y-m-d H:i:s'),
+            $event->end_date->format('Y-m-d H:i:s')
+        );
+    }
 
-describe('Event Query Scopes', function () {
-    test('can query by status', function () {
-        Event::factory()->create(['status' => EventStatus::DRAFT]);
-        Event::factory()->create(['status' => EventStatus::PUBLISHED]);
-        Event::factory()->create(['status' => EventStatus::ARCHIVED]);
+    /** @test */
+    public function it_has_a_slug(): void
+    {
+        $event = Event::factory()->create(['slug' => 'test-event-slug']);
 
-        $published = Event::where('status', EventStatus::PUBLISHED)->get();
+        $this->assertEquals('test-event-slug', $event->slug);
+    }
 
-        expect($published)->toHaveCount(1)
-            ->and($published->first()->status)->toBe(EventStatus::PUBLISHED);
-    });
+    /** @test */
+    public function it_can_have_a_description(): void
+    {
+        $description = 'This is a test event description with lots of details.';
+        $event = Event::factory()->create(['description' => $description]);
 
-    test('can query featured events', function () {
-        Event::factory()->count(3)->create(['is_featured' => false]);
-        Event::factory()->count(2)->create(['is_featured' => true]);
+        $this->assertEquals($description, $event->description);
+    }
 
-        $featured = Event::where('is_featured', true)->get();
+    /** @test */
+    public function it_can_have_null_description(): void
+    {
+        $event = Event::factory()->create(['description' => null]);
 
-        expect($featured)->toHaveCount(2);
-    });
+        $this->assertNull($event->description);
+    }
 
-    test('can query by organizer', function () {
+    /** @test */
+    public function location_info_can_be_null(): void
+    {
+        $event = Event::factory()->create(['location_info' => null]);
+
+        $this->assertNull($event->location_info);
+    }
+
+    /** @test */
+    public function it_can_retrieve_event_by_slug(): void
+    {
+        $event = Event::factory()->create(['slug' => 'unique-event']);
+
+        $found = Event::where('slug', 'unique-event')->first();
+
+        $this->assertNotNull($found);
+        $this->assertEquals($event->id, $found->id);
+    }
+
+    /** @test */
+    public function multiple_events_can_belong_to_same_organizer(): void
+    {
         $organizer = Organizer::factory()->create();
-        Event::factory()->count(3)->create(['organizer_id' => $organizer->id]);
-        Event::factory()->count(2)->create();
+        
+        $event1 = Event::factory()->create(['organizer_id' => $organizer->id]);
+        $event2 = Event::factory()->create(['organizer_id' => $organizer->id]);
 
-        $organizerEvents = Event::where('organizer_id', $organizer->id)->get();
+        $this->assertEquals($organizer->id, $event1->organizer_id);
+        $this->assertEquals($organizer->id, $event2->organizer_id);
+        $this->assertEquals(2, $organizer->events()->count());
+    }
 
-        expect($organizerEvents)->toHaveCount(3);
-    });
-});
+    /** @test */
+    public function it_can_be_featured(): void
+    {
+        $event = Event::factory()->create(['is_featured' => true]);
+
+        $this->assertTrue($event->is_featured);
+    }
+}

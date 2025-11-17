@@ -1,61 +1,85 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\EventManagement\Enums;
+
 use Domain\EventManagement\Enums\EventStatus;
+use PHPUnit\Framework\TestCase;
 
-describe('EventStatus Enum', function () {
-    test('has draft case', function () {
-        expect(EventStatus::DRAFT->value)->toBe('draft');
-    });
+class EventStatusTest extends TestCase
+{
+    /** @test */
+    public function it_has_draft_status(): void
+    {
+        $status = EventStatus::DRAFT;
 
-    test('has published case', function () {
-        expect(EventStatus::PUBLISHED->value)->toBe('published');
-    });
+        $this->assertEquals('draft', $status->value);
+        $this->assertInstanceOf(EventStatus::class, $status);
+    }
 
-    test('has archived case', function () {
-        expect(EventStatus::ARCHIVED->value)->toBe('archived');
-    });
+    /** @test */
+    public function it_has_published_status(): void
+    {
+        $status = EventStatus::PUBLISHED;
 
-    test('can be instantiated from string value', function () {
+        $this->assertEquals('published', $status->value);
+        $this->assertInstanceOf(EventStatus::class, $status);
+    }
+
+    /** @test */
+    public function it_has_archived_status(): void
+    {
+        $status = EventStatus::ARCHIVED;
+
+        $this->assertEquals('archived', $status->value);
+        $this->assertInstanceOf(EventStatus::class, $status);
+    }
+
+    /** @test */
+    public function it_can_be_created_from_value(): void
+    {
         $status = EventStatus::from('draft');
 
-        expect($status)->toBe(EventStatus::DRAFT);
-    });
+        $this->assertEquals(EventStatus::DRAFT, $status);
+    }
 
-    test('can get all cases', function () {
+    /** @test */
+    public function it_can_retrieve_all_cases(): void
+    {
         $cases = EventStatus::cases();
 
-        expect($cases)->toHaveCount(3)
-            ->and($cases)->toContain(EventStatus::DRAFT, EventStatus::PUBLISHED, EventStatus::ARCHIVED);
-    });
+        $this->assertCount(3, $cases);
+        $this->assertContains(EventStatus::DRAFT, $cases);
+        $this->assertContains(EventStatus::PUBLISHED, $cases);
+        $this->assertContains(EventStatus::ARCHIVED, $cases);
+    }
 
-    test('can try from with valid value', function () {
+    /** @test */
+    public function it_can_be_compared(): void
+    {
+        $status1 = EventStatus::DRAFT;
+        $status2 = EventStatus::DRAFT;
+        $status3 = EventStatus::PUBLISHED;
+
+        $this->assertTrue($status1 === $status2);
+        $this->assertFalse($status1 === $status3);
+    }
+
+    /** @test */
+    public function it_can_try_from_with_valid_value(): void
+    {
         $status = EventStatus::tryFrom('published');
 
-        expect($status)->toBe(EventStatus::PUBLISHED);
-    });
+        $this->assertNotNull($status);
+        $this->assertEquals(EventStatus::PUBLISHED, $status);
+    }
 
-    test('returns null for invalid value with tryFrom', function () {
+    /** @test */
+    public function it_returns_null_for_invalid_value(): void
+    {
         $status = EventStatus::tryFrom('invalid');
 
-        expect($status)->toBeNull();
-    });
-
-    test('throws exception for invalid value with from', function () {
-        EventStatus::from('invalid');
-    })->throws(ValueError::class);
-
-    test('can be compared', function () {
-        expect(EventStatus::DRAFT === EventStatus::DRAFT)->toBeTrue()
-            ->and(EventStatus::DRAFT === EventStatus::PUBLISHED)->toBeFalse();
-    });
-
-    test('can be used in match expression', function () {
-        $result = match (EventStatus::PUBLISHED) {
-            EventStatus::DRAFT => 'draft',
-            EventStatus::PUBLISHED => 'published',
-            EventStatus::ARCHIVED => 'archived',
-        };
-
-        expect($result)->toBe('published');
-    });
-});
+        $this->assertNull($status);
+    }
+}

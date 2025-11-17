@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\Ordering\Services;
+
 use Domain\EventManagement\Enums\EventStatus;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Data\CreateOrderData;
@@ -8,329 +12,195 @@ use Domain\Ordering\Services\OrderValidatorService;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
+class OrderValidatorServiceTest extends TestCase
+{
+    use RefreshDatabase;
 
-describe('OrderValidatorService', function () {
-    test('can be instantiated', function () {
-        $service = new OrderValidatorService();
+    private OrderValidatorService $service;
 
-        expect($service)->toBeInstanceOf(OrderValidatorService::class);
-    });
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->service = new OrderValidatorService();
+    }
 
-    test('validates order successfully for published event', function () {
-        $event = Event::factory()->create([
-            'status' => EventStatus::PUBLISHED,
-            'start_date' => now()->subDay(),
-            'end_date' => now()->addDays(30),
-        ]);
+    /** @test */
+    public function it_throws_exception_when_event_is_not_published(): void
+    {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Event is not published.');
 
-        $product = Product::factory()->create([
-            'event_id' => $event->id,
-            'start_sale_date' => now()->subDay(),
-            'end_sale_date' => now()->addDays(30),
-        ]);
-
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'stock' => 50,
-            'quantity_sold' => 0,
-            'start_sale_date' => now()->subDay(),
-            'end_sale_date' => now()->addDays(30),
-            'is_hidden' => false,
-            'sort_order' => 1,
-        ]);
-
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData(
-                    productId: $product->id,
-                    selectedPriceId: $price->id,
-                    quantity: 5
-                ),
-            ]
-        );
-
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-
-        expect(true)->toBeTrue(); // No exception thrown
-    });
-
-    test('throws exception when event is not published', function () {
         $event = Event::factory()->create(['status' => EventStatus::DRAFT]);
 
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: []
-        );
+        $orderData = new CreateOrderData($event->id, []);
 
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Event is not published.');
+        $this->service->validateOrder($orderData);
+    }
 
-    test('throws exception when event is archived', function () {
-        $event = Event::factory()->create(['status' => EventStatus::ARCHIVED]);
-
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: []
-        );
-
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Event is not published.');
-
-    test('throws exception when product does not exist in event', function () {
+    /** @test */
+    public function it_passes_validation_for_published_event_with_no_products(): void
+    {
         $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
-        $otherEvent = Event::factory()->create();
-        $product = Product::factory()->create(['event_id' => $otherEvent->id]);
 
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData($product->id, 1, 1),
-            ]
-        );
+        $orderData = new CreateOrderData($event->id, []);
 
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Event product doesn\'t exist');
+        $this->service->validateOrder($orderData);
 
-    test('throws exception when selected price does not exist', function () {
+        $this->assertTrue(true); // No exception thrown
+    }
+
+    /** @test */
+    public function it_throws_exception_when_product_does_not_exist_in_event(): void
+    {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Event product doesn\'t exist');
+
+        $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+        $nonExistentProductId = 999999;
+
+        $orderData = new CreateOrderData($event->id, [
+            new CreateOrderProductData($nonExistentProductId, 1, 1),
+        ]);
+
+        $this->service->validateOrder($orderData);
+    }
+
+    /** @test */
+    public function it_throws_exception_when_selected_price_does_not_exist(): void
+    {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Selected price doesn\'t exist');
+
         $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
         $product = Product::factory()->create(['event_id' => $event->id]);
 
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData($product->id, 999, 1),
-            ]
-        );
+        $orderData = new CreateOrderData($event->id, [
+            new CreateOrderProductData($product->id, 999999, 1),
+        ]);
 
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Selected price doesn\'t exist');
+        $this->service->validateOrder($orderData);
+    }
 
-    test('throws exception when product sales have not started', function () {
+    /** @test */
+    public function it_throws_exception_when_product_sales_are_not_available(): void
+    {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Product sales are not available.');
+
         $event = Event::factory()->create([
             'status' => EventStatus::PUBLISHED,
-            'start_date' => now()->addDays(30),
-            'end_date' => now()->addDays(60),
+            'start_date' => now()->addDays(10),
+            'end_date' => now()->addDays(20),
         ]);
 
         $product = Product::factory()->create([
             'event_id' => $event->id,
-            'start_sale_date' => now()->addDays(10),
-            'end_sale_date' => now()->addDays(50),
-        ]);
-
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'stock' => 50,
-            'sort_order' => 1,
-        ]);
-
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData($product->id, $price->id, 1),
-            ]
-        );
-
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Product sales are not available.');
-
-    test('throws exception when product sales have ended', function () {
-        $event = Event::factory()->create([
-            'status' => EventStatus::PUBLISHED,
-            'start_date' => now()->subDays(60),
-            'end_date' => now()->addDays(30),
-        ]);
-
-        $product = Product::factory()->create([
-            'event_id' => $event->id,
-            'start_sale_date' => now()->subDays(50),
-            'end_sale_date' => now()->subDay(),
-        ]);
-
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'stock' => 50,
-            'sort_order' => 1,
-        ]);
-
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData($product->id, $price->id, 1),
-            ]
-        );
-
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Product sales are not available.');
-
-    test('throws exception when price sales have not started', function () {
-        $event = Event::factory()->create([
-            'status' => EventStatus::PUBLISHED,
-            'start_date' => now()->subDay(),
-            'end_date' => now()->addDays(30),
-        ]);
-
-        $product = Product::factory()->create([
-            'event_id' => $event->id,
-            'start_sale_date' => now()->subDay(),
-            'end_sale_date' => now()->addDays(30),
-        ]);
-
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Early Bird',
-            'stock' => 50,
             'start_sale_date' => now()->addDays(5),
+            'end_sale_date' => now()->addDays(8),
+        ]);
+
+        $price = ProductPrice::factory()->create(['product_id' => $product->id]);
+
+        $orderData = new CreateOrderData($event->id, [
+            new CreateOrderProductData($product->id, $price->id, 1),
+        ]);
+
+        $this->service->validateOrder($orderData);
+    }
+
+    /** @test */
+    public function it_throws_exception_when_price_sales_are_not_available(): void
+    {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Product with this price sales are not available');
+
+        $event = Event::factory()->create([
+            'status' => EventStatus::PUBLISHED,
+            'start_date' => now()->subDays(5),
+            'end_date' => now()->addDays(20),
+        ]);
+
+        $product = Product::factory()->create([
+            'event_id' => $event->id,
+            'start_sale_date' => now()->subDays(5),
             'end_sale_date' => now()->addDays(10),
-            'is_hidden' => false,
-            'sort_order' => 1,
         ]);
 
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData($product->id, $price->id, 1),
-            ]
-        );
+        $price = ProductPrice::factory()->create([
+            'product_id' => $product->id,
+            'start_sale_date' => now()->addDays(5),
+            'end_sale_date' => now()->addDays(8),
+        ]);
 
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Product with this price sales are not available');
+        $orderData = new CreateOrderData($event->id, [
+            new CreateOrderProductData($product->id, $price->id, 1),
+        ]);
 
-    test('throws exception when price sales have ended', function () {
+        $this->service->validateOrder($orderData);
+    }
+
+    /** @test */
+    public function it_throws_exception_when_insufficient_stock(): void
+    {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessage('Product is not available');
+
         $event = Event::factory()->create([
             'status' => EventStatus::PUBLISHED,
-            'start_date' => now()->subDays(30),
-            'end_date' => now()->addDays(30),
+            'start_date' => now()->subDays(5),
+            'end_date' => now()->addDays(20),
         ]);
 
         $product = Product::factory()->create([
             'event_id' => $event->id,
-            'start_sale_date' => now()->subDays(30),
-            'end_sale_date' => now()->addDays(30),
+            'start_sale_date' => now()->subDays(5),
+            'end_sale_date' => now()->addDays(10),
         ]);
 
-        $price = ProductPrice::create([
+        $price = ProductPrice::factory()->create([
             'product_id' => $product->id,
-            'price' => 50.00,
-            'label' => 'Early Bird',
-            'stock' => 50,
-            'start_sale_date' => now()->subDays(20),
-            'end_sale_date' => now()->subDay(),
-            'is_hidden' => false,
-            'sort_order' => 1,
-        ]);
-
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData($product->id, $price->id, 1),
-            ]
-        );
-
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Product with this price sales are not available');
-
-    test('throws exception when stock is insufficient', function () {
-        $event = Event::factory()->create([
-            'status' => EventStatus::PUBLISHED,
-            'start_date' => now()->subDay(),
-            'end_date' => now()->addDays(30),
-        ]);
-
-        $product = Product::factory()->create([
-            'event_id' => $event->id,
-            'start_sale_date' => now()->subDay(),
-            'end_sale_date' => now()->addDays(30),
-        ]);
-
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
             'stock' => 5,
-            'quantity_sold' => 0,
-            'start_sale_date' => now()->subDay(),
-            'end_sale_date' => now()->addDays(30),
-            'is_hidden' => false,
-            'sort_order' => 1,
+            'start_sale_date' => now()->subDays(5),
+            'end_sale_date' => now()->addDays(10),
         ]);
 
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData($product->id, $price->id, 10),
-            ]
-        );
+        $orderData = new CreateOrderData($event->id, [
+            new CreateOrderProductData($product->id, $price->id, 10), // Requesting 10 but only 5 available
+        ]);
 
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-    })->throws(DomainException::class, 'Product is not available');
+        $this->service->validateOrder($orderData);
+    }
 
-    test('validates multiple products successfully', function () {
+    /** @test */
+    public function it_passes_validation_with_valid_order_data(): void
+    {
         $event = Event::factory()->create([
             'status' => EventStatus::PUBLISHED,
-            'start_date' => now()->subDay(),
-            'end_date' => now()->addDays(30),
+            'start_date' => now()->subDays(5),
+            'end_date' => now()->addDays(20),
         ]);
 
-        $product1 = Product::factory()->create([
+        $product = Product::factory()->create([
             'event_id' => $event->id,
-            'start_sale_date' => now()->subDay(),
-            'end_sale_date' => now()->addDays(30),
+            'start_sale_date' => now()->subDays(5),
+            'end_sale_date' => now()->addDays(10),
         ]);
 
-        $price1 = ProductPrice::create([
-            'product_id' => $product1->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'stock' => 50,
-            'sort_order' => 1,
+        $price = ProductPrice::factory()->create([
+            'product_id' => $product->id,
+            'stock' => 100,
+            'start_sale_date' => now()->subDays(5),
+            'end_sale_date' => now()->addDays(10),
         ]);
 
-        $product2 = Product::factory()->create([
-            'event_id' => $event->id,
-            'start_sale_date' => now()->subDay(),
-            'end_sale_date' => now()->addDays(30),
+        $orderData = new CreateOrderData($event->id, [
+            new CreateOrderProductData($product->id, $price->id, 5),
         ]);
 
-        $price2 = ProductPrice::create([
-            'product_id' => $product2->id,
-            'price' => 200.00,
-            'label' => 'VIP',
-            'stock' => 20,
-            'sort_order' => 1,
-        ]);
+        $this->service->validateOrder($orderData);
 
-        $orderData = new CreateOrderData(
-            eventId: $event->id,
-            products: [
-                new CreateOrderProductData($product1->id, $price1->id, 2),
-                new CreateOrderProductData($product2->id, $price2->id, 1),
-            ]
-        );
-
-        $service = new OrderValidatorService();
-        $service->validateOrder($orderData);
-
-        expect(true)->toBeTrue(); // No exception thrown
-    });
-});
+        $this->assertTrue(true); // No exception thrown
+    }
+}

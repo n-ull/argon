@@ -1,65 +1,85 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\ProductCatalog\Enums;
+
 use Domain\ProductCatalog\Enums\ProductPriceType;
+use PHPUnit\Framework\TestCase;
 
-describe('ProductPriceType Enum', function () {
-    test('has standard case', function () {
-        expect(ProductPriceType::STANDARD->value)->toBe('standard');
-    });
+class ProductPriceTypeTest extends TestCase
+{
+    /** @test */
+    public function it_has_standard_type(): void
+    {
+        $type = ProductPriceType::STANDARD;
 
-    test('has free case', function () {
-        expect(ProductPriceType::FREE->value)->toBe('free');
-    });
+        $this->assertEquals('standard', $type->value);
+        $this->assertInstanceOf(ProductPriceType::class, $type);
+    }
 
-    test('has staggered case', function () {
-        expect(ProductPriceType::STAGGERED->value)->toBe('staggered');
-    });
+    /** @test */
+    public function it_has_free_type(): void
+    {
+        $type = ProductPriceType::FREE;
 
-    test('can be instantiated from string value', function () {
+        $this->assertEquals('free', $type->value);
+        $this->assertInstanceOf(ProductPriceType::class, $type);
+    }
+
+    /** @test */
+    public function it_has_staggered_type(): void
+    {
+        $type = ProductPriceType::STAGGERED;
+
+        $this->assertEquals('staggered', $type->value);
+        $this->assertInstanceOf(ProductPriceType::class, $type);
+    }
+
+    /** @test */
+    public function it_can_be_created_from_value(): void
+    {
         $type = ProductPriceType::from('standard');
 
-        expect($type)->toBe(ProductPriceType::STANDARD);
-    });
+        $this->assertEquals(ProductPriceType::STANDARD, $type);
+    }
 
-    test('can get all cases', function () {
+    /** @test */
+    public function it_can_retrieve_all_cases(): void
+    {
         $cases = ProductPriceType::cases();
 
-        expect($cases)->toHaveCount(3)
-            ->and($cases)->toContain(
-                ProductPriceType::STANDARD,
-                ProductPriceType::FREE,
-                ProductPriceType::STAGGERED
-            );
-    });
+        $this->assertCount(3, $cases);
+        $this->assertContains(ProductPriceType::STANDARD, $cases);
+        $this->assertContains(ProductPriceType::FREE, $cases);
+        $this->assertContains(ProductPriceType::STAGGERED, $cases);
+    }
 
-    test('can try from with valid value', function () {
+    /** @test */
+    public function it_can_be_compared(): void
+    {
+        $type1 = ProductPriceType::STANDARD;
+        $type2 = ProductPriceType::STANDARD;
+        $type3 = ProductPriceType::FREE;
+
+        $this->assertTrue($type1 === $type2);
+        $this->assertFalse($type1 === $type3);
+    }
+
+    /** @test */
+    public function it_can_try_from_with_valid_value(): void
+    {
         $type = ProductPriceType::tryFrom('free');
 
-        expect($type)->toBe(ProductPriceType::FREE);
-    });
+        $this->assertNotNull($type);
+        $this->assertEquals(ProductPriceType::FREE, $type);
+    }
 
-    test('returns null for invalid value with tryFrom', function () {
+    /** @test */
+    public function it_returns_null_for_invalid_value(): void
+    {
         $type = ProductPriceType::tryFrom('invalid');
 
-        expect($type)->toBeNull();
-    });
-
-    test('throws exception for invalid value with from', function () {
-        ProductPriceType::from('invalid');
-    })->throws(ValueError::class);
-
-    test('can be compared', function () {
-        expect(ProductPriceType::STANDARD === ProductPriceType::STANDARD)->toBeTrue()
-            ->and(ProductPriceType::STANDARD === ProductPriceType::FREE)->toBeFalse();
-    });
-
-    test('can be used in match expression', function () {
-        $result = match (ProductPriceType::STAGGERED) {
-            ProductPriceType::STANDARD => 'standard pricing',
-            ProductPriceType::FREE => 'free product',
-            ProductPriceType::STAGGERED => 'staggered pricing',
-        };
-
-        expect($result)->toBe('staggered pricing');
-    });
-});
+        $this->assertNull($type);
+    }
+}

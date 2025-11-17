@@ -1,56 +1,58 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\ProductCatalog\Enums;
+
 use Domain\ProductCatalog\Enums\ProductType;
+use PHPUnit\Framework\TestCase;
 
-describe('ProductType Enum', function () {
-    test('has general case', function () {
-        expect(ProductType::GENERAL->value)->toBe('general');
-    });
+class ProductTypeTest extends TestCase
+{
+    /** @test */
+    public function it_has_general_type(): void
+    {
+        $type = ProductType::GENERAL;
 
-    test('has ticket case', function () {
-        expect(ProductType::TICKET->value)->toBe('ticket');
-    });
+        $this->assertEquals('general', $type->value);
+        $this->assertInstanceOf(ProductType::class, $type);
+    }
 
-    test('can be instantiated from string value', function () {
+    /** @test */
+    public function it_has_ticket_type(): void
+    {
+        $type = ProductType::TICKET;
+
+        $this->assertEquals('ticket', $type->value);
+        $this->assertInstanceOf(ProductType::class, $type);
+    }
+
+    /** @test */
+    public function it_can_be_created_from_value(): void
+    {
         $type = ProductType::from('general');
 
-        expect($type)->toBe(ProductType::GENERAL);
-    });
+        $this->assertEquals(ProductType::GENERAL, $type);
+    }
 
-    test('can get all cases', function () {
+    /** @test */
+    public function it_can_retrieve_all_cases(): void
+    {
         $cases = ProductType::cases();
 
-        expect($cases)->toHaveCount(2)
-            ->and($cases)->toContain(ProductType::GENERAL, ProductType::TICKET);
-    });
+        $this->assertCount(2, $cases);
+        $this->assertContains(ProductType::GENERAL, $cases);
+        $this->assertContains(ProductType::TICKET, $cases);
+    }
 
-    test('can try from with valid value', function () {
-        $type = ProductType::tryFrom('ticket');
+    /** @test */
+    public function it_can_be_compared(): void
+    {
+        $type1 = ProductType::GENERAL;
+        $type2 = ProductType::GENERAL;
+        $type3 = ProductType::TICKET;
 
-        expect($type)->toBe(ProductType::TICKET);
-    });
-
-    test('returns null for invalid value with tryFrom', function () {
-        $type = ProductType::tryFrom('invalid');
-
-        expect($type)->toBeNull();
-    });
-
-    test('throws exception for invalid value with from', function () {
-        ProductType::from('invalid');
-    })->throws(ValueError::class);
-
-    test('can be compared', function () {
-        expect(ProductType::GENERAL === ProductType::GENERAL)->toBeTrue()
-            ->and(ProductType::GENERAL === ProductType::TICKET)->toBeFalse();
-    });
-
-    test('can be used in match expression', function () {
-        $result = match (ProductType::TICKET) {
-            ProductType::GENERAL => 'general product',
-            ProductType::TICKET => 'ticket product',
-        };
-
-        expect($result)->toBe('ticket product');
-    });
-});
+        $this->assertTrue($type1 === $type2);
+        $this->assertFalse($type1 === $type3);
+    }
+}

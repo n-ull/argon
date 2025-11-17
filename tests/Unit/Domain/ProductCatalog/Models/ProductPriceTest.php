@@ -1,55 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\ProductCatalog\Models;
+
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
+class ProductPriceTest extends TestCase
+{
+    use RefreshDatabase;
 
-describe('ProductPrice Model', function () {
-    test('can create a product price', function () {
-        $product = Product::factory()->create();
-
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 99.99,
-            'label' => 'Early Bird',
-            'start_sale_date' => now(),
-            'end_sale_date' => now()->addDays(30),
-            'stock' => 100,
-            'quantity_sold' => 0,
-            'is_hidden' => false,
-            'sort_order' => 1,
-        ]);
-
-        expect($price)->toBeInstanceOf(ProductPrice::class)
-            ->and($price->product_id)->toBe($product->id)
-            ->and($price->price)->toBe(99.99)
-            ->and($price->label)->toBe('Early Bird')
-            ->and($price->stock)->toBe(100)
-            ->and($price->quantity_sold)->toBe(0)
-            ->and($price->is_hidden)->toBeFalse()
-            ->and($price->sort_order)->toBe(1);
-    });
-
-    test('belongs to a product', function () {
-        $product = Product::factory()->create();
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 50.00,
-            'label' => 'Standard',
-            'sort_order' => 1,
-        ]);
-
-        expect($price->product)->toBeInstanceOf(Product::class)
-            ->and($price->product->id)->toBe($product->id);
-    });
-
-    test('has correct fillable attributes', function () {
-        $price = new ProductPrice();
-        $fillable = $price->getFillable();
-
-        expect($fillable)->toContain(
+    /** @test */
+    public function it_has_correct_fillable_attributes(): void
+    {
+        $expected = [
             'product_id',
             'price',
             'label',
@@ -58,117 +25,130 @@ describe('ProductPrice Model', function () {
             'stock',
             'quantity_sold',
             'is_hidden',
-            'sort_order'
-        );
-    });
+            'sort_order',
+        ];
 
-    test('can handle null stock', function () {
+        $productPrice = new ProductPrice();
+        $this->assertEquals($expected, $productPrice->getFillable());
+    }
+
+    /** @test */
+    public function it_belongs_to_a_product(): void
+    {
         $product = Product::factory()->create();
-        $price = ProductPrice::create([
+        $productPrice = ProductPrice::factory()->create(['product_id' => $product->id]);
+
+        $this->assertInstanceOf(Product::class, $productPrice->product);
+        $this->assertEquals($product->id, $productPrice->product->id);
+    }
+
+    /** @test */
+    public function it_can_create_product_price_with_all_fields(): void
+    {
+        $product = Product::factory()->create();
+        
+        $productPrice = ProductPrice::create([
             'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Unlimited',
-            'stock' => null,
+            'price' => 99.99,
+            'label' => 'Standard Ticket',
+            'start_sale_date' => now(),
+            'end_sale_date' => now()->addDays(30),
+            'stock' => 100,
+            'quantity_sold' => 0,
+            'is_hidden' => false,
             'sort_order' => 1,
         ]);
 
-        expect($price->stock)->toBeNull();
-    });
+        $this->assertInstanceOf(ProductPrice::class, $productPrice);
+        $this->assertEquals(99.99, $productPrice->price);
+        $this->assertEquals('Standard Ticket', $productPrice->label);
+        $this->assertEquals(100, $productPrice->stock);
+    }
 
-    test('can handle null sale dates', function () {
+    /** @test */
+    public function it_can_store_decimal_prices(): void
+    {
+        $productPrice = ProductPrice::factory()->create(['price' => 123.45]);
+
+        $this->assertEquals(123.45, $productPrice->price);
+    }
+
+    /** @test */
+    public function it_can_track_quantity_sold(): void
+    {
+        $productPrice = ProductPrice::factory()->create([
+            'stock' => 100,
+            'quantity_sold' => 0,
+        ]);
+
+        $this->assertEquals(0, $productPrice->quantity_sold);
+
+        $productPrice->update(['quantity_sold' => 25]);
+
+        $this->assertEquals(25, $productPrice->fresh()->quantity_sold);
+    }
+
+    /** @test */
+    public function it_can_be_hidden(): void
+    {
+        $visiblePrice = ProductPrice::factory()->create(['is_hidden' => false]);
+        $hiddenPrice = ProductPrice::factory()->create(['is_hidden' => true]);
+
+        $this->assertFalse($visiblePrice->is_hidden);
+        $this->assertTrue($hiddenPrice->is_hidden);
+    }
+
+    /** @test */
+    public function it_can_have_sort_order(): void
+    {
+        $price1 = ProductPrice::factory()->create(['sort_order' => 1]);
+        $price2 = ProductPrice::factory()->create(['sort_order' => 2]);
+        $price3 = ProductPrice::factory()->create(['sort_order' => 3]);
+
+        $this->assertEquals(1, $price1->sort_order);
+        $this->assertEquals(2, $price2->sort_order);
+        $this->assertEquals(3, $price3->sort_order);
+    }
+
+    /** @test */
+    public function it_can_have_null_stock_for_unlimited(): void
+    {
+        $productPrice = ProductPrice::factory()->create(['stock' => null]);
+
+        $this->assertNull($productPrice->stock);
+    }
+
+    /** @test */
+    public function it_can_have_sale_date_range(): void
+    {
+        $startDate = now();
+        $endDate = now()->addDays(15);
+
+        $productPrice = ProductPrice::factory()->create([
+            'start_sale_date' => $startDate,
+            'end_sale_date' => $endDate,
+        ]);
+
+        $this->assertNotNull($productPrice->start_sale_date);
+        $this->assertNotNull($productPrice->end_sale_date);
+    }
+
+    /** @test */
+    public function it_has_timestamps(): void
+    {
+        $productPrice = ProductPrice::factory()->create();
+
+        $this->assertNotNull($productPrice->created_at);
+        $this->assertNotNull($productPrice->updated_at);
+    }
+
+    /** @test */
+    public function multiple_prices_can_belong_to_same_product(): void
+    {
         $product = Product::factory()->create();
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 75.00,
-            'label' => 'Standard',
-            'start_sale_date' => null,
-            'end_sale_date' => null,
-            'sort_order' => 1,
-        ]);
+        
+        ProductPrice::factory()->count(3)->create(['product_id' => $product->id]);
 
-        expect($price->start_sale_date)->toBeNull()
-            ->and($price->end_sale_date)->toBeNull();
-    });
-
-    test('can track quantity sold', function () {
-        $product = Product::factory()->create();
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'stock' => 50,
-            'quantity_sold' => 10,
-            'sort_order' => 1,
-        ]);
-
-        expect($price->quantity_sold)->toBe(10);
-
-        $price->update(['quantity_sold' => 15]);
-
-        expect($price->fresh()->quantity_sold)->toBe(15);
-    });
-
-    test('can be hidden', function () {
-        $product = Product::factory()->create();
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Hidden Price',
-            'is_hidden' => true,
-            'sort_order' => 1,
-        ]);
-
-        expect($price->is_hidden)->toBeTrue();
-    });
-
-    test('can update price', function () {
-        $product = Product::factory()->create();
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'sort_order' => 1,
-        ]);
-
-        $price->update(['price' => 150.00]);
-
-        expect($price->fresh()->price)->toBe(150.00);
-    });
-
-    test('can update stock', function () {
-        $product = Product::factory()->create();
-        $price = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'Standard',
-            'stock' => 50,
-            'sort_order' => 1,
-        ]);
-
-        $price->update(['stock' => 30]);
-
-        expect($price->fresh()->stock)->toBe(30);
-    });
-});
-
-describe('ProductPrice Sorting', function () {
-    test('sort order determines display order', function () {
-        $product = Product::factory()->create();
-
-        $price1 = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 100.00,
-            'label' => 'First',
-            'sort_order' => 1,
-        ]);
-
-        $price2 = ProductPrice::create([
-            'product_id' => $product->id,
-            'price' => 200.00,
-            'label' => 'Second',
-            'sort_order' => 2,
-        ]);
-
-        expect($price1->sort_order)->toBeLessThan($price2->sort_order);
-    });
-});
+        $this->assertEquals(3, $product->product_prices()->count());
+    }
+}

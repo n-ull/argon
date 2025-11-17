@@ -1,86 +1,100 @@
 <?php
 
-use Domain\EventManagement\Models\Event;
+declare(strict_types=1);
+
+namespace Tests\Unit\Domain\Ordering\Models;
+
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
 use Domain\ProductCatalog\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
+class OrderItemTest extends TestCase
+{
+    use RefreshDatabase;
 
-describe('OrderItem Model', function () {
-    test('can create an order item', function () {
-        $event = Event::factory()->create();
-        $order = Order::create(['event_id' => $event->id]);
-        $product = Product::factory()->create(['event_id' => $event->id]);
+    /** @test */
+    public function it_belongs_to_an_order(): void
+    {
+        $order = Order::factory()->create();
+        $orderItem = OrderItem::factory()->create(['order_id' => $order->id]);
 
-        $orderItem = OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => $product->id,
-            'quantity' => 5,
-        ]);
+        $this->assertInstanceOf(Order::class, $orderItem->order);
+        $this->assertEquals($order->id, $orderItem->order->id);
+    }
 
-        expect($orderItem)->toBeInstanceOf(OrderItem::class)
-            ->and($orderItem->order_id)->toBe($order->id)
-            ->and($orderItem->product_id)->toBe($product->id)
-            ->and($orderItem->quantity)->toBe(5);
-    });
+    /** @test */
+    public function it_belongs_to_a_product(): void
+    {
+        $product = Product::factory()->create();
+        $orderItem = OrderItem::factory()->create(['product_id' => $product->id]);
 
-    test('belongs to an order', function () {
-        $event = Event::factory()->create();
-        $order = Order::create(['event_id' => $event->id]);
-        $orderItem = OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => 1,
-        ]);
+        $this->assertInstanceOf(Product::class, $orderItem->product);
+        $this->assertEquals($product->id, $orderItem->product->id);
+    }
 
-        expect($orderItem->order)->toBeInstanceOf(Order::class)
-            ->and($orderItem->order->id)->toBe($order->id);
-    });
+    /** @test */
+    public function it_can_have_a_quantity(): void
+    {
+        $orderItem = OrderItem::factory()->create(['quantity' => 5]);
 
-    test('belongs to a product', function () {
-        $event = Event::factory()->create();
-        $order = Order::create(['event_id' => $event->id]);
-        $product = Product::factory()->create(['event_id' => $event->id]);
+        $this->assertEquals(5, $orderItem->quantity);
+    }
+
+    /** @test */
+    public function it_allows_null_quantity(): void
+    {
+        $orderItem = OrderItem::factory()->create(['quantity' => null]);
+
+        $this->assertNull($orderItem->quantity);
+    }
+
+    /** @test */
+    public function it_allows_mass_assignment_with_guarded_empty(): void
+    {
+        $data = [
+            'order_id' => Order::factory()->create()->id,
+            'product_id' => Product::factory()->create()->id,
+            'quantity' => 3,
+        ];
+
+        $orderItem = new OrderItem($data);
+
+        $this->assertEquals($data['order_id'], $orderItem->order_id);
+        $this->assertEquals($data['product_id'], $orderItem->product_id);
+        $this->assertEquals(3, $orderItem->quantity);
+    }
+
+    /** @test */
+    public function it_has_timestamps(): void
+    {
+        $orderItem = OrderItem::factory()->create();
+
+        $this->assertNotNull($orderItem->created_at);
+        $this->assertNotNull($orderItem->updated_at);
+    }
+
+    /** @test */
+    public function multiple_order_items_can_belong_to_same_order(): void
+    {
+        $order = Order::factory()->create();
         
-        $orderItem = OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => $product->id,
-        ]);
+        $item1 = OrderItem::factory()->create(['order_id' => $order->id]);
+        $item2 = OrderItem::factory()->create(['order_id' => $order->id]);
+        $item3 = OrderItem::factory()->create(['order_id' => $order->id]);
 
-        expect($orderItem->product)->toBeInstanceOf(Product::class)
-            ->and($orderItem->product->id)->toBe($product->id);
-    });
+        $this->assertEquals(3, $order->order_items()->count());
+        $this->assertTrue($order->order_items->contains($item1));
+        $this->assertTrue($order->order_items->contains($item2));
+        $this->assertTrue($order->order_items->contains($item3));
+    }
 
-    test('has no guarded attributes', function () {
-        $orderItem = new OrderItem();
+    /** @test */
+    public function it_can_store_large_quantities(): void
+    {
+        $orderItem = OrderItem::factory()->create(['quantity' => 999999]);
 
-        expect($orderItem->getGuarded())->toBe(['*']);
-    });
-
-    test('can update quantity', function () {
-        $event = Event::factory()->create();
-        $order = Order::create(['event_id' => $event->id]);
-        $orderItem = OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => 1,
-            'quantity' => 2,
-        ]);
-
-        $orderItem->update(['quantity' => 10]);
-
-        expect($orderItem->fresh()->quantity)->toBe(10);
-    });
-
-    test('quantity can be null', function () {
-        $event = Event::factory()->create();
-        $order = Order::create(['event_id' => $event->id]);
-        $orderItem = OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => 1,
-            'quantity' => null,
-        ]);
-
-        expect($orderItem->quantity)->toBeNull();
-    });
-});
+        $this->assertEquals(999999, $orderItem->quantity);
+    }
+}
