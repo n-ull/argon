@@ -136,7 +136,7 @@ class LocationInfoTest extends TestCase
     public function it_handles_long_address_strings(): void
     {
         $longAddress = str_repeat('Long Address Line ', 50);
-        
+
         $locationInfo = new LocationInfo(
             address: $longAddress,
             city: 'City',

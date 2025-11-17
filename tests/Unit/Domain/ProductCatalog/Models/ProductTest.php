@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\ProductCatalog\Models;
 
+use Domain\EventManagement\Models\Event;
 use Domain\ProductCatalog\Enums\ProductType;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
-use Domain\EventManagement\Models\Event;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,14 +34,14 @@ class ProductTest extends TestCase
             'event_id',
         ];
 
-        $product = new Product();
+        $product = new Product;
         $this->assertEquals($expected, $product->getFillable());
     }
 
     /** @test */
     public function it_casts_product_type_to_enum(): void
     {
-        $product = new Product();
+        $product = new Product;
         $casts = $product->getCasts();
 
         $this->assertArrayHasKey('product_type', $casts);
@@ -63,7 +63,7 @@ class ProductTest extends TestCase
     public function it_orders_product_prices_by_sort_order(): void
     {
         $product = Product::factory()->create();
-        
+
         ProductPrice::factory()->create(['product_id' => $product->id, 'sort_order' => 3]);
         ProductPrice::factory()->create(['product_id' => $product->id, 'sort_order' => 1]);
         ProductPrice::factory()->create(['product_id' => $product->id, 'sort_order' => 2]);
@@ -79,7 +79,7 @@ class ProductTest extends TestCase
     public function it_can_create_product_with_all_fields(): void
     {
         $event = Event::factory()->create();
-        
+
         $product = Product::create([
             'name' => 'Test Product',
             'description' => 'Test Description',

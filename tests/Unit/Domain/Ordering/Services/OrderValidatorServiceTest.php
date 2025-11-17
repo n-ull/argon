@@ -23,7 +23,7 @@ class OrderValidatorServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new OrderValidatorService();
+        $this->service = new OrderValidatorService;
     }
 
     /** @test */

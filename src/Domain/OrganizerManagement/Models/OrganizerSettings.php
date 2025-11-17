@@ -23,6 +23,7 @@ class OrganizerSettings extends Model
         'is_modo_active',
         'is_mercadopago_active',
     ];
+
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(Organizer::class);

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Domain\Ordering\Models;
 
+use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
-use Domain\EventManagement\Models\Event;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -29,7 +29,7 @@ class OrderTest extends TestCase
     public function it_can_create_order_with_all_fields(): void
     {
         $event = Event::factory()->create();
-        
+
         $order = Order::create([
             'event_id' => $event->id,
             'total_before_additions' => '100.00',
@@ -67,7 +67,7 @@ class OrderTest extends TestCase
     public function it_can_have_multiple_order_items(): void
     {
         $order = Order::factory()->create();
-        
+
         OrderItem::factory()->count(3)->create(['order_id' => $order->id]);
 
         $this->assertEquals(3, $order->order_items()->count());

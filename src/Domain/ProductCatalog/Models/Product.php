@@ -50,10 +50,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @mixin \Eloquent
  */
- 
 class Product extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'description',

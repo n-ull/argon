@@ -9,9 +9,9 @@ uses(RefreshDatabase::class);
 
 describe('LocationInfoJson Cast', function () {
     test('casts json string to LocationInfo on get', function () {
-        $cast = new LocationInfoJson();
-        $model = new Event();
-        
+        $cast = new LocationInfoJson;
+        $model = new Event;
+
         $jsonValue = json_encode([
             'address' => '123 Test St',
             'city' => 'Test City',
@@ -31,8 +31,8 @@ describe('LocationInfoJson Cast', function () {
     });
 
     test('returns null when value is null on get', function () {
-        $cast = new LocationInfoJson();
-        $model = new Event();
+        $cast = new LocationInfoJson;
+        $model = new Event;
 
         $result = $cast->get($model, 'location_info', null, []);
 
@@ -40,9 +40,9 @@ describe('LocationInfoJson Cast', function () {
     });
 
     test('casts LocationInfo to json string on set', function () {
-        $cast = new LocationInfoJson();
-        $model = new Event();
-        
+        $cast = new LocationInfoJson;
+        $model = new Event;
+
         $locationInfo = new LocationInfo(
             address: '456 Oak Ave',
             city: 'Springfield',
@@ -65,9 +65,9 @@ describe('LocationInfoJson Cast', function () {
     });
 
     test('casts array to json string on set', function () {
-        $cast = new LocationInfoJson();
-        $model = new Event();
-        
+        $cast = new LocationInfoJson;
+        $model = new Event;
+
         $array = [
             'address' => '789 Pine Rd',
             'city' => 'Portland',
@@ -84,8 +84,8 @@ describe('LocationInfoJson Cast', function () {
     });
 
     test('returns null when value is null on set', function () {
-        $cast = new LocationInfoJson();
-        $model = new Event();
+        $cast = new LocationInfoJson;
+        $model = new Event;
 
         $result = $cast->set($model, 'location_info', null, []);
 
@@ -93,9 +93,9 @@ describe('LocationInfoJson Cast', function () {
     });
 
     test('returns value as-is when already a string', function () {
-        $cast = new LocationInfoJson();
-        $model = new Event();
-        
+        $cast = new LocationInfoJson;
+        $model = new Event;
+
         $jsonString = '{"address":"test","city":"test","country":"test"}';
 
         $result = $cast->set($model, 'location_info', $jsonString, []);

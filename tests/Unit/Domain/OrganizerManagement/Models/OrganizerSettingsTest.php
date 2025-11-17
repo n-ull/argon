@@ -24,7 +24,7 @@ class OrganizerSettingsTest extends TestCase
             'is_mercadopago_active',
         ];
 
-        $settings = new OrganizerSettings();
+        $settings = new OrganizerSettings;
         $this->assertEquals($expected, $settings->getFillable());
     }
 
@@ -42,7 +42,7 @@ class OrganizerSettingsTest extends TestCase
     public function it_can_create_settings_with_all_fields(): void
     {
         $organizer = Organizer::factory()->create();
-        
+
         $settings = OrganizerSettings::create([
             'organizer_id' => $organizer->id,
             'raise_money_method' => 'external',
@@ -111,7 +111,7 @@ class OrganizerSettingsTest extends TestCase
     public function one_organizer_can_have_only_one_settings(): void
     {
         $organizer = Organizer::factory()->create();
-        
+
         OrganizerSettings::factory()->create(['organizer_id' => $organizer->id]);
 
         $settings = $organizer->settings;

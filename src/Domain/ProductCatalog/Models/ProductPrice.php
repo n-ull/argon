@@ -47,6 +47,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ProductPrice extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'product_id',
         'price',

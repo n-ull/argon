@@ -79,7 +79,7 @@ class OrderItemTest extends TestCase
     public function multiple_order_items_can_belong_to_same_order(): void
     {
         $order = Order::factory()->create();
-        
+
         $item1 = OrderItem::factory()->create(['order_id' => $order->id]);
         $item2 = OrderItem::factory()->create(['order_id' => $order->id]);
         $item3 = OrderItem::factory()->create(['order_id' => $order->id]);

@@ -6,7 +6,6 @@ namespace Tests\Unit\Domain\EventManagement\Services;
 
 use Domain\EventManagement\Models\Event;
 use Domain\EventManagement\Services\EventValidatorService;
-use Domain\OrganizerManagement\Models\Organizer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,7 +18,7 @@ class EventValidatorServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new EventValidatorService();
+        $this->service = new EventValidatorService;
     }
 
     /** @test */

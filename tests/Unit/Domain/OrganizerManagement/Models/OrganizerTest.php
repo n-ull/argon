@@ -24,7 +24,7 @@ class OrganizerTest extends TestCase
             'logo',
         ];
 
-        $organizer = new Organizer();
+        $organizer = new Organizer;
         $this->assertEquals($expected, $organizer->getFillable());
     }
 
@@ -97,7 +97,7 @@ class OrganizerTest extends TestCase
     public function it_can_have_multiple_events(): void
     {
         $organizer = Organizer::factory()->create();
-        
+
         Event::factory()->count(3)->create(['organizer_id' => $organizer->id]);
 
         $this->assertEquals(3, $organizer->events()->count());

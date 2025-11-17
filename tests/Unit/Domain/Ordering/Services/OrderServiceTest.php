@@ -7,7 +7,6 @@ namespace Tests\Unit\Domain\Ordering\Services;
 use Domain\EventManagement\Enums\EventStatus;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Data\CreateOrderData;
-use Domain\Ordering\Data\CreateOrderProductData;
 use Domain\Ordering\Services\OrderService;
 use Domain\Ordering\Services\OrderValidatorService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,7 +21,7 @@ class OrderServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new OrderService(new OrderValidatorService());
+        $this->service = new OrderService(new OrderValidatorService);
     }
 
     /** @test */
