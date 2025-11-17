@@ -56,6 +56,7 @@ class Product extends Model
         'max_per_order',
         'min_per_order',
         'product_type',
+        'product_price_type',
         'hide_before_sale_start_date',
         'hide_after_sale_end_date',
         'hide_when_sold_out',
