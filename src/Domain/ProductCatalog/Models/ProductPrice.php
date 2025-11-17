@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * ProductPrice model represents pricing information for products.
- * 
+ *
  * This model handles product pricing data including regular prices,
  * sale dates, stock quantities, and visibility settings.
  *
  * @property-read int $product_id
- * @property-read double $price
+ * @property-read float $price
  * @property-read string $label
  * @property-read \Illuminate\Support\Carbon|null $start_sale_date
  * @property-read \Illuminate\Support\Carbon|null $end_sale_date
@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read Product $product
  * @property int $id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice query()
@@ -39,23 +40,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice whereStartSaleDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice whereStock($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ProductPrice extends Model
 {
     protected $fillable = [
-        "product_id",
-        "price",
-        "label",
-        "start_sale_date",
-        "end_sale_date",
-        "stock",
-        "quantity_sold",
-        "is_hidden",
-        "sort_order",
+        'product_id',
+        'price',
+        'label',
+        'start_sale_date',
+        'end_sale_date',
+        'stock',
+        'quantity_sold',
+        'is_hidden',
+        'sort_order',
     ];
-    
-    public function product(): BelongsTo {
+
+    public function product(): BelongsTo
+    {
         return $this->belongsTo(Product::class);
     }
 }

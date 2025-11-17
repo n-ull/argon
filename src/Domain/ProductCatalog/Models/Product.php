@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\ProductCatalog\Models\ProductPrice> $product_prices
  * @property-read int|null $product_prices_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
@@ -44,27 +45,28 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereShowStock($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereStartSaleDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Product extends Model
 {
     protected $fillable = [
-        "name",
-        "description",
-        "max_per_order",
-        "min_per_order",
-        "product_type",
-        "hide_before_sale_start_date",
-        "hide_after_sale_end_date",
-        "hide_when_sold_out",
-        "show_stock",
-        "start_sale_date",
-        "end_sale_date",
-        "event_id",
+        'name',
+        'description',
+        'max_per_order',
+        'min_per_order',
+        'product_type',
+        'hide_before_sale_start_date',
+        'hide_after_sale_end_date',
+        'hide_when_sold_out',
+        'show_stock',
+        'start_sale_date',
+        'end_sale_date',
+        'event_id',
     ];
 
     protected $casts = [
-        "product_type" => ProductType::class
+        'product_type' => ProductType::class,
     ];
 
     public function product_prices(): HasMany

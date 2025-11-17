@@ -13,35 +13,35 @@ class LocationInfo implements Arrayable, JsonSerializable
         public string $country,
         public ?string $mapLink = null,
         public ?string $site = null,
-    ) {
-
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {
         return new self(
-            $data["address"],
-            $data["city"],
-            $data["country"],
-            $data["mapLink"],
-            $data["site"],
+            $data['address'],
+            $data['city'],
+            $data['country'],
+            $data['mapLink'],
+            $data['site'],
         );
     }
 
-    public function toArray(): array {
+    public function toArray(): array
+    {
         return [
-          "address" => $this->address,
-          "city" => $this->city,
-          "country" => $this->country,
-          "mapLink" => $this->mapLink,
-          "site" => $this->site  
+            'address' => $this->address,
+            'city' => $this->city,
+            'country' => $this->country,
+            'mapLink' => $this->mapLink,
+            'site' => $this->site,
         ];
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function jsonSerialize() {
+    public function jsonSerialize()
+    {
         return $this->toArray();
     }
 }
