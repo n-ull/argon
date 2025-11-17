@@ -2,6 +2,7 @@
 
 namespace Domain\OrganizerManagment\Models;
 
+use Domain\EventManagment\Models\Event;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $logo
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, AEvent> $events
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
  * @property-read int|null $events_count
  * @property-read \Domain\OrganizerManagment\Models\OrganizerSettings|null $settings
  *
@@ -46,7 +47,7 @@ class Organizer extends Model
 
     public function events(): HasMany
     {
-        return $this->hasMany(AEvent::class);
+        return $this->hasMany(Event::class);
     }
 
     public function settings(): HasOne
