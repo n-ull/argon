@@ -31,8 +31,8 @@ class CreateEventRequest extends FormRequest
             'location_info.address' => ['required', 'string'],
             'location_info.city' => ['required', 'string'],
             'location_info.country' => ['required', 'string'],
-            'location_info.mapLink' => ['string'],
-            'location_info.site' => ['string'],
+            'location_info.mapLink' => ['nullable', 'string'],
+            'location_info.site' => ['nullable', 'string'],
         ];
     }
 }

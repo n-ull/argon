@@ -15,7 +15,7 @@ class OrganizerFactory extends Factory
             'name' => $this->faker->name,
             'email' => $this->faker->safeEmail,
             'phone' => $this->faker->phoneNumber,
-            'logo' => $this->faker->image,
+            'logo' => $this->faker->imageUrl(640, 480, 'business', true),
         ];
     }
 }
