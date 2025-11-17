@@ -31,14 +31,14 @@ class EventTest extends TestCase
             'slug',
         ];
 
-        $event = new Event();
+        $event = new Event;
         $this->assertEquals($expected, $event->getFillable());
     }
 
     /** @test */
     public function it_casts_location_info_to_location_info_json(): void
     {
-        $event = new Event();
+        $event = new Event;
         $casts = $event->getCasts();
 
         $this->assertArrayHasKey('location_info', $casts);
@@ -48,7 +48,7 @@ class EventTest extends TestCase
     /** @test */
     public function it_casts_status_to_event_status_enum(): void
     {
-        $event = new Event();
+        $event = new Event;
         $casts = $event->getCasts();
 
         $this->assertArrayHasKey('status', $casts);
@@ -58,7 +58,7 @@ class EventTest extends TestCase
     /** @test */
     public function it_casts_datetime_fields_correctly(): void
     {
-        $event = new Event();
+        $event = new Event;
         $casts = $event->getCasts();
 
         $this->assertEquals('datetime', $casts['start_date']);
@@ -199,7 +199,7 @@ class EventTest extends TestCase
     public function multiple_events_can_belong_to_same_organizer(): void
     {
         $organizer = Organizer::factory()->create();
-        
+
         $event1 = Event::factory()->create(['organizer_id' => $organizer->id]);
         $event2 = Event::factory()->create(['organizer_id' => $organizer->id]);
 

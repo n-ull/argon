@@ -28,7 +28,7 @@ class ProductPriceTest extends TestCase
             'sort_order',
         ];
 
-        $productPrice = new ProductPrice();
+        $productPrice = new ProductPrice;
         $this->assertEquals($expected, $productPrice->getFillable());
     }
 
@@ -46,7 +46,7 @@ class ProductPriceTest extends TestCase
     public function it_can_create_product_price_with_all_fields(): void
     {
         $product = Product::factory()->create();
-        
+
         $productPrice = ProductPrice::create([
             'product_id' => $product->id,
             'price' => 99.99,
@@ -146,7 +146,7 @@ class ProductPriceTest extends TestCase
     public function multiple_prices_can_belong_to_same_product(): void
     {
         $product = Product::factory()->create();
-        
+
         ProductPrice::factory()->count(3)->create(['product_id' => $product->id]);
 
         $this->assertEquals(3, $product->product_prices()->count());

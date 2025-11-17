@@ -20,7 +20,7 @@ class CreateEventTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->action = new CreateEvent();
+        $this->action = new CreateEvent;
     }
 
     /** @test */
