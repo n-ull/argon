@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedInteger('max_per_order')->nullable();
             $table->unsignedInteger('min_per_order')->nullable();
             $table->string('product_type')->default('ticket');
+            $table->string('product_price_type')->default('standard');
             $table->boolean('hide_before_sale_start_date')->default(false);
             $table->boolean('hide_after_sale_end_date')->default(false);
             $table->boolean('hide_when_sold_out')->default(false);
