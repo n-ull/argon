@@ -1,8 +1,8 @@
 <?php
 
-namespace Domain\OrganizerManagment\Models;
+namespace Domain\OrganizerManagement\Models;
 
-use Domain\EventManagment\Models\Event;
+use Domain\EventManagement\Models\Event;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,9 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
  * @property-read int|null $events_count
- * @property-read \Domain\OrganizerManagment\Models\OrganizerSettings|null $settings
+ * @property-read \Domain\OrganizerManagement\Models\OrganizerSettings|null $settings
  *
- * @method static \Domain\OrganizerManagment\Database\Factories\OrganizerFactory factory($count = null, $state = [])
+ * @method static \Domain\OrganizerManagement\Database\Factories\OrganizerFactory factory($count = null, $state = [])
  * @method static \Illuminate\Eventse\Eloquent\Builder<static>|Organizer newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer query()
@@ -52,6 +52,10 @@ class Organizer extends Model
 
     public function settings(): HasOne
     {
-        return $this->hasOne(OrganizerSettings::class);
+        return $this->hasOne(OrganizerSettings::class)->withDefault([
+            'raise_money_method' => 'internal',
+            'is_modo_active' => false,
+            'is_mercadopago_active' => false,
+        ]);
     }
 }

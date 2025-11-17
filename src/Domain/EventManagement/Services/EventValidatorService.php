@@ -1,8 +1,8 @@
 <?php
 
-namespace Domain\EventManagment\Services;
+namespace Domain\EventManagement\Services;
 
-use Domain\EventManagment\Models\Event;
+use Domain\EventManagement\Models\Event;
 
 class EventValidatorService
 {

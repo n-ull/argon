@@ -1,11 +1,11 @@
 <?php
 
-namespace Domain\EventManagment\Models;
+namespace Domain\EventManagement\Models;
 
-use Domain\EventManagment\Casts\LocationInfoJson;
-use Domain\EventManagment\Enums\EventStatus;
+use Domain\EventManagement\Casts\LocationInfoJson;
+use Domain\EventManagement\Enums\EventStatus;
 use Domain\Ordering\Models\Order;
-use Domain\OrganizerManagment\Models\Organizer;
+use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\EventManagment\Requests;
+namespace App\Modules\EventManagement\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,9 +24,9 @@ class CreateEventRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255', 'min:8'],
-            'description' => ['string', 'max:2000', 'min:255'],
-            'start_date' => ['datetime'],
-            'end_date' => ['datetime'],
+            'description' => ['nullable', 'string', 'max:2000', 'min:10'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
             'location_info' => ['required', 'array'],
             'location_info.address' => ['required', 'string'],
             'location_info.city' => ['required', 'string'],

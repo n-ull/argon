@@ -3,6 +3,7 @@
 namespace Domain\ProductCatalog\Models;
 
 use Domain\ProductCatalog\Enums\ProductType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $max_per_order Maximum quantity per order
  * @property int $min_per_order Minimum quantity per order
  * @property ProductType $product_type Type of product
+ * @property string $product_price_type Product price type
  * @property bool $hide_before_sale_start_date Whether to hide product before sale starts
  * @property bool $hide_after_sale_end_date Whether to hide product after sale ends
  * @property bool $hide_when_sold_out Whether to hide product when sold out
@@ -48,8 +50,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @mixin \Eloquent
  */
+ 
 class Product extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
         'description',
