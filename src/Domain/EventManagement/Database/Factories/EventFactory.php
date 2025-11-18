@@ -6,6 +6,7 @@ use DateInterval;
 use DateTimeImmutable;
 use Domain\EventManagement\Enums\EventStatus;
 use Domain\EventManagement\Models\Event;
+use Domain\EventManagement\Models\EventCategory;
 use Domain\OrganizerManagement\Models\Organizer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -32,6 +33,7 @@ class EventFactory extends Factory
                 'city' => $this->faker->city,
                 'country' => $this->faker->country,
             ],
+            'category_id' => EventCategory::factory()
         ];
     }
 }
