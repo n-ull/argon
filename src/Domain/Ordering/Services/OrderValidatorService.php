@@ -25,7 +25,7 @@ class OrderValidatorService
         }
 
         foreach ($orderData->products as $product) {
-            $eventProduct = $event->products->firstWhere('product_id', $product->productId);
+            $eventProduct = $event->products->firstWhere('id', $product->productId);
 
             if ($eventProduct == null) {
                 throw new \DomainException('Event product doesn\'t exist');
@@ -42,14 +42,14 @@ class OrderValidatorService
             $productStartSaleDate = $eventProduct->start_sale_date ?? $event->start_date;
             $productEndSaleDate = $eventProduct->end_sale_date ?? $event->end_date;
 
-            if ($productStartSaleDate->gt(now()) || $productEndSaleDate->lt(now())) {
+            if ($productStartSaleDate->gt(now()) || ($productEndSaleDate && $productEndSaleDate->lt(now()))) {
                 throw new \DomainException('Product sales are not available.');
             }
 
             $priceStartSaleDate = $selectedPrice->start_sale_date ?? $event->start_date;
             $priceEndSaleDate = $selectedPrice->end_sale_date ?? $event->end_date;
 
-            if ($priceStartSaleDate->gt(now()) || $priceEndSaleDate->lt(now())) {
+            if ($priceStartSaleDate->gt(now()) || ($priceEndSaleDate && $priceEndSaleDate->lt(now()))) {
                 throw new \DomainException('Product with this price sales are not available');
             }
 

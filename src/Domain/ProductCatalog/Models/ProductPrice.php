@@ -60,6 +60,11 @@ class ProductPrice extends Model
         'sort_order',
     ];
 
+    protected $casts = [
+        'start_sale_date' => 'datetime',
+        'end_sale_date' => 'datetime',
+    ];
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

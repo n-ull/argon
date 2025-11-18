@@ -72,6 +72,8 @@ class Product extends Model
 
     protected $casts = [
         'product_type' => ProductType::class,
+        'start_sale_date' => 'datetime',
+        'end_sale_date' => 'datetime',
     ];
 
     public function product_prices(): HasMany
