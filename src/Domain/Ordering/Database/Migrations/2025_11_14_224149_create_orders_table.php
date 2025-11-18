@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('total_before_additions', 10, 2)->default(0)->comment('Total price without any additional cost');
             $table->decimal('total_gross', 10, 2)->default(0)->comment('Total price with all the additions');
             $table->enum('status', ['pending', 'expired', 'cancelled', 'refunded', 'paid'])->default('pending');
+            $table->string('reference_id')->unique()->comment('reference used to find the order through the payment gateway.');
             $table->dateTime('expires_at');
             $table->timestamps();
         });
