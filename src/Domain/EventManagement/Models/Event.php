@@ -66,9 +66,7 @@ class Event extends Model
         'status',
         'start_date',
         'end_date',
-        'organizer_id',
-        'is_featured',
-        'slug',
+        'category_id'        
     ];
 
     protected $casts = [
@@ -92,5 +90,9 @@ class Event extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function category(): BelongsTo {
+        return $this->belongsTo(EventCategory::class);
     }
 }
