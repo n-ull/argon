@@ -4,7 +4,7 @@ namespace App\Modules\EventManagement\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateEventRequest extends FormRequest
+class StoreEventRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
