@@ -66,7 +66,7 @@ class Event extends Model
         'status',
         'start_date',
         'end_date',
-        'category_id'        
+        'category_id',
     ];
 
     protected $casts = [
@@ -74,7 +74,7 @@ class Event extends Model
         'end_date' => 'datetime',
         'status' => EventStatus::class,
         'location_info' => LocationInfoJson::class,
-        'is_featured' => 'boolean'
+        'is_featured' => 'boolean',
     ];
 
     public function organizer(): BelongsTo
@@ -92,7 +92,8 @@ class Event extends Model
         return $this->hasMany(Order::class);
     }
 
-    public function category(): BelongsTo {
+    public function category(): BelongsTo
+    {
         return $this->belongsTo(EventCategory::class);
     }
 }

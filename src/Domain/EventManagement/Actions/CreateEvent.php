@@ -2,7 +2,6 @@
 
 namespace Domain\EventManagement\Actions;
 
-use App\Modules\EventManagement\Requests\StoreEventRequest;
 use Domain\EventManagement\Events\EventCreated;
 use Domain\EventManagement\Models\Event;
 use Domain\EventManagement\Services\EventManagerService;
@@ -14,8 +13,7 @@ class CreateEvent
 
     public function __construct(
         private EventManagerService $eventManager
-    ) {
-    }
+    ) {}
 
     public function handle(array $validatedData): Event
     {

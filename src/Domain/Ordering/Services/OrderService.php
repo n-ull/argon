@@ -23,7 +23,7 @@ class OrderService
         // check event existence
         $event = Event::find($orderData->eventId);
 
-        if (!$event) {
+        if (! $event) {
             throw new \DomainException("Event doesn't exist.");
         }
 
@@ -32,9 +32,9 @@ class OrderService
 
         // create order
         $order = $event->orders()->create([
-            "total_gross",
-            "total_before_additions",
-            "reference_id" => ReferenceIdService::create($order->id ?? null)
+            'total_gross',
+            'total_before_additions',
+            'reference_id' => ReferenceIdService::create($order->id ?? null),
         ]);
 
         event(new OrderCreated($order));
