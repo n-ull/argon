@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('organizer_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organizer_id')->constrained('organizers')->cascadeOnDelete();
-            $table->enum('raise_money_method', ['internal', 'split'])->default('internal');
+            $table->enum('raise_money_method', ['internal', 'split'])->default('split');
             $table->string('raise_money_account')->nullable();
             $table->boolean('is_modo_active')->default(false);
             $table->boolean('is_mercadopago_active')->default(false);
