@@ -14,5 +14,4 @@ class ReferenceIdService
 
         return "ORD-{$id}";
     }
-
 }

@@ -14,7 +14,7 @@ class EventCategoryFactory extends Factory
         return [
             'name' => $this->faker->name,
             'icon' => $this->faker->word,
-            'color' => $this->faker->colorName
+            'color' => $this->faker->colorName,
         ];
     }
 }

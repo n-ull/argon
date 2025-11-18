@@ -9,14 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class EventCategory extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'color',
-        'icon'
+        'icon',
     ];
 
-    public function events(): HasMany {
+    public function events(): HasMany
+    {
         return $this->hasMany(Event::class);
     }
-
 }
