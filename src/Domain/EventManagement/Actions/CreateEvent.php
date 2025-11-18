@@ -16,6 +16,6 @@ class CreateEvent
 
     public function handle(CreateEventRequest $request)
     {
-        $this->eventManager->createEvent();
+        return $this->eventManager->createEvent($request);
     }
 }

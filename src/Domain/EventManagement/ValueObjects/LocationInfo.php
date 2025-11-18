@@ -21,8 +21,8 @@ class LocationInfo implements Arrayable, JsonSerializable
             $data['address'],
             $data['city'],
             $data['country'],
-            $data['mapLink'],
-            $data['site'],
+            $data['mapLink'] ?? null,
+            $data['site'] ?? null,
         );
     }
 

@@ -76,6 +76,7 @@ class Event extends Model
         'end_date' => 'datetime',
         'status' => EventStatus::class,
         'location_info' => LocationInfoJson::class,
+        'is_featured' => 'boolean'
     ];
 
     public function organizer(): BelongsTo
