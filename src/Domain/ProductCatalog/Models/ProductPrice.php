@@ -12,15 +12,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * This model handles product pricing data including regular prices,
  * sale dates, stock quantities, and visibility settings.
  *
- * @property-read int $product_id
- * @property-read float $price
- * @property-read string $label
- * @property-read \Illuminate\Support\Carbon|null $start_sale_date
- * @property-read \Illuminate\Support\Carbon|null $end_sale_date
- * @property-read int|null $stock
- * @property-read int $quantity_sold
- * @property-read bool $is_hidden
- * @property-read int $sort_order
+ * @property int $product_id
+ * @property float $price
+ * @property string $label
+ * @property \Illuminate\Support\Carbon|null $start_sale_date
+ * @property \Illuminate\Support\Carbon|null $end_sale_date
+ * @property int|null $stock
+ * @property int $quantity_sold
+ * @property bool $is_hidden
+ * @property int $sort_order
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read Product $product

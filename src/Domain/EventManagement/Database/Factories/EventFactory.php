@@ -24,7 +24,7 @@ class EventFactory extends Factory
             'start_date' => $startDate,
             'end_date' => $endDate,
             'is_featured' => $this->faker->boolean(50),
-            'slug' => $this->faker->slug,
+            'slug' => $this->faker->unique()->slug,
             'status' => $this->faker->randomElement([EventStatus::PUBLISHED->value, EventStatus::DRAFT->value, EventStatus::ARCHIVED->value]),
             'organizer_id' => Organizer::factory(),
             'location_info' => [

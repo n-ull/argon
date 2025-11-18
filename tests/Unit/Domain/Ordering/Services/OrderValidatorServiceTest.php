@@ -561,7 +561,7 @@ test('it validates when event has null end date and product has end sale date', 
     expect(true)->toBeTrue();
 });
 
-test('it validates when product has null start date and uses event start date', function () {
+test('it validates when product has both null start and end sale dates and uses event dates', function () {
     $event = Event::factory()->create([
         'status' => EventStatus::PUBLISHED,
         'start_date' => now()->subDay(),
@@ -571,7 +571,7 @@ test('it validates when product has null start date and uses event start date', 
     $product = Product::factory()->create([
         'event_id' => $event->id,
         'start_sale_date' => null,
-        'end_sale_date' => now()->addDays(30),
+        'end_sale_date' => null,
     ]);
 
     $productPrice = ProductPrice::create([
