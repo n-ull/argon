@@ -2,7 +2,7 @@
 
 namespace Domain\EventManagement\Actions;
 
-use App\Modules\EventManagement\Requests\CreateEventRequest;
+use App\Modules\EventManagement\Requests\StoreEventRequest;
 use Domain\EventManagement\Services\EventManagerService;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -14,8 +14,8 @@ class CreateEvent
         private EventManagerService $eventManager
     ) {}
 
-    public function handle(CreateEventRequest $request)
+    public function handle(array $data)
     {
-        return $this->eventManager->createEvent($request);
+        return $this->eventManager->createEvent($data);
     }
 }
