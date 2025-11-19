@@ -26,13 +26,17 @@ class OrderValidatorService
 
         // todo: this could be separated into different validation processes
         foreach ($orderData->items as $product) {
-            $eventProduct = $event->products->firstWhere('id', $product->productId);
+            $productId = is_array($product) ? $product['productId'] : $product->productId;
+            $productPriceId = is_array($product) ? $product['productPriceId'] : $product->productPriceId;
+            $quantity = is_array($product) ? $product['quantity'] : $product->quantity;
+
+            $eventProduct = $event->products->firstWhere('id', $productId);
 
             if ($eventProduct == null) {
                 throw new \DomainException('Event product doesn\'t exist');
             }
 
-            $selectedPrice = $eventProduct->product_prices->firstWhere('id', $product->selectedPriceId);
+            $selectedPrice = $eventProduct->product_prices->firstWhere('id', $productPriceId);
 
             if ($selectedPrice == null) {
                 throw new \DomainException('Selected price doesn\'t exist');
@@ -55,7 +59,7 @@ class OrderValidatorService
             }
 
             // check stock
-            if ($selectedPrice->stock < $product->quantity) {
+            if ($selectedPrice->stock < $quantity) {
                 throw new \DomainException('Product is not available');
             }
         }

@@ -8,7 +8,7 @@ use Domain\EventManagement\Enums\DisplayMode;
 use Domain\EventManagement\Enums\TaxFeeType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * TaxAndFee Model
@@ -54,7 +54,7 @@ class TaxAndFee extends Model
 
     // TODO: make this a BelongsToMany relationship, to reuse this taxes inside other events
     // of the same organizer
-    public function events(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'event_tax_and_fee')
             ->withPivot('sort_order')

@@ -30,7 +30,7 @@ class PriceCalculationService
         // Filter by gateway if specified
         if ($paymentGateway) {
             $taxesAndFees = $taxesAndFees->filter(
-                fn($item) => $item->isApplicableToGateway($paymentGateway)
+                fn ($item) => $item->isApplicableToGateway($paymentGateway)
             );
         }
 
@@ -70,7 +70,7 @@ class PriceCalculationService
     {
         return array_reduce(
             $items,
-            fn($carry, OrderItemData $item) => $carry + $item->getSubtotal(),
+            fn ($carry, OrderItemData $item) => $carry + $item->getSubtotal(),
             0.0
         );
     }
@@ -80,7 +80,7 @@ class PriceCalculationService
      */
     private function calculateTaxesAndFees($baseAmount, $collection): float
     {
-        return $collection->sum(fn($item) => $item->calculateAmount($baseAmount));
+        return $collection->sum(fn ($item) => $item->calculateAmount($baseAmount));
     }
 
     /**
@@ -89,7 +89,7 @@ class PriceCalculationService
     private function createItemsSnapshot(array $items): array
     {
         return array_map(
-            fn(OrderItemData $item) => $item->toArray(),
+            fn (OrderItemData $item) => $item->toArray(),
             $items
         );
     }
@@ -124,7 +124,7 @@ class PriceCalculationService
 
         if ($gateway) {
             $taxesAndFees = $taxesAndFees->filter(
-                fn($item) => $item->isApplicableToGateway($gateway)
+                fn ($item) => $item->isApplicableToGateway($gateway)
             );
         }
 
@@ -138,7 +138,7 @@ class PriceCalculationService
             'base_price' => $basePrice,
             'integrated_amount' => $integratedAmount,
             'display_price' => $basePrice + $integratedAmount,
-            'separated_items' => $separated->map(fn($item) => [
+            'separated_items' => $separated->map(fn ($item) => [
                 'name' => $item->name,
                 'type' => $item->type->value,
                 'amount' => $item->calculateAmount($basePrice),

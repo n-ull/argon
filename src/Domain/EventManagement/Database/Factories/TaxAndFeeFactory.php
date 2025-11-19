@@ -5,7 +5,6 @@ namespace Domain\EventManagement\Database\Factories;
 use Domain\EventManagement\Enums\CalculationType;
 use Domain\EventManagement\Enums\DisplayMode;
 use Domain\EventManagement\Enums\TaxFeeType;
-use Domain\EventManagement\Models\Event;
 use Domain\EventManagement\Models\TaxAndFee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -51,7 +50,7 @@ class TaxAndFeeFactory extends Factory
     /**
      * Create a percentage-based charge
      */
-    public function percentage(float $value = null): static
+    public function percentage(?float $value = null): static
     {
         return $this->state(fn (array $attributes) => [
             'calculation_type' => CalculationType::PERCENTAGE,
@@ -62,7 +61,7 @@ class TaxAndFeeFactory extends Factory
     /**
      * Create a fixed amount charge
      */
-    public function fixed(float $value = null): static
+    public function fixed(?float $value = null): static
     {
         return $this->state(fn (array $attributes) => [
             'calculation_type' => CalculationType::FIXED,
@@ -109,8 +108,6 @@ class TaxAndFeeFactory extends Factory
             'is_active' => false,
         ]);
     }
-
-
 
     /**
      * Create a typical VAT tax
