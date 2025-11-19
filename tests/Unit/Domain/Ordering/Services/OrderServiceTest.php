@@ -141,7 +141,7 @@ test('it stores organizer raise method snapshot after order completion', functio
     // Tests organizer settings capture
 });
 
-test('it stores used gateway after order completion', function () { });
+test('it stores used gateway after order completion', function () {});
 
 test('it handles gateway-specific fees correctly', function () {
     // Tests payment gateway fee logic
