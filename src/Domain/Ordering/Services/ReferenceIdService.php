@@ -2,16 +2,12 @@
 
 namespace Domain\Ordering\Services;
 
+use Illuminate\Support\Str;
+
 class ReferenceIdService
 {
-    public static function create(string $id): string
+    public static function create(): string
     {
-        $environment = app()->environment();
-
-        if ($environment === 'local' || $environment === 'testing') {
-            return "TEST-{$id}";
-        }
-
-        return "ORD-{$id}";
+        return 'ORD-' . strtoupper(Str::random(12));
     }
 }

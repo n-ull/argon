@@ -36,9 +36,29 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'event_id',
+        'subtotal',
+        'taxes_total',
+        'fees_total',
+        'items_snapshot',
+        'taxes_snapshot',
+        'fees_snapshot',
+        'status',
+        'reference_id',
+        'organizer_raise_method_snapshot',
+        'used_payment_gateway_snapshot',
+        'expires_at',
+    ];
 
-    public function order_items(): HasMany
+    protected $casts = [
+        'items_snapshot' => 'array',
+        'taxes_snapshot' => 'array',
+        'fees_snapshot' => 'array',
+        'expires_at' => 'datetime',
+    ];
+
+    public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }

@@ -4,41 +4,91 @@ namespace Domain\Ordering\Services;
 
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Data\CreateOrderData;
+use Domain\Ordering\Data\OrderItemData;
 use Domain\Ordering\Events\OrderCreated;
 use Domain\Ordering\Models\Order;
+use Domain\ProductCatalog\Models\ProductPrice;
 
 class OrderService
 {
-    /**
-     * Create a new class instance.
-     */
     public function __construct(
-        private OrderValidatorService $orderValidatorService
-    ) {
-        //
-    }
+        private OrderValidatorService $orderValidatorService,
+        private PriceCalculationService $priceCalculationService,
+        private ReferenceIdService $referenceIdService
+    ) {}
 
     public function createPendingOrder(CreateOrderData $orderData): Order
     {
-        // check event existence
-        $event = Event::find($orderData->eventId);
+        // Load event with relationships
+        $event = Event::with(['products.product_prices', 'taxesAndFees', 'organizer.settings'])
+            ->find($orderData->eventId);
 
         if (! $event) {
             throw new \DomainException("Event doesn't exist.");
         }
 
-        // validate order
+        // Validate order
         $this->orderValidatorService->validateOrder($orderData);
 
-        // create order
+        // Prepare order items with pricing
+        $orderItems = $this->prepareOrderItems($orderData->items);
+
+        // Calculate prices with snapshots
+        $priceBreakdown = $this->priceCalculationService->calculate(
+            $orderItems,
+            $event,
+            $orderData->gateway ?? null
+        );
+
+        // Create order with all calculated values
         $order = $event->orders()->create([
-            'total_gross',
-            'total_before_additions',
-            'reference_id' => ReferenceIdService::create($order->id ?? null),
+            'subtotal' => $priceBreakdown->subtotal,
+            'taxes_total' => $priceBreakdown->taxesTotal,
+            'fees_total' => $priceBreakdown->feesTotal,
+            'total_before_additions' => $priceBreakdown->totalBeforeAdditions,
+            'total_gross' => $priceBreakdown->totalGross,
+            'items_snapshot' => $priceBreakdown->itemsSnapshot,
+            'taxes_snapshot' => $priceBreakdown->taxesSnapshot,
+            'fees_snapshot' => $priceBreakdown->feesSnapshot,
+            'reference_id' => $this->referenceIdService->create(),
+            'organizer_raise_method_snapshot' => $event->organizer->settings->raise_money_method ?? null,
+            'used_payment_gateway_snapshot' => $orderData->gateway ?? null,
+            'expires_at' => now()->addMinutes(15),
+            'status' => 'pending',
         ]);
+
+        // Create order items
+        foreach ($priceBreakdown->itemsSnapshot as $itemSnapshot) {
+            $order->orderItems()->create([
+                'product_id' => $itemSnapshot['product_id'],
+                'product_price_id' => $itemSnapshot['product_price_id'],
+                'quantity' => $itemSnapshot['quantity'],
+                'unit_price' => $itemSnapshot['unit_price'],
+            ]);
+        }
 
         event(new OrderCreated($order));
 
         return $order;
+    }
+
+    /**
+     * Prepare order items with pricing information
+     *
+     * @param array $items Array of CreateOrderProductData
+     * @return OrderItemData[]
+     */
+    private function prepareOrderItems(array $items): array
+    {
+        return array_map(function ($item) {
+            $productPrice = ProductPrice::findOrFail($item->selectedPriceId);
+
+            return new OrderItemData(
+                productId: $item->productId,
+                productPriceId: $item->selectedPriceId,
+                quantity: $item->quantity,
+                unitPrice: $productPrice->price
+            );
+        }, $items);
     }
 }

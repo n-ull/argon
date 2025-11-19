@@ -66,7 +66,7 @@ class Event extends Model
         'status',
         'start_date',
         'end_date',
-        'category_id',
+        'event_category_id',
     ];
 
     protected $casts = [
@@ -95,5 +95,13 @@ class Event extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(EventCategory::class);
+    }
+
+    public function taxesAndFees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(TaxAndFee::class, 'event_tax_and_fee')
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
     }
 }

@@ -44,4 +44,9 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function productPrice(): BelongsTo
+    {
+        return $this->belongsTo(\Domain\ProductCatalog\Models\ProductPrice::class);
+    }
 }
