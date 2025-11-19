@@ -79,7 +79,7 @@ class ManageTaxAndFee
     public function toggleActive(int $taxFeeId): TaxAndFee
     {
         $taxFee = TaxAndFee::findOrFail($taxFeeId);
-        $taxFee->update(['is_active' => !$taxFee->is_active]);
+        $taxFee->update(['is_active' => ! $taxFee->is_active]);
 
         return $taxFee->fresh();
     }

@@ -8,6 +8,6 @@ class ReferenceIdService
 {
     public static function create(): string
     {
-        return 'ORD-' . strtoupper(Str::random(12));
+        return 'ORD-'.strtoupper(Str::random(12));
     }
 }

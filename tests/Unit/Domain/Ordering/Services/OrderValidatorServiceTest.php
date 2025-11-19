@@ -3,7 +3,6 @@
 use Domain\EventManagement\Enums\EventStatus;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Data\CreateOrderData;
-use Domain\Ordering\Data\CreateOrderProductData;
 use Domain\Ordering\Services\OrderValidatorService;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
@@ -39,12 +38,13 @@ test('it validates order successfully with valid data', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 2
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 2,
+            ],
+
         ]
     );
 
@@ -60,7 +60,7 @@ test('it throws exception when event is not published', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: []
+        items: []
     );
 
     $this->service->validateOrder($orderData);
@@ -78,12 +78,12 @@ test('it throws exception when product does not belong to event', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: 1,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => 1,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -101,12 +101,12 @@ test('it throws exception when selected price does not exist', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: 999,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => 999,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -138,12 +138,12 @@ test('it throws exception when product sale has not started', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -175,12 +175,12 @@ test('it throws exception when product sale has ended', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -212,12 +212,12 @@ test('it uses event start date when product has no start sale date', function ()
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -251,12 +251,12 @@ test('it uses event end date when product has no end sale date', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -292,12 +292,12 @@ test('it throws exception when price sale has not started', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -331,12 +331,12 @@ test('it throws exception when price sale has ended', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -370,12 +370,12 @@ test('it uses event start date when price has no start sale date', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -411,12 +411,12 @@ test('it uses event end date when price has no end sale date', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -450,19 +450,19 @@ test('it throws exception when stock is insufficient', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 10
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 10,
+            ],
         ]
     );
 
     $this->service->validateOrder($orderData);
 })->throws(DomainException::class, 'Product is not available');
 
-test('it validates multiple products in single order', function () {
+test('it validates multiple items in single order', function () {
     $event = Event::factory()->create([
         'status' => EventStatus::PUBLISHED,
         'start_date' => now()->subDay(),
@@ -503,17 +503,17 @@ test('it validates multiple products in single order', function () {
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product1->id,
-                selectedPriceId: $productPrice1->id,
-                quantity: 2
-            ),
-            new CreateOrderProductData(
-                productId: $product2->id,
-                selectedPriceId: $productPrice2->id,
-                quantity: 3
-            ),
+        items: [
+            [
+                'productId' => $product1->id,
+                'productPriceId' => $productPrice1->id,
+                'quantity' => 2,
+            ],
+            [
+                'productId' => $product2->id,
+                'productPriceId' => $productPrice2->id,
+                'quantity' => 3,
+            ],
         ]
     );
 
@@ -547,12 +547,12 @@ test('it validates when event has null end date and product has end sale date', 
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 
@@ -586,12 +586,12 @@ test('it validates when product has both null start and end sale dates and uses 
 
     $orderData = new CreateOrderData(
         eventId: $event->id,
-        products: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                selectedPriceId: $productPrice->id,
-                quantity: 1
-            ),
+        items: [
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 1,
+            ],
         ]
     );
 

@@ -75,7 +75,7 @@ class OrderService
     /**
      * Prepare order items with pricing information
      *
-     * @param array $items Array of CreateOrderProductData
+     * @param  array  $items  Array of CreateOrderProductData
      * @return OrderItemData[]
      */
     private function prepareOrderItems(array $items): array
