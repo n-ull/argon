@@ -12,7 +12,7 @@ class CreateOrderProductData extends Data
         #[Exists('products')]
         public int $productId,
         #[Exists('product_prices')]
-        public int $selectedPriceId,
+        public int $productPriceId,
         #[Min(1)]
         public int $quantity
     ) {

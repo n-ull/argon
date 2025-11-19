@@ -56,7 +56,7 @@ test('it creates an order and stores price snapshots even if prices change later
         items: [
             new CreateOrderProductData(
                 productId: $product->id,
-                selectedPriceId: $productPrice->id,
+                productPriceId: $productPrice->id,
                 quantity: 2
             ),
         ],
