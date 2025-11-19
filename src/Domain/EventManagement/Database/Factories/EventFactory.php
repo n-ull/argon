@@ -33,7 +33,7 @@ class EventFactory extends Factory
                 'city' => $this->faker->city,
                 'country' => $this->faker->country,
             ],
-            'category_id' => EventCategory::factory(),
+            'event_category_id' => EventCategory::factory(),
         ];
     }
 }

@@ -25,7 +25,7 @@ class OrderValidatorService
         }
 
         // todo: this could be separated into different validation processes
-        foreach ($orderData->products as $product) {
+        foreach ($orderData->items as $product) {
             $eventProduct = $event->products->firstWhere('id', $product->productId);
 
             if ($eventProduct == null) {

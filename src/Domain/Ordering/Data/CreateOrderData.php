@@ -8,9 +8,7 @@ class CreateOrderData extends Data
 {
     public function __construct(
         public int $eventId,
-        /** @var CreateOrderProductData[] */
-        public array $products
-    ) {
-        //
-    }
+        public array $items,
+        public ?string $gateway = null,
+    ) {}
 }
