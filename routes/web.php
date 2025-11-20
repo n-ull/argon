@@ -14,4 +14,7 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('events', [\App\Modules\EventManagement\Controllers\EventIndexController::class, 'index'])
+    ->name('events.index');
+
 require __DIR__.'/settings.php';
