@@ -17,4 +17,7 @@ Route::get('dashboard', function () {
 Route::get('events', [\App\Modules\EventManagement\Controllers\EventIndexController::class, 'index'])
     ->name('events.index');
 
-require __DIR__.'/settings.php';
+Route::get('events/{event}', \App\Modules\EventManagement\Controllers\EventDetailsController::class)
+    ->name('events.show');
+
+require __DIR__ . '/settings.php';
