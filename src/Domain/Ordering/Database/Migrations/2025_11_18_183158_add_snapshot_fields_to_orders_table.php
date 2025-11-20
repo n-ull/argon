@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('subtotal', 10, 2)->default(0)->after('total_gross');
+            $table->decimal('subtotal', 10, 2)->default(0)->after('used_payment_gateway_snapshot');
             $table->decimal('taxes_total', 10, 2)->default(0)->after('subtotal');
             $table->decimal('fees_total', 10, 2)->default(0)->after('taxes_total');
             $table->json('items_snapshot')->nullable()->after('fees_total')->comment('Snapshot of order items with prices at purchase time');
