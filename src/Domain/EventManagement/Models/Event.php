@@ -79,8 +79,6 @@ class Event extends Model
         'is_featured' => 'boolean',
     ];
 
-
-
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(Organizer::class);
@@ -107,5 +105,10 @@ class Event extends Model
             ->withPivot('sort_order')
             ->withTimestamps()
             ->orderByPivot('sort_order');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }
