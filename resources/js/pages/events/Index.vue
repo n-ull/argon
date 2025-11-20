@@ -1,31 +1,10 @@
 <script setup lang="ts">
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { Head, InfiniteScroll, Link } from '@inertiajs/vue3';
-
-interface Event {
-    id: number;
-    title: string;
-    description: string | null;
-    start_date: string;
-    end_date: string;
-    location: string | null;
-}
-
-interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
-}
+import { Event, PaginatedResponse } from '@/types';
+import { Head, InfiniteScroll } from '@inertiajs/vue3';
 
 interface Props {
-    events: {
-        data: Event[];
-        current_page: number;
-        last_page: number;
-        per_page: number;
-        total: number;
-        links: PaginationLink[];
-    };
+    events: PaginatedResponse<Event>;
 }
 
 const { events } = defineProps<Props>();
@@ -37,6 +16,7 @@ const formatDate = (date: string) => {
         day: 'numeric',
     });
 };
+
 </script>
 
 <template>
