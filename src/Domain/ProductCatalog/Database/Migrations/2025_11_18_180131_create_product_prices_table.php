@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('is_hidden')->default(false);
             $table->unsignedInteger('sort_order')->default(1);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
