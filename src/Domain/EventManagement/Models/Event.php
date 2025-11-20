@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Event Model
@@ -55,7 +56,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Event extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'events';
 
@@ -76,6 +77,8 @@ class Event extends Model
         'location_info' => LocationInfoJson::class,
         'is_featured' => 'boolean',
     ];
+
+
 
     public function organizer(): BelongsTo
     {

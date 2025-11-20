@@ -4,6 +4,7 @@ namespace Domain\OrganizerManagement\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property-read \Domain\OrganizerManagement\Models\Organizer|null $organizer
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class OrganizerSettings extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'organizer_id',
         'raise_money_method',
