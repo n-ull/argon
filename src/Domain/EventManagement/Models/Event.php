@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $slug The URL slug for the event
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Order> $orders
  * @property-read int|null $orders_count
  * @property-read Organizer $organizer

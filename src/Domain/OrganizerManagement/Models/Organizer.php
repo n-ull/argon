@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $logo
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
  * @property-read int|null $events_count
  * @property-read \Domain\OrganizerManagement\Models\OrganizerSettings|null $settings

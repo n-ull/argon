@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Domain\OrganizerManagement\Models\Organizer|null $organizer
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings newModelQuery()
