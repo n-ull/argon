@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppLogo from '@/components/AppLogo.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -15,21 +16,21 @@ const user = computed(() => page.props.auth?.user);
                     <!-- Logo/Brand -->
                     <div class="flex items-center gap-8">
                         <Link href="/" class="text-xl font-bold text-gray-900 dark:text-white">
-                        App
+                        <AppLogo class="h-4 fill-white" />
                         </Link>
 
                         <!-- Navigation Links -->
-                        <div class="hidden space-x-4 md:flex">
+                        <div class="hidden space-x-4 md:flex uppercase font-black text-sm">
                             <Link href="/events"
-                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                class="rounded-md px-3 py-2 text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
                             Events
                             </Link>
                             <Link v-if="user" href="/dashboard"
-                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                class="rounded-md px-3 py-2 text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
                             Dashboard
                             </Link>
                             <Link v-if="user" href="/inventory"
-                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
+                                class="rounded-md px-3 py-2 text-gray-700 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white">
                             Inventory
                             </Link>
                         </div>
