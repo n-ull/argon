@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->foreignId('event_category_id')->nullable()->constrained('event_categories')->nullOnDelete();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('is_modo_active')->default(false);
             $table->boolean('is_mercadopago_active')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

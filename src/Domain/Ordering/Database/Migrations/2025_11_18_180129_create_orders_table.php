@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('used_payment_gateway_snapshot')->nullable()->comment('The payment gateway used at the moment the order was paid.');
             $table->dateTime('expires_at');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
