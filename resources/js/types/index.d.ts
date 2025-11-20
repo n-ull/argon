@@ -74,7 +74,6 @@ export interface Organizer {
     updated_at: string | null;
     deleted_at: string | null;
     events?: Event[];
-    events_count?: number | null;
     settings?: OrganizerSettings | null;
 }
 
