@@ -36,4 +36,30 @@ export interface User {
     updated_at: string;
 }
 
+export interface Event {
+    id: number;
+    title: string;
+    description: string | null;
+    start_date: string;
+    end_date: string | null;
+    location: string | null;
+}
+
+export interface PaginationLink {
+    url: string | null;
+    label: string;
+    active: boolean;
+}
+
+export interface PaginatedResponse<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number;
+    to: number;
+    links: PaginationLink[];
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;
