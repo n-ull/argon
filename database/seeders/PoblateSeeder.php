@@ -41,9 +41,9 @@ class PoblateSeeder extends Seeder
     {
         $this->command->info('Starting data population...');
 
-        // Create 500 users
-        $this->command->info('Creating 500 users...');
-        $users = User::factory(500)->create();
+        // Create 80 users
+        $this->command->info('Creating 80 users...');
+        $users = User::factory(80)->create();
         $this->command->info('✓ Users created');
 
         // Get or create event categories
@@ -148,7 +148,7 @@ class PoblateSeeder extends Seeder
         // Create event
         $event = Event::create([
             'title' => fake()->words(fake()->numberBetween(3, 6), true),
-            'description' => fake()->paragraphs(fake()->numberBetween(2, 5), true),
+            'description' => fake()->paragraphs(fake()->numberBetween(2, 3), true),
             'start_date' => $startDate,
             'end_date' => $endDate,
             'is_featured' => fake()->boolean(20),
@@ -156,6 +156,8 @@ class PoblateSeeder extends Seeder
             'status' => fake()->randomElement([
                 EventStatus::PUBLISHED->value,
                 EventStatus::PUBLISHED->value, // More published events
+                EventStatus::PUBLISHED->value,
+                EventStatus::PUBLISHED->value,
                 EventStatus::PUBLISHED->value,
                 EventStatus::DRAFT->value,
                 EventStatus::ARCHIVED->value,
@@ -212,7 +214,7 @@ class PoblateSeeder extends Seeder
 
         $product = Product::create([
             'name' => $this->generateProductName($productType),
-            'description' => fake()->paragraph(),
+            'description' => fake()->paragraph(1),
             'max_per_order' => fake()->numberBetween(4, 10),
             'min_per_order' => 1,
             'product_type' => $productType->value,
