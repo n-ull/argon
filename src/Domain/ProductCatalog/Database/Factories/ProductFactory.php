@@ -15,7 +15,7 @@ class ProductFactory extends Factory
     {
         return [
             'name' => $this->faker->words(3, true),
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->words(4, true),
             'max_per_order' => $this->faker->numberBetween(1, 10),
             'min_per_order' => 1,
             'product_type' => $this->faker->randomElement([ProductType::GENERAL, ProductType::TICKET]),

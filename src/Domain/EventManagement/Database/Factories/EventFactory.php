@@ -21,7 +21,7 @@ class EventFactory extends Factory
 
         return [
             'title' => $this->faker->words(4, true),
-            'description' => $this->faker->text(1000),
+            'description' => $this->faker->text(500),
             'start_date' => $startDate,
             'end_date' => $endDate,
             'is_featured' => $this->faker->boolean(50),
