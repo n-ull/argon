@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignId('organizer_id')->constrained('organizers')->cascadeOnDelete();
             $table->boolean('is_featured')->default(false);
             $table->string('slug')->unique();
-            $table->foreignId('event_category_id')->constrained('event_categories')->nullOnDelete();
+            $table->foreignId('event_category_id')->nullable()->constrained('event_categories')->nullOnDelete();
             $table->timestamps();
         });
     }

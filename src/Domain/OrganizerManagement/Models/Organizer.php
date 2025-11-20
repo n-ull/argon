@@ -2,9 +2,11 @@
 
 namespace Domain\OrganizerManagement\Models;
 
+use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -44,6 +46,10 @@ class Organizer extends Model
         'phone',
         'logo',
     ];
+
+    public function users(): BelongsToMany {
+        return $this->belongsToMany(User::class);
+    }
 
     public function events(): HasMany
     {
