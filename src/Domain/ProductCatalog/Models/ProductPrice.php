@@ -71,4 +71,9 @@ class ProductPrice extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\ProductCatalog\Models\ProductPriceFactory::new();
+    }
 }

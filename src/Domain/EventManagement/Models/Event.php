@@ -111,4 +111,9 @@ class Event extends Model
     {
         return 'slug';
     }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\EventManagement\Models\EventFactory::new();
+    }
 }

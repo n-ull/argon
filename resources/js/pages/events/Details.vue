@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { Event } from '@/types';
+import { Event, Product } from '@/types';
 import { Head } from '@inertiajs/vue3';
 
 interface Props {
-    event: Event
+    event: Event,
+    products: Product[]
 }
 
-const { event } = defineProps<Props>();
+const { event, products } = defineProps<Props>();
+
+console.log(products);
 
 </script>
 

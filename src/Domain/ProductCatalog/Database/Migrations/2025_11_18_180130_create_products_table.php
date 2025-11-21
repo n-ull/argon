@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('hide_after_sale_end_date')->default(false);
             $table->boolean('hide_when_sold_out')->default(false);
             $table->boolean('show_stock')->default(false);
+            $table->boolean('is_hidden')->default(false);
             $table->dateTime('start_sale_date')->nullable();
             $table->dateTime('end_sale_date')->nullable();
             $table->timestamps();
