@@ -24196,6 +24196,20 @@ namespace Illuminate\Database\Query {
             }
     }
 
+namespace App\Modules\EventManagement\Requests {
+    /**
+     */
+    class StoreEventRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    }
+
+namespace Illuminate\Foundation\Http {
+    /**
+     */
+    class FormRequest extends \Illuminate\Http\Request {
+            }
+    }
+
 
 namespace  {
     class App extends \Illuminate\Support\Facades\App {}
