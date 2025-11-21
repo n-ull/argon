@@ -82,4 +82,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductPrice::class)->orderBy('sort_order');
     }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\ProductCatalog\Models\ProductFactory::new();
+    }
 }

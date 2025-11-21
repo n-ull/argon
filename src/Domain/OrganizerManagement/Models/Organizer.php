@@ -66,4 +66,9 @@ class Organizer extends Model
             'is_mercadopago_active' => false,
         ]);
     }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\OrganizerManagement\Models\OrganizerFactory::new();
+    }
 }
