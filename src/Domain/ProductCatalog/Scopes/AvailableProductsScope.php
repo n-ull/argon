@@ -32,6 +32,7 @@ class AvailableProductsScope implements Scope
                             });
                       });
             })
+            ->where('products.is_hidden', false)
             ->select('products.*'); // Ensure we select products columns to avoid ambiguity or missing fields
     }
 }
