@@ -15,7 +15,12 @@ class EventDetailsController extends Controller
      */
     public function __invoke(EventModel $event)
     {
-        $products = $event->products()->withGlobalScope('available', new AvailableProductsScope())->get();
+        $products = $event->products()
+            ->withGlobalScope('available', new AvailableProductsScope())
+            ->with(['product_prices' => function ($query) {
+                $query->withGlobalScope('available_prices', new \Domain\ProductCatalog\Scopes\AvailableProductPricesScope());
+            }])
+            ->get();
 
         return Inertia::render('events/Details', [
             'event' => $event,

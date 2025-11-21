@@ -133,5 +133,15 @@ class AvailableProductsScopeTest extends TestCase
         $this->assertTrue($results->contains($product7), 'Product 7 should be available (stock > sold)');
         $this->assertFalse($results->contains($product8), 'Product 8 should be unavailable (stock <= sold)');
         $this->assertTrue($results->contains($product9), 'Product 9 should be available (unlimited stock)');
+
+        // 10. Hidden Product -> Unavailable
+        $product10 = Product::factory()->create([
+            'event_id' => $event1->id,
+            'is_hidden' => true,
+        ]);
+        ProductPrice::factory()->create(['product_id' => $product10->id]);
+
+        $results = Product::query()->withGlobalScope('available', new AvailableProductsScope)->get();
+        $this->assertFalse($results->contains($product10), 'Product 10 should be unavailable (hidden)');
     }
 }
