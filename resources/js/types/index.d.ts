@@ -45,6 +45,7 @@ export interface Event {
     location: Location;
     products: Product[] | null;
     slug: string;
+    organizer: Organizer;
 }
 
 export interface Location {

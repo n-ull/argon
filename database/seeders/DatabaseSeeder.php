@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $this->call([
-            EventCategorySeeder::class,
-        ]);
+        // $this->call([
+        //     EventCategorySeeder::class,
+        // ]);
     }
 }

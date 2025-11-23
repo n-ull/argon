@@ -16,6 +16,8 @@ class EventDetailsController extends Controller
      */
     public function __invoke(EventModel $event)
     {
+        $event->load(['organizer']);
+
         $products = $event->products()
             ->withGlobalScope('available', new AvailableProductsScope)
             ->with([
