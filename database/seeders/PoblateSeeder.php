@@ -2,18 +2,18 @@
 
 /**
  * PoblateSeeder - Comprehensive Database Population Seeder
- * 
+ *
  * This seeder populates the database with a large dataset for testing and development:
- * - 500 users
+ * - 80 users
  * - 4 organizations with settings
  * - 5-15 managers per organization
  * - 8-15 events per organization (with varied dates: past, present, future)
  * - 3-8 products per event (tickets and general items)
  * - 1-4 price tiers per product (with staggered sale dates)
- * 
+ *
  * Usage:
  *   php artisan db:seed --class=PoblateSeeder
- * 
+ *
  * Or add to DatabaseSeeder:
  *   $this->call([PoblateSeeder::class]);
  */
@@ -39,26 +39,33 @@ class PoblateSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('Starting data population...');
+        \DB::beginTransaction();
+        try {
+            $this->command->info('Starting data population...');
 
-        // Create 80 users
-        $this->command->info('Creating 80 users...');
-        $users = User::factory(80)->create();
-        $this->command->info('✓ Users created');
+            // Create 80 users
+            $this->command->info('Creating 80 users...');
+            $users = User::factory(80)->create();
+            $this->command->info('✓ Users created');
 
-        // Get or create event categories
-        $this->command->info('Checking event categories...');
-        $categories = $this->getOrCreateEventCategories();
-        $this->command->info('✓ Event categories ready');
+            // Get or create event categories
+            $this->command->info('Checking event categories...');
+            $categories = $this->getOrCreateEventCategories();
+            $this->command->info('✓ Event categories ready');
 
-        // Create 4 organizations with events and products
-        $this->command->info('Creating 4 organizations...');
-        for ($i = 1; $i <= 4; $i++) {
-            $this->createOrganizationWithData($i, $users, $categories);
+            // Create 4 organizations with events and products
+            $this->command->info('Creating 4 organizations...');
+            for ($i = 1; $i <= 4; $i++) {
+                $this->createOrganizationWithData($i, $users, $categories);
+            }
+            $this->command->info('✓ Organizations created with events and products');
+
+            $this->command->info('Data population completed successfully!');
+        } catch (\Exception $exception) {
+            \DB::rollBack();
+            $this->command->error('Failed to populate data: '.$exception->getMessage());
         }
-        $this->command->info('✓ Organizations created with events and products');
-
-        $this->command->info('Data population completed successfully!');
+        \DB::commit();
     }
 
     /**
@@ -67,7 +74,7 @@ class PoblateSeeder extends Seeder
     private function getOrCreateEventCategories(): array
     {
         $existingCategories = EventCategory::all();
-        
+
         if ($existingCategories->isNotEmpty()) {
             return $existingCategories->toArray();
         }
@@ -93,15 +100,18 @@ class PoblateSeeder extends Seeder
 
     /**
      * Create an organization with users, events, and products
+     *
+     * @property $users \Illuminate\Database\Eloquent\Collection<User>
      */
     private function createOrganizationWithData(int $index, $users, array $categories): void
     {
         // Create organizer
         $organizer = Organizer::create([
-            'name' => fake()->company() . ' Events',
+            'name' => fake()->company().' Events',
             'email' => fake()->companyEmail(),
             'phone' => fake()->phoneNumber(),
             'logo' => fake()->imageUrl(640, 480, 'business', true),
+            'owner_id' => 1,
         ]);
 
         // Create organizer settings
@@ -115,7 +125,7 @@ class PoblateSeeder extends Seeder
         // Assign 5-15 users to manage this organizer
         $managerCount = fake()->numberBetween(5, 15);
         $managers = $users->random($managerCount);
-        
+
         // Attach users to organizer with pivot data
         foreach ($managers as $manager) {
             $organizer->users()->attach($manager->id, [
@@ -125,7 +135,7 @@ class PoblateSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
-        
+
         $this->command->info("  Organization {$index}: {$organizer->name} ({$managerCount} managers)");
 
         // Create 8-15 events per organizer
@@ -169,7 +179,7 @@ class PoblateSeeder extends Seeder
                 'state' => fake()->state(),
                 'country' => fake()->country(),
                 'postal_code' => fake()->postcode(),
-                'venue_name' => fake()->company() . ' ' . fake()->randomElement(['Hall', 'Center', 'Arena', 'Theater', 'Stadium']),
+                'venue_name' => fake()->company().' '.fake()->randomElement(['Hall', 'Center', 'Arena', 'Theater', 'Stadium']),
             ],
             'event_category_id' => fake()->randomElement($categories)->id,
         ]);
@@ -187,7 +197,7 @@ class PoblateSeeder extends Seeder
     private function generateEventStartDate(): \Carbon\Carbon
     {
         $dateType = fake()->randomElement(['past', 'near_future', 'future', 'far_future']);
-        
+
         return match ($dateType) {
             'past' => now()->subDays(fake()->numberBetween(1, 90)),
             'near_future' => now()->addDays(fake()->numberBetween(1, 30)),
@@ -252,6 +262,7 @@ class PoblateSeeder extends Seeder
                 'Standing Room',
                 'Reserved Seating',
             ];
+
             return fake()->randomElement($ticketTypes);
         }
 
@@ -265,6 +276,7 @@ class PoblateSeeder extends Seeder
             'Commemorative Item',
             'VIP Lounge Access',
         ];
+
         return fake()->randomElement($generalProducts);
     }
 
@@ -280,7 +292,7 @@ class PoblateSeeder extends Seeder
     ): void {
         $labels = ['Early Bird', 'Regular', 'Premium', 'VIP', 'Standard', 'Deluxe', 'Basic'];
         $basePrice = fake()->randomFloat(2, 10, 500);
-        
+
         // Higher tier = higher price
         $price = $basePrice * (1 + $index * 0.5);
 
@@ -288,7 +300,7 @@ class PoblateSeeder extends Seeder
         if ($totalPrices > 1) {
             $daysBetween = $productStartDate->diffInDays($productEndDate);
             $segmentDays = (int) $daysBetween / $totalPrices;
-            
+
             $tierStartDate = $productStartDate->copy()->addDays($segmentDays * $index);
             $tierEndDate = $index < $totalPrices - 1
                 ? $productStartDate->copy()->addDays($segmentDays * ($index + 1))

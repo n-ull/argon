@@ -82,7 +82,7 @@ const getQuantity = (priceId: number) => {
     <SimpleLayout>
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-4">
-                <div class="bg-gray-800 p-4 rounded space-y-2 flex flex-col">
+                <div class="bg-neutral-900 p-4 rounded space-y-2 flex flex-col">
                     <h1>{{ event.title }}</h1>
                     <span v-if="event.description">{{ event.description }}</span>
                     <div class="flex-col flex gap-2">
@@ -96,20 +96,31 @@ const getQuantity = (priceId: number) => {
                     </div>
                 </div>
 
-                <div class="bg-gray-800 p-4 rounded">
+                <div class="bg-moovin-lila text-moovin-dark-purple p-4 rounded">
+                    <h2>Organized by</h2>
+                    <span>{{ event.organizer.name }}</span>
+                </div>
+
+                <div class="bg-neutral-900 p-4 rounded">
                     <h2>Products</h2>
-                    <ul class="list-disc list-inside space-y-2">
+                    <ul class="space-y-4">
                         <li v-for="product in products" :key="product.id">
                             {{ product.name }}
                             <span>{{ product.product_type }}</span>
-                            <ul class="list-disc list-inside space-y-2">
-                                <li v-for="price in product.product_prices" :key="price.id">
-                                    {{ price.price }}
-                                    <span>{{ price.label }}</span>
+                            <ul class="space-y-2">
+                                <li v-for="price in product.product_prices" :key="price.id"
+                                    class="flex flex-row justify-between items-center">
                                     <div class="flex flex-row gap-2">
-                                        <button @click="removeFromCart(product, price)">-</button>
-                                        <span>{{ getQuantity(price.id) }}</span>
-                                        <button @click="addToCart(product, price)">+</button>
+                                        <span>{{ price.label }}</span>
+                                        <span class="text-moovin-lime">${{ price.price }}</span>
+                                    </div>
+                                    <div class="flex flex-row gap-2">
+                                        <button @click="removeFromCart(product, price)"
+                                            class="p-2 border border-moovin-green rounded">-</button>
+                                        <span class="p-2 border border-moovin-green rounded">{{ getQuantity(price.id)
+                                            }}</span>
+                                        <button @click="addToCart(product, price)"
+                                            class="p-2 border border-moovin-green rounded">+</button>
                                     </div>
                                 </li>
                             </ul>

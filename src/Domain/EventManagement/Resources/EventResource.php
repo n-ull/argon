@@ -21,6 +21,14 @@ class EventResource extends JsonResource
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'location' => $this->location_info,
+            'organizer' => $this->whenLoaded('organizer', function () {
+                return [
+                    'name' => $this->organizer->name,
+                    'email' => $this->organizer->email,
+                    'phone' => $this->organizer->phone,
+                    'logo' => $this->organizer->logo,
+                ];
+            }),
         ];
     }
 }
