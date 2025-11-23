@@ -42,8 +42,17 @@ export interface Event {
     description: string | null;
     start_date: string;
     end_date: string | null;
-    location: string | null;
+    location: Location;
     products: Product[] | null;
+    slug: string;
+}
+
+export interface Location {
+    site: string | null;
+    mapLink: string | null;
+    city: string | null;
+    country: string | null;
+    address: string | null;
 }
 
 export interface Product {
@@ -62,6 +71,7 @@ export interface ProductPrice {
     label: string;
     price: number;
     sort_order: number;
+    stock: number | null;
 }
 
 export interface Organizer {
