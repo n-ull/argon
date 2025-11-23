@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
+import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, Product, ProductPrice } from '@/types';
 import { Head } from '@inertiajs/vue3';
+import { Minus, Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 
 interface Props {
@@ -82,17 +85,19 @@ const getQuantity = (priceId: number) => {
     <SimpleLayout>
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-4">
-                <div class="bg-neutral-900 p-4 rounded space-y-2 flex flex-col">
-                    <h1>{{ event.title }}</h1>
-                    <span v-if="event.description">{{ event.description }}</span>
-                    <div class="flex-col flex gap-2">
-                        <span>{{ formatDate(event.start_date) }}</span>
-                        <span v-if="event.end_date">{{ formatDate(event.end_date) }}</span>
-                    </div>
-                    <div>
-                        <span>{{ event.location.address }}</span>
-                        <span>{{ event.location.city }}</span>
-                        <span>{{ event.location.country }}</span>
+                <div class="bg-neutral-900 rounded space-y-2 flex flex-col">
+                    <TicketShapedCardHeader color="gray" text-size="xl" :title="event.title" />
+                    <div class="p-4">
+                        <span v-if="event.description">{{ event.description }}</span>
+                        <div class="flex-col flex gap-2">
+                            <span>{{ formatDate(event.start_date) }}</span>
+                            <span v-if="event.end_date">{{ formatDate(event.end_date) }}</span>
+                        </div>
+                        <div>
+                            <span>{{ event.location.address }}</span>
+                            <span>{{ event.location.city }}</span>
+                            <span>{{ event.location.country }}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -101,9 +106,9 @@ const getQuantity = (priceId: number) => {
                     <span>{{ event.organizer.name }}</span>
                 </div>
 
-                <div class="bg-neutral-900 p-4 rounded">
-                    <h2>Products</h2>
-                    <ul class="space-y-4">
+                <div class="bg-neutral-900 rounded">
+                    <TicketShapedCardHeader title="Products" />
+                    <ul class="space-y-4 p-4">
                         <li v-for="product in products" :key="product.id">
                             {{ product.name }}
                             <span>{{ product.product_type }}</span>
@@ -115,12 +120,16 @@ const getQuantity = (priceId: number) => {
                                         <span class="text-moovin-lime">${{ price.price }}</span>
                                     </div>
                                     <div class="flex flex-row gap-2">
-                                        <button @click="removeFromCart(product, price)"
-                                            class="p-2 border border-moovin-green rounded">-</button>
-                                        <span class="p-2 border border-moovin-green rounded">{{ getQuantity(price.id)
-                                            }}</span>
-                                        <button @click="addToCart(product, price)"
-                                            class="p-2 border border-moovin-green rounded">+</button>
+                                        <Button size="icon" variant="outline" @click="removeFromCart(product, price)">
+                                            <Minus />
+                                        </Button>
+                                        <Button size="icon" variant="outline"
+                                            class="p-2 border border-moovin-green rounded">{{
+                                                getQuantity(price.id)
+                                            }}</Button>
+                                        <Button size="icon" variant="outline" @click="addToCart(product, price)">
+                                            <Plus />
+                                        </Button>
                                     </div>
                                 </li>
                             </ul>
