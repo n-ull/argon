@@ -14,10 +14,36 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('events', [\App\Modules\EventManagement\Controllers\EventIndexController::class, 'index'])
-    ->name('events.index');
+Route::group([
+    'prefix' => 'events',
+    'as' => 'events.',
+], function () {
+    Route::get('/', [\App\Modules\EventManagement\Controllers\EventIndexController::class, 'index'])
+        ->name('index');
 
-Route::get('events/{event}', \App\Modules\EventManagement\Controllers\EventDetailsController::class)
-    ->name('events.show');
+    Route::get('{event}', \App\Modules\EventManagement\Controllers\EventDetailsController::class)
+        ->name('show');
+});
 
-require __DIR__ . '/settings.php';
+Route::group([
+    'prefix' => 'organizers',
+    'as' => 'organizers.',
+    'middleware' => ['auth', 'verified'],
+], function () {
+    Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
+        ->name('index');
+
+    Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
+        ->name('create');
+
+    Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
+        ->name('store');
+});
+
+Route::group([
+    'prefix' => 'user',
+    'as' => 'user.',
+    'middleware' => ['auth', 'verified'],
+], function () {});
+
+require __DIR__.'/settings.php';

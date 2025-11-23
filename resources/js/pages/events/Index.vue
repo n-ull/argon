@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
+import { show } from '@/routes/events';
 import { Event, PaginatedResponse } from '@/types';
-import { Head, InfiniteScroll } from '@inertiajs/vue3';
+import { Head, InfiniteScroll, Link } from '@inertiajs/vue3';
 
 interface Props {
     events: PaginatedResponse<Event>;
@@ -39,7 +40,9 @@ const formatDate = (date: string) => {
                     <div v-for="event in events.data" :key="event.id"
                         class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-gray-700 dark:bg-gray-800 my-4">
                         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                            <Link :href="show(event.slug)">
                             {{ event.title }}
+                            </Link>
                         </h2>
                         <p v-if="event.description" class="mt-2 text-gray-600 dark:text-gray-300">
                             {{ event.description }}

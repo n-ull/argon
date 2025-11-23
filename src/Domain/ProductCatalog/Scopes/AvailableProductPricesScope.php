@@ -17,20 +17,20 @@ class AvailableProductPricesScope implements Scope
                 // For now, simple valid range check
                 $query->where(function ($q) {
                     $q->whereNull('product_prices.start_sale_date')
-                      ->orWhere('product_prices.start_sale_date', '<=', now());
+                        ->orWhere('product_prices.start_sale_date', '<=', now());
                 })->where(function ($q) {
                     $q->whereNull('product_prices.end_sale_date')
-                      ->orWhere('product_prices.end_sale_date', '>=', now());
+                        ->orWhere('product_prices.end_sale_date', '>=', now());
                 });
             })
-            ->where(function (Builder $query) {
-                // Stock Logic based on Product's show_stock
-                $query->where('products.show_stock', false)
-                      ->orWhere(function (Builder $q) {
-                          $q->where('products.show_stock', true)
-                            ->whereRaw('COALESCE(product_prices.stock, 999999999) > product_prices.quantity_sold');
-                      });
-            })
+            // ->where(function (Builder $query) {
+            //     // Stock Logic based on Product's show_stock
+            //     $query->where('products.show_stock', false)
+            //           ->orWhere(function (Builder $q) {
+            //               $q->where('products.show_stock', true)
+            //                 ->whereRaw('COALESCE(product_prices.stock, 999999999) > product_prices.quantity_sold');
+            //           });
+            // })
             ->select('product_prices.*');
     }
 }
