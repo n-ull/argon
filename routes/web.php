@@ -38,6 +38,9 @@ Route::group([
 
     Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
         ->name('store');
+
+    Route::get('{organizer}', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'show'])
+        ->name('show');
 });
 
 Route::group([
