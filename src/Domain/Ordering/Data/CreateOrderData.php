@@ -11,4 +11,5 @@ class CreateOrderData extends Data
         public array $items,
         public ?string $gateway = null,
     ) {}
+
 }

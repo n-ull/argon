@@ -4,6 +4,8 @@ interface Props {
     color?: 'default' | 'gray' | 'green';
     padding?: number;
     textSize?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+    extras?: any[];
+    extrasClass?: string;
 }
 
 const colorVariants = {
@@ -27,17 +29,22 @@ const colorVariants = {
 
 const props = withDefaults(defineProps<Props>(), {
     padding: 4,
-    textSize: 'md'
+    textSize: 'md',
+    extrasClass: ''
 });
 
-const { title, color, padding, textSize } = props;
+const { title, color, padding, textSize, extrasClass } = props;
 </script>
 
 <template>
     <div
-        :class="`relative w-full ${colorVariants[color || 'default'].bg} rounded-t p-${padding} ${colorVariants[color || 'default'].text} border-b-2 border-dashed ${colorVariants[color || 'default'].border}
-                        before:absolute before:bottom-0 before:left-0 before:h-5 before:w-5 before:-translate-x-1/2 before:translate-y-1/2 before:rounded-full before:bg-behind
-                        after:absolute after:bottom-0 after:right-0 after:h-5 after:w-5 after:translate-x-1/2 after:translate-y-1/2 after:rounded-full after:bg-behind`">
-        <span :class="`text-${textSize}`">{{ title }}</span>
+        :class="`relative w-full ${colorVariants[color || 'default'].bg} rounded-t p-${padding} ${colorVariants[color || 'default'].text} border-b-2 border-dashed ${colorVariants[color || 'default'].border} ticket-shape-bottom`">
+        <span :class="`text-${textSize} font-bold`">{{ title }}</span>
+        <div v-if="extras" class="flex items-center gap-2">
+            <template v-for="(extra, index) in extras" :key="index" :class="extrasClass">
+                <span v-if="typeof extra === 'string' || typeof extra === 'number'">{{ extra }}</span>
+                <component :is="extra" v-else class="w-4 h-4" />
+            </template>
+        </div>
     </div>
 </template>

@@ -81,12 +81,12 @@ class OrderService
     private function prepareOrderItems(array $items): array
     {
         return array_map(function ($item) {
-            $productPrice = ProductPrice::findOrFail($item->productPriceId);
+            $productPrice = ProductPrice::findOrFail($item['productPriceId']);
 
             return new OrderItemData(
-                productId: $item->productId,
-                productPriceId: $item->productPriceId,
-                quantity: $item->quantity,
+                productId: $item['productId'],
+                productPriceId: $item['productPriceId'],
+                quantity: $item['quantity'],
                 unitPrice: $productPrice->price
             );
         }, $items);

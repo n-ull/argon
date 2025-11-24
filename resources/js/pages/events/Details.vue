@@ -3,9 +3,11 @@ import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, Product, ProductPrice } from '@/types';
-import { Head } from '@inertiajs/vue3';
-import { Minus, Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import { Calendar, MapPin, Minus, Plus } from 'lucide-vue-next';
+import { onMounted, ref } from 'vue';
+import { NButton } from 'naive-ui';
+import { store } from '@/routes/orders';
 
 interface Props {
     event: Event,
@@ -16,7 +18,7 @@ const { event, products } = defineProps<Props>();
 
 interface CartItem {
     productId: number;
-    priceId: number;
+    productPriceId: number;
     quantity: number;
 }
 
@@ -42,7 +44,7 @@ const formatDate = (date: string | null) => {
 };
 
 const addToCart = (product: Product, price: ProductPrice) => {
-    const existingItem = cart.value.items.find(item => item.priceId === price.id);
+    const existingItem = cart.value.items.find(item => item.productPriceId === price.id);
 
     if (existingItem) {
         if (product.max_per_order && existingItem.quantity >= product.max_per_order) {
@@ -52,14 +54,14 @@ const addToCart = (product: Product, price: ProductPrice) => {
     } else {
         cart.value.items.push({
             productId: product.id,
-            priceId: price.id,
+            productPriceId: price.id,
             quantity: 1,
         });
     }
 }
 
 const removeFromCart = (product: Product, price: ProductPrice) => {
-    const existingItemIndex = cart.value.items.findIndex(item => item.priceId === price.id);
+    const existingItemIndex = cart.value.items.findIndex(item => item.productPriceId === price.id);
 
     if (existingItemIndex !== -1) {
         const item = cart.value.items[existingItemIndex];
@@ -72,9 +74,25 @@ const removeFromCart = (product: Product, price: ProductPrice) => {
 }
 
 const getQuantity = (priceId: number) => {
-    const item = cart.value.items.find(item => item.priceId === priceId);
+    const item = cart.value.items.find(item => item.productPriceId === priceId);
     return item ? item.quantity : 0;
 }
+
+const isPhone = ref(false);
+
+onMounted(() => {
+    isPhone.value = window.innerWidth < 768;
+});
+
+const handleCheckout = () => {
+    router.post(store(), cart.value);
+}
+
+const debugButton = () => {
+    console.log(cart.value);
+}
+
+const filterProductWithPrices = products.filter(product => product.product_prices.length > 0);
 
 </script>
 
@@ -85,60 +103,84 @@ const getQuantity = (priceId: number) => {
     <SimpleLayout>
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-4">
+                <div>
+                    <img v-if="!isPhone" :src="event.horizontal_image_url ?? 'https://placehold.co/1480x600/png'"
+                        class="w-full object-cover rounded" alt="Event Image" />
+                    <img v-else :src="event.vertical_image_url ?? 'https://placehold.co/800x1024/png'"
+                        class="w-full object-cover rounded" alt="Event Image" />
+                </div>
+
                 <div class="bg-neutral-900 rounded space-y-2 flex flex-col">
-                    <TicketShapedCardHeader color="gray" text-size="xl" :title="event.title" />
-                    <div class="p-4">
+                    <TicketShapedCardHeader color="default" text-size="xl" :title="event.title" :extras="[
+                        Calendar,
+                        formatDate(event.start_date),
+                    ]" />
+                    <div class="flex flex-col p-4 gap-2">
                         <span v-if="event.description">{{ event.description }}</span>
-                        <div class="flex-col flex gap-2">
-                            <span>{{ formatDate(event.start_date) }}</span>
-                            <span v-if="event.end_date">{{ formatDate(event.end_date) }}</span>
-                        </div>
-                        <div>
-                            <span>{{ event.location.address }}</span>
-                            <span>{{ event.location.city }}</span>
-                            <span>{{ event.location.country }}</span>
-                        </div>
+                        <span class="flex items-center gap-2 text-sm text-neutral-400">
+                            <MapPin />
+                            {{ event.location_info.address }}, {{ event.location_info.city }}, {{
+                                event.location_info.country
+                            }}
+                        </span>
                     </div>
                 </div>
 
-                <div class="bg-moovin-lila text-moovin-dark-purple p-4 rounded">
-                    <h2>Organized by</h2>
-                    <span>{{ event.organizer.name }}</span>
+                <div class="bg-moovin-green p-4 rounded space-y-2">
+                    <h2 class="font-bold">Organized by</h2>
+                    <div class="flex items-center gap-2">
+                        <img src="https://placehold.co/400x400/png" class="w-12 h-12 rounded-full"
+                            alt="Organizer Logo" />
+                        <span class="text-moovin-dark-green text-sm">{{ event.organizer.name }}</span>
+                    </div>
                 </div>
 
                 <div class="bg-neutral-900 rounded">
-                    <TicketShapedCardHeader title="Products" />
+                    <TicketShapedCardHeader color="gray" title="Products" />
                     <ul class="space-y-4 p-4">
-                        <li v-for="product in products" :key="product.id">
-                            {{ product.name }}
-                            <span>{{ product.product_type }}</span>
+                        <li v-if="filterProductWithPrices.length > 0" v-for="product in filterProductWithPrices"
+                            :key="product.id" class="border p-4 rounded">
+                            <div class="flex flex-col mb-2">
+                                <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
+                                <span v-if="product.description" class="text-sm text-neutral-400">{{ product.description
+                                }}</span>
+                            </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id"
-                                    class="flex flex-row justify-between items-center">
-                                    <div class="flex flex-row gap-2">
-                                        <span>{{ price.label }}</span>
-                                        <span class="text-moovin-lime">${{ price.price }}</span>
+                                    class="flex flex-row justify-between items-center py-2 px-4 bg-neutral-800 rounded">
+                                    <div class="flex flex-col gap-2">
+                                        <span class="text-xl">{{ price.label }}</span>
+                                        <span class="text-moovin-lime text-md">${{ price.price }}</span>
                                     </div>
-                                    <div class="flex flex-row gap-2">
-                                        <Button size="icon" variant="outline" @click="removeFromCart(product, price)">
+                                    <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
+                                        class="text-sm text-neutral-400">
+                                        Sales start in {{ price.sales_start_date_diff }}
+                                    </div>
+                                    <div v-else class="flex flex-row gap-2">
+                                        <Button size="icon" variant="default" @click="removeFromCart(product, price)">
                                             <Minus />
                                         </Button>
-                                        <Button size="icon" variant="outline"
-                                            class="p-2 border border-moovin-green rounded">{{
-                                                getQuantity(price.id)
+                                        <Button size="icon" variant="default">{{
+                                            getQuantity(price.id)
                                             }}</Button>
-                                        <Button size="icon" variant="outline" @click="addToCart(product, price)">
+                                        <Button size="icon" variant="default" @click="addToCart(product, price)">
                                             <Plus />
                                         </Button>
                                     </div>
                                 </li>
                             </ul>
                         </li>
+                        <div v-else>
+                            No products available
+                        </div>
+
+                        <form @submit.prevent="handleCheckout">
+                            <n-button attr-type="submit" v-if="filterProductWithPrices.length > 0"
+                                :disabled="cart.items.length === 0" color="hsl(264, 100%, 84%)" size="large"
+                                text-color="hsl(242, 32%, 15%)" :block="true">Checkout</n-button>
+                        </form>
                     </ul>
                 </div>
-                <button @click="console.log(cart)">
-                    Console Log the Order
-                </button>
             </div>
         </section>
     </SimpleLayout>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { create } from '@/routes/organizers';
+import { create, show } from '@/routes/organizers';
 import { Organizer } from '@/types';
 import { Link } from '@inertiajs/vue3';
 
@@ -41,7 +41,9 @@ console.log(organizers);
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3" v-else>
                 <div v-for="organizer in organizers" :key="organizer.id">
                     <div class="flex flex-col gap-4 border border-moovin-green p-6 rounded-lg">
+                        <Link :href="show(organizer.id)">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ organizer.name }}</h2>
+                        </Link>
                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ organizer.email }}</p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">{{ organizer.phone }}</p>
                     </div>

@@ -22,9 +22,11 @@ class EventDetailsController extends Controller
             ->withGlobalScope('available', new AvailableProductsScope)
             ->with([
                 'product_prices' => function ($query) {
-                    $query->withGlobalScope('available_prices', new \Domain\ProductCatalog\Scopes\AvailableProductPricesScope);
+                    $query->withGlobalScope('available_prices', new \Domain\ProductCatalog\Scopes\AvailableProductPricesScope)
+                        ->orderBy('product_prices.sort_order');
                 },
             ])
+            ->orderBy('sort_order')
             ->get();
 
         return Inertia::render('events/Details', [
