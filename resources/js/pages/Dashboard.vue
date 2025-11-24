@@ -4,9 +4,18 @@ import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import SectionHeader from '@/components/argon/layout/SectionHeader.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import Section from '@/components/argon/layout/Section.vue';
+import { Event, Organizer } from '@/types';
 
 const page = usePage();
 const user = page.props.auth?.user;
+
+interface Props {
+    latestEvents: Event[];
+    organizers: Organizer[];
+}
+
+const props = defineProps<Props>();
+
 </script>
 
 <template>
@@ -20,24 +29,20 @@ const user = page.props.auth?.user;
                     :description="`Welcome back, ${user?.name}. This is a list of all your events`" />
                 <div class="flex items-center gap-4 p-4 border border-moovin-green rounded-lg">
                     <div class="flex -space-x-2">
-                        <img class="inline-block size-8 rounded-full ring-2 ring-white dark:ring-neutral-900"
-                            src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
-                            alt="Avatar">
-                        <img class="inline-block size-8 rounded-full ring-2 ring-white dark:ring-neutral-900"
-                            src="https://images.unsplash.com/photo-1531927557220-a9e23c1e4794?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
-                            alt="Avatar">
-                        <img class="inline-block size-8 rounded-full ring-2 ring-white dark:ring-neutral-900"
-                            src="https://images.unsplash.com/photo-1541101767792-f9b2b1c4f127?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&&auto=format&fit=facearea&facepad=3&w=300&h=300&q=80"
-                            alt="Avatar">
+                        <img v-for="organizer in props.organizers" :key="organizer.id"
+                            class="inline-block size-8 rounded-full ring-2 ring-white dark:ring-neutral-900"
+                            :src="organizer.logo ?? 'https://placehold.co/300x300/png'" :alt="organizer.name">
                     </div>
-                    3 Organizers
+                    {{ props.organizers.length }} Organizers
                 </div>
             </div>
 
             <div class="flex flex-col gap-6">
-                <div class="p-4 border border-moovin-green rounded-lg">
-                    <div>
-                        <p>Event Name</p>
+                <div v-for="event in props.latestEvents" :key="event.id"
+                    class="p-4 border border-moovin-green rounded-lg">
+                    <div class="flex justify-between">
+                        <p>{{ event.title }}</p>
+                        <p>{{ event.start_date }}</p>
                     </div>
                 </div>
             </div>

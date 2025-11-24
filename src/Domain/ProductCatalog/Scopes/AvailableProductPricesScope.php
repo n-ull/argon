@@ -13,24 +13,26 @@ class AvailableProductPricesScope implements Scope
         $builder->join('products', 'product_prices.product_id', '=', 'products.id')
             ->where('product_prices.is_hidden', false)
             ->where(function (Builder $query) {
-                // Date Logic (assuming null means always available for prices, or we could implement inheritance if needed)
-                // For now, simple valid range check
                 $query->where(function ($q) {
                     $q->whereNull('product_prices.start_sale_date')
-                        ->orWhere('product_prices.start_sale_date', '<=', now());
+                        ->orWhere('product_prices.start_sale_date', '<=', now())
+                        ->orWhere('products.hide_before_sale_start_date', false);
                 })->where(function ($q) {
                     $q->whereNull('product_prices.end_sale_date')
-                        ->orWhere('product_prices.end_sale_date', '>=', now());
+                        ->orWhere('product_prices.end_sale_date', '>=', now())
+                        ->orWhere('products.hide_after_sale_end_date', false);
                 });
             })
-            // ->where(function (Builder $query) {
-            //     // Stock Logic based on Product's show_stock
-            //     $query->where('products.show_stock', false)
-            //           ->orWhere(function (Builder $q) {
-            //               $q->where('products.show_stock', true)
-            //                 ->whereRaw('COALESCE(product_prices.stock, 999999999) > product_prices.quantity_sold');
-            //           });
-            // })
+            ->where(function (Builder $query) {
+                $query->whereNull('product_prices.stock')
+                    ->orWhereRaw('product_prices.stock > product_prices.quantity_sold')
+                    ->orWhere('products.show_stock', true)
+                    ->orWhereRaw('products.max_per_order > product_prices.stock');
+            })
+            ->where(function (Builder $query) {
+                $query->where('products.hide_when_sold_out', false)
+                    ->orWhereRaw('product_prices.stock > product_prices.quantity_sold');
+            })
             ->select('product_prices.*');
     }
 }

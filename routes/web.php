@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\OrganizerManagement\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -10,9 +11,7 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', DashboardController::class)->name('dashboard');
 
 Route::group([
     'prefix' => 'events',
@@ -23,6 +22,15 @@ Route::group([
 
     Route::get('{event}', \App\Modules\EventManagement\Controllers\EventDetailsController::class)
         ->name('show');
+});
+
+Route::group([
+    'prefix' => 'orders',
+    'as' => 'orders.',
+    'middleware' => ['auth', 'verified'],
+], function () {
+    Route::post('store', [\App\Modules\Ordering\Controllers\OrderController::class, 'store'])
+        ->name('store');
 });
 
 Route::group([

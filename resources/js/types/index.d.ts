@@ -24,6 +24,7 @@ export type AppPageProps<
     quote: { message: string; author: string };
     auth: Auth;
     sidebarOpen: boolean;
+    csrf_token: string;
 };
 
 export interface User {
@@ -42,10 +43,12 @@ export interface Event {
     description: string | null;
     start_date: string;
     end_date: string | null;
-    location: Location;
+    location_info: Location;
     products: Product[] | null;
     slug: string;
     organizer: Organizer;
+    vertical_image_url: string | null;
+    horizontal_image_url: string | null;
 }
 
 export interface Location {
@@ -73,6 +76,9 @@ export interface ProductPrice {
     price: number;
     sort_order: number;
     stock: number | null;
+    sales_start_date: string | null;
+    sales_end_date: string | null;
+    sales_start_date_diff: string | null;
 }
 
 export interface Organizer {

@@ -3,6 +3,7 @@
 namespace Domain\Ordering\Actions;
 
 use Domain\Ordering\Data\CreateOrderData;
+use Domain\Ordering\Models\Order;
 use Domain\Ordering\Services\OrderService;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -14,8 +15,8 @@ class CreateOrder
         private OrderService $orderService
     ) {}
 
-    public function handle(CreateOrderData $orderData)
+    public function handle(CreateOrderData $orderData): Order
     {
-        $this->orderService->createPendingOrder($orderData);
+        return $this->orderService->createPendingOrder($orderData);
     }
 }

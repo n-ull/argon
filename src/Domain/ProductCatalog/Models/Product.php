@@ -70,6 +70,7 @@ class Product extends Model
         'start_sale_date',
         'end_sale_date',
         'event_id',
+        'sort_order',
     ];
 
     protected $casts = [

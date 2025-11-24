@@ -20,7 +20,7 @@ class EventResource extends JsonResource
             'description' => $this->description,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
-            'location' => $this->location_info,
+            'location_info' => $this->location_info,
             'organizer' => $this->whenLoaded('organizer', function () {
                 return [
                     'name' => $this->organizer->name,
