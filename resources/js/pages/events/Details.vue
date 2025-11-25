@@ -84,12 +84,21 @@ onMounted(() => {
     isPhone.value = window.innerWidth < 768;
 });
 
-const handleCheckout = () => {
-    router.post(store(), cart.value);
-}
+const isLoading = ref(false);
 
-const debugButton = () => {
-    console.log(cart.value);
+const handleCheckout = () => {
+    isLoading.value = true;
+    try {
+        router.post(store(), cart.value, {
+            preserveScroll: true,
+            preserveState: true,
+        });
+    } catch (error) {
+        console.log(error);
+    } finally {
+        isLoading.value = false;
+    }
+
 }
 
 const filterProductWithPrices = products.filter(product => product.product_prices.length > 0);
@@ -175,7 +184,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                         </div>
 
                         <form @submit.prevent="handleCheckout">
-                            <n-button attr-type="submit" v-if="filterProductWithPrices.length > 0"
+                            <n-button :loading="isLoading" attr-type="submit" v-if="filterProductWithPrices.length > 0"
                                 :disabled="cart.items.length === 0" color="hsl(264, 100%, 84%)" size="large"
                                 text-color="hsl(242, 32%, 15%)" :block="true">Checkout</n-button>
                         </form>

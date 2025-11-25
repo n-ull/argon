@@ -21,10 +21,11 @@ export type AppPageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
     name: string;
-    quote: { message: string; author: string };
     auth: Auth;
     sidebarOpen: boolean;
-    csrf_token: string;
+    flash: {
+        message: string;
+    };
 };
 
 export interface User {
@@ -104,6 +105,23 @@ export interface OrganizerSettings {
     created_at: string | null;
     updated_at: string | null;
     deleted_at: string | null;
+}
+
+export interface Order {
+    id: number;
+    reference_id: string;
+    subtotal: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    items_snapshot: OrderItem[];
+    fees_snapshot: any;
+    fees_total: number;
+    status: string;
+    taxes_snapshot: any;
+    taxes_total: number;
+    event?: Event | null;
+    settings?: OrganizerSettings | null;
 }
 
 export interface PaginationLink {
