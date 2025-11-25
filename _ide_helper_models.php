@@ -42,6 +42,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorSecret($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\OrganizerManagement\Models\Organizer> $organizers
+ * @property-read int|null $organizers_count
  */
 	class User extends \Eloquent {}
 }
@@ -64,6 +66,7 @@ namespace Domain\EventManagement\Models{
  * @property string $slug The URL slug for the event
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Order> $orders
  * @property-read int|null $orders_count
  * @property-read Organizer $organizer
@@ -85,10 +88,16 @@ namespace Domain\EventManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property int $event_category_id
+ * @property int|null $event_category_id
  * @property-read \Domain\EventManagement\Models\EventCategory|null $category
- * @method static \Domain\EventManagement\Database\Factories\EventFactory factory($count = null, $state = [])
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\EventManagement\Models\TaxAndFee> $taxesAndFees
+ * @property-read int|null $taxes_and_fees_count
+ * @method static \Database\Factories\Domain\EventManagement\Models\EventFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereEventCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event withoutTrashed()
  */
 	class Event extends \Eloquent {}
 }
@@ -117,6 +126,43 @@ namespace Domain\EventManagement\Models{
 	class EventCategory extends \Eloquent {}
 }
 
+namespace Domain\EventManagement\Models{
+/**
+ * TaxAndFee Model
+ *
+ * @property int $id
+ * @property int $event_id
+ * @property TaxFeeType $type
+ * @property string $name
+ * @property CalculationType $calculation_type
+ * @property float $value
+ * @property DisplayMode $display_mode
+ * @property array|null $applicable_gateways
+ * @property bool $is_active
+ * @property int $sort_order
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
+ * @property-read Event $event
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\EventManagement\Models\Event> $events
+ * @property-read int|null $events_count
+ * @method static \Domain\EventManagement\Database\Factories\TaxAndFeeFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereApplicableGateways($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereCalculationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereDisplayMode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereValue($value)
+ */
+	class TaxAndFee extends \Eloquent {}
+}
+
 namespace Domain\Ordering\Models{
 /**
  * @property int $id
@@ -127,6 +173,7 @@ namespace Domain\Ordering\Models{
  * @property string $expires_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ordering\Models\OrderItem> $order_items
  * @property-read int|null $order_items_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newModelQuery()
@@ -141,12 +188,33 @@ namespace Domain\Ordering\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTotalGross($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property string $reference_id
- * @property string|null $organizer_raise_method_snapshot
- * @property string|null $used_payment_gateway_snapshot
+ * @property string $reference_id Reference used to find the order through the payment gateway.
+ * @property string|null $organizer_raise_method_snapshot The preferred raise money method used by the organization at the moment the order was paid.
+ * @property string|null $used_payment_gateway_snapshot The payment gateway used at the moment the order was paid.
+ * @property string $subtotal
+ * @property string $taxes_total
+ * @property string $fees_total
+ * @property array<array-key, mixed>|null $items_snapshot Snapshot of order items with prices at purchase time
+ * @property array<array-key, mixed>|null $taxes_snapshot Applied taxes snapshot
+ * @property array<array-key, mixed>|null $fees_snapshot Applied fees snapshot
+ * @property int|null $user_id
+ * @property-read \Domain\EventManagement\Models\Event $event
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ordering\Models\OrderItem> $orderItems
+ * @method static \Database\Factories\Domain\Ordering\Models\OrderFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereFeesSnapshot($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereFeesTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereItemsSnapshot($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereOrganizerRaiseMethodSnapshot($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereReferenceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereSubtotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTaxesSnapshot($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTaxesTotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUsedPaymentGatewaySnapshot($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order withoutTrashed()
  */
 	class Order extends \Eloquent {}
 }
@@ -159,6 +227,7 @@ namespace Domain\Ordering\Models{
  * @property int|null $quantity
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Domain\Ordering\Models\Order $order
  * @property-read Product $product
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem newModelQuery()
@@ -171,8 +240,15 @@ namespace Domain\Ordering\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereQuantity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int|null $product_price_id
  * @property string $unit_price
+ * @property-read \Domain\ProductCatalog\Models\ProductPrice|null $productPrice
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereProductPriceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem withoutTrashed()
  */
 	class OrderItem extends \Eloquent {}
 }
@@ -186,6 +262,7 @@ namespace Domain\OrganizerManagement\Models{
  * @property string|null $logo
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
  * @property-read int|null $events_count
  * @property-read \Domain\OrganizerManagement\Models\OrganizerSettings|null $settings
@@ -201,12 +278,24 @@ namespace Domain\OrganizerManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer wherePhone($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int $owner_id
+ * @property-read \App\Models\User $owner
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer whereOwnerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer withoutTrashed()
  */
 	class Organizer extends \Eloquent {}
 }
 
 namespace Domain\OrganizerManagement\Models{
 /**
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Domain\OrganizerManagement\Models\Organizer|null $organizer
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings newQuery()
@@ -218,9 +307,9 @@ namespace Domain\OrganizerManagement\Models{
  * @property string|null $raise_money_account
  * @property int $is_modo_active
  * @property int $is_mercadopago_active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereIsMercadopagoActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereIsModoActive($value)
@@ -228,6 +317,8 @@ namespace Domain\OrganizerManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereRaiseMoneyAccount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereRaiseMoneyMethod($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings withoutTrashed()
  */
 	class OrganizerSettings extends \Eloquent {}
 }
@@ -252,6 +343,7 @@ namespace Domain\ProductCatalog\Models{
  * @property int $id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\ProductCatalog\Models\ProductPrice> $product_prices
  * @property-read int|null $product_prices_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
@@ -273,8 +365,17 @@ namespace Domain\ProductCatalog\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereStartSaleDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
  * @mixin \Eloquent
- * @method static \Domain\ProductCatalog\Database\Factories\ProductFactory factory($count = null, $state = [])
+ * @property int $sort_order
+ * @property int $is_hidden
+ * @property-read \Domain\EventManagement\Models\Event $event
+ * @method static \Database\Factories\Domain\ProductCatalog\Models\ProductFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereIsHidden($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProductPriceType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
  */
 	class Product extends \Eloquent {}
 }
@@ -297,6 +398,7 @@ namespace Domain\ProductCatalog\Models{
  * @property int $sort_order
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read Product $product
  * @property int $id
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice newModelQuery()
@@ -315,6 +417,11 @@ namespace Domain\ProductCatalog\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice whereStock($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @method static \Database\Factories\Domain\ProductCatalog\Models\ProductPriceFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice withoutTrashed()
  */
 	class ProductPrice extends \Eloquent {}
 }

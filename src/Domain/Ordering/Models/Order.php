@@ -3,6 +3,7 @@
 namespace Domain\Ordering\Models;
 
 use Domain\EventManagement\Models\Event;
+use Domain\Ordering\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -52,6 +53,7 @@ class Order extends Model
         'reference_id',
         'organizer_raise_method_snapshot',
         'used_payment_gateway_snapshot',
+        'user_id',
         'expires_at',
     ];
 
@@ -60,6 +62,7 @@ class Order extends Model
         'taxes_snapshot' => 'array',
         'fees_snapshot' => 'array',
         'expires_at' => 'datetime',
+        'status' => OrderStatus::class,
     ];
 
     public function orderItems(): HasMany
@@ -70,5 +73,10 @@ class Order extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\Ordering\Models\OrderFactory::new();
     }
 }

@@ -152,7 +152,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                             <div class="flex flex-col mb-2">
                                 <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
                                 <span v-if="product.description" class="text-sm text-neutral-400">{{ product.description
-                                }}</span>
+                                    }}</span>
                             </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id"
@@ -171,7 +171,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                         </Button>
                                         <Button size="icon" variant="default">{{
                                             getQuantity(price.id)
-                                            }}</Button>
+                                        }}</Button>
                                         <Button size="icon" variant="default" @click="addToCart(product, price)">
                                             <Plus />
                                         </Button>

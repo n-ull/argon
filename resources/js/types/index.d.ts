@@ -113,6 +113,7 @@ export interface Order {
     subtotal: number;
     created_at: string;
     updated_at: string;
+    expires_at: string;
     deleted_at: string | null;
     items_snapshot: OrderItem[];
     fees_snapshot: any;
