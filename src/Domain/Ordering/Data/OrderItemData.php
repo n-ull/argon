@@ -9,6 +9,8 @@ class OrderItemData
         public readonly int $productPriceId,
         public readonly int $quantity,
         public readonly float $unitPrice,
+        public readonly string $productPriceLabel,
+        public readonly string $productName
     ) {}
 
     public function getSubtotal(): float
@@ -24,6 +26,8 @@ class OrderItemData
             'quantity' => $this->quantity,
             'unit_price' => $this->unitPrice,
             'subtotal' => $this->getSubtotal(),
+            'product_price_label' => $this->productPriceLabel,
+            'product_name' => $this->productName,
         ];
     }
 }

@@ -5,6 +5,7 @@ import { computed } from 'vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
+
 </script>
 
 <template>

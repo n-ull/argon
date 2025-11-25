@@ -31,6 +31,9 @@ Route::group([
 ], function () {
     Route::post('store', [\App\Modules\Ordering\Controllers\OrderController::class, 'store'])
         ->name('store');
+
+    Route::get('checkout/{order}', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'checkout'])
+        ->name('checkout');
 });
 
 Route::group([

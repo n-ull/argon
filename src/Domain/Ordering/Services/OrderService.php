@@ -87,7 +87,9 @@ class OrderService
                 productId: $item['productId'],
                 productPriceId: $item['productPriceId'],
                 quantity: $item['quantity'],
-                unitPrice: $productPrice->price
+                unitPrice: $productPrice->price,
+                productName: $productPrice->product->name,
+                productPriceLabel: $productPrice->label
             );
         }, $items);
     }

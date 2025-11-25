@@ -11,10 +11,11 @@ class OrderController extends Controller
 {
     public function store(StoreOrderRequest $request, CreateOrder $createOrder)
     {
+
         $orderDTO = CreateOrderData::from($request->validated());
 
         $order = $createOrder->handle($orderDTO);
 
-        dd($order);
+        return redirect(route('orders.checkout', $order->id));
     }
 }
