@@ -3,7 +3,7 @@
 use Domain\EventManagement\Enums\EventStatus;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Data\CreateOrderData;
-use Domain\Ordering\Data\CreateOrderProductData;
+use Domain\Ordering\Enums\OrderStatus;
 use Domain\Ordering\Services\OrderService;
 use Domain\Ordering\Services\OrderValidatorService;
 use Domain\Ordering\Services\PriceCalculationService;
@@ -54,12 +54,13 @@ test('it creates an order and stores price snapshots even if prices change later
     $orderData = new CreateOrderData(
         eventId: $event->id,
         items: [
-            new CreateOrderProductData(
-                productId: $product->id,
-                productPriceId: $productPrice->id,
-                quantity: 2
-            ),
+            [
+                'productId' => $product->id,
+                'productPriceId' => $productPrice->id,
+                'quantity' => 2,
+            ],
         ],
+        userId: 1,
         gateway: null
     );
 
@@ -81,7 +82,7 @@ test('it creates an order and stores price snapshots even if prices change later
     // Assert: Order was created with correct totals
     expect($order)->toBeInstanceOf(\Domain\Ordering\Models\Order::class);
     expect((float) $order->subtotal)->toBe(200.0); // 2 * 100
-    expect($order->status)->toBe('pending');
+    expect($order->status)->toBe(OrderStatus::PENDING);
     expect($order->reference_id)->toBe('ORD-12345');
 
     // Assert: Snapshots were stored

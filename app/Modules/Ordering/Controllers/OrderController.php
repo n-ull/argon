@@ -11,11 +11,17 @@ class OrderController extends Controller
 {
     public function store(StoreOrderRequest $request, CreateOrder $createOrder)
     {
+        try {
+            $data = $request->validated();
+            $data['userId'] = $request->user()?->id;
 
-        $orderDTO = CreateOrderData::from($request->validated());
+            $orderDTO = CreateOrderData::from($data);
 
-        $order = $createOrder->handle($orderDTO);
+            $order = $createOrder->handle($orderDTO);
 
-        return redirect(route('orders.checkout', $order->id));
+            return redirect(route('orders.checkout', $order->id));
+        } catch (\Domain\Ordering\Exceptions\OrderAlreadyPendingException $e) {
+            return back()->with('message', $e->getMessage());
+        }
     }
 }

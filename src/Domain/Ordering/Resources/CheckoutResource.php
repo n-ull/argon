@@ -20,7 +20,11 @@ class CheckoutResource extends JsonResource
             'subtotal' => $this->subtotal,
             'total' => $this->total,
             'items_snapshot' => $this->items_snapshot,
+            'expires_at' => $this->expires_at,
             'order_items' => CheckoutOrderItemResource::collection($this->orderItems),
+            'event' => [
+                'slug' => $this->event->slug,
+            ],
         ];
     }
 }

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import Section from '@/components/argon/layout/Section.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
+import { show } from '@/routes/events';
+import { cancel } from '@/routes/orders';
 import { Order, OrganizerSettings } from '@/types';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { NButton } from 'naive-ui';
-import { ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {
     order: Order,
@@ -14,6 +16,33 @@ interface Props {
 const { order, settings } = defineProps<Props>();
 
 const paymentMethod = ref('cash');
+const timeLeft = ref(Math.max(0, Math.floor((new Date(order.expires_at).getTime() - new Date().getTime()) / 1000)));
+let timerInterval: number | undefined;
+
+const formattedTime = computed(() => {
+    const minutes = Math.floor(timeLeft.value / 60);
+    const seconds = timeLeft.value % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+});
+
+onMounted(() => {
+    timerInterval = setInterval(() => {
+        if (timeLeft.value > 0) {
+            timeLeft.value--;
+        } else {
+            clearInterval(timerInterval);
+            router.visit(show(order.event?.slug!))
+        }
+    }, 1000);
+});
+
+onUnmounted(() => {
+    clearInterval(timerInterval);
+});
+
+const cancelOrder = () => {
+    confirm('Are you sure you want to cancel?') && router.post(cancel(order.id));
+};
 
 </script>
 
@@ -27,7 +56,7 @@ const paymentMethod = ref('cash');
                     <p>Checkout #{{ order.id }}</p>
                     <p class="text-sm text-neutral-400">{{ order.reference_id }}</p>
                 </div>
-                <p>Time Remaining: 15:00</p>
+                <p>Time Remaining: {{ formattedTime }}</p>
             </div>
 
             <div class="p-4 border border-moovin-lime rounded-lg">
@@ -80,10 +109,12 @@ const paymentMethod = ref('cash');
                 <p>Total: ${{ order.subtotal }}</p>
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex justify-between items-center">
+                <NButton type="error" ghost @click="cancelOrder">
+                    Cancel Order
+                </NButton>
                 <NButton type="primary" size="large">Pay</NButton>
             </div>
-
         </Section>
     </SimpleLayout>
 </template>
