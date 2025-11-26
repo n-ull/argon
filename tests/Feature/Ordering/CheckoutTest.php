@@ -20,7 +20,7 @@ class CheckoutTest extends TestCase
     public function test_user_cannot_have_multiple_pending_orders()
     {
         $user = User::factory()->create();
-        $event = Event::factory()->create();
+        $event = Event::factory()->create(['start_date' => now()->subDays(1)]);
         $product = Product::factory()->create(['event_id' => $event->id, 'start_sale_date' => now()->subDays(1)]);
         $price = ProductPrice::factory()->for($product)->create(['price' => 100, 'is_hidden' => false, 'stock' => 10]);
 
@@ -74,7 +74,7 @@ class CheckoutTest extends TestCase
         $response = $this->post(route('orders.cancel', $order->id));
 
         $response->assertRedirect(route('events.show', $event->slug));
-        $this->assertEquals('cancelled', $order->fresh()->status);
+        $this->assertEquals(OrderStatus::CANCELLED, $order->fresh()->status);
     }
 
     public function test_expiration_job_is_dispatched()
@@ -82,7 +82,7 @@ class CheckoutTest extends TestCase
         Bus::fake();
 
         $user = User::factory()->create();
-        $event = Event::factory()->create();
+        $event = Event::factory()->create(['start_date' => now()->subDays(1)]);
         $product = Product::factory()->create(['event_id' => $event->id]);
         $price = ProductPrice::factory()->for($product)->create(['price' => 100]);
 

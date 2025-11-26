@@ -3,11 +3,10 @@ import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, Product, ProductPrice } from '@/types';
-import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { Calendar, MapPin, Minus, Plus } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
-import { NButton } from 'naive-ui';
-import { store } from '@/routes/orders';
+import { cancel, checkout, store } from '@/routes/orders';
 
 interface Props {
     event: Event,
@@ -27,7 +26,7 @@ interface Cart {
     items: CartItem[];
 }
 
-const cart = ref<Cart>({
+const form = useForm<Cart>({
     eventId: event.id,
     items: []
 });
@@ -44,7 +43,7 @@ const formatDate = (date: string | null) => {
 };
 
 const addToCart = (product: Product, price: ProductPrice) => {
-    const existingItem = cart.value.items.find(item => item.productPriceId === price.id);
+    const existingItem = form.items.find(item => item.productPriceId === price.id);
 
     if (existingItem) {
         if (product.max_per_order && existingItem.quantity >= product.max_per_order) {
@@ -52,7 +51,7 @@ const addToCart = (product: Product, price: ProductPrice) => {
         }
         existingItem.quantity++;
     } else {
-        cart.value.items.push({
+        form.items.push({
             productId: product.id,
             productPriceId: price.id,
             quantity: 1,
@@ -61,20 +60,20 @@ const addToCart = (product: Product, price: ProductPrice) => {
 }
 
 const removeFromCart = (product: Product, price: ProductPrice) => {
-    const existingItemIndex = cart.value.items.findIndex(item => item.productPriceId === price.id);
+    const existingItemIndex = form.items.findIndex(item => item.productPriceId === price.id);
 
     if (existingItemIndex !== -1) {
-        const item = cart.value.items[existingItemIndex];
+        const item = form.items[existingItemIndex];
         item.quantity--;
 
         if (item.quantity === 0) {
-            cart.value.items.splice(existingItemIndex, 1);
+            form.items.splice(existingItemIndex, 1);
         }
     }
 }
 
 const getQuantity = (priceId: number) => {
-    const item = cart.value.items.find(item => item.productPriceId === priceId);
+    const item = form.items.find(item => item.productPriceId === priceId);
     return item ? item.quantity : 0;
 }
 
@@ -89,16 +88,19 @@ const isLoading = ref(false);
 const handleCheckout = () => {
     isLoading.value = true;
     try {
-        router.post(store(), cart.value, {
+        form.post(store().url, {
             preserveScroll: true,
             preserveState: true,
+            onError: (error) => {
+                // TODO: show order pending toast or dialog
+
+            },
         });
     } catch (error) {
         console.log(error);
     } finally {
         isLoading.value = false;
     }
-
 }
 
 const filterProductWithPrices = products.filter(product => product.product_prices.length > 0);
@@ -108,6 +110,26 @@ const filterProductWithPrices = products.filter(product => product.product_price
 <template>
 
     <Head :title="event.title" />
+
+    <!-- <Toast position="top-center" group="pending-order">
+        <template #message="slotProps">
+            <div class="flex flex-col items-start flex-auto">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold">Pending order</span>
+                </div>
+                <div class="font-medium text-lg my-4">{{ slotProps.message.summary }}</div>
+                <div class="flex gap-2 justify-between">
+                    <Link :href="checkout(slotProps.message.detail)"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 bg-primary text-primary-foreground hover:bg-primary/90">
+                    View order</Link>
+                    <Link method="post" @click="toast.removeGroup('pending-order')" :preserve-scroll="true"
+                        :preserve-state="true" :href="cancel(slotProps.message.detail)"
+                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 bg-red-400 text-red-900 hover:bg-red-400/90">
+                    Cancel order</Link>
+                </div>
+            </div>
+        </template>
+</Toast> -->
 
     <SimpleLayout>
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -140,7 +162,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                     <div class="flex items-center gap-2">
                         <img src="https://placehold.co/400x400/png" class="w-12 h-12 rounded-full"
                             alt="Organizer Logo" />
-                        <span class="text-moovin-dark-green text-sm">{{ event.organizer.name }}</span>
+                        <span class="text-moovin-dark-green text-xl font-black">{{ event.organizer.name }}</span>
                     </div>
                 </div>
 
@@ -152,7 +174,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                             <div class="flex flex-col mb-2">
                                 <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
                                 <span v-if="product.description" class="text-sm text-neutral-400">{{ product.description
-                                    }}</span>
+                                }}</span>
                             </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id"
@@ -185,7 +207,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
 
                         <form @submit.prevent="handleCheckout">
                             <n-button :loading="isLoading" attr-type="submit" v-if="filterProductWithPrices.length > 0"
-                                :disabled="cart.items.length === 0" color="hsl(264, 100%, 84%)" size="large"
+                                :disabled="form.items.length === 0" color="hsl(264, 100%, 84%)" size="large"
                                 text-color="hsl(242, 32%, 15%)" :block="true">Checkout</n-button>
                         </form>
                     </ul>
