@@ -15,7 +15,11 @@ class CheckoutController extends Controller
         $settings = $order->event->organizer->settings;
 
         if ($order->status === OrderStatus::EXPIRED || $order->status === OrderStatus::CANCELLED) {
-            return redirect(route('events.show', $order->event->slug))->with('message', 'Order is expired.');
+            return redirect(route('events.show', $order->event->slug))
+                ->with('message', flash_error(
+                    'Order unavailable.',
+                    'This order has expired or been cancelled.'
+                ));
         }
 
         return Inertia::render('orders/Checkout', [
@@ -30,12 +34,18 @@ class CheckoutController extends Controller
     public function cancel(Order $order)
     {
         if ($order->status !== OrderStatus::PENDING) {
-            return back()->with('error', 'Order cannot be cancelled.');
+            return back()->with('message', flash_error(
+                'Order cannot be cancelled.',
+                'Order is not in pending state.'
+            ));
         }
 
         $order->update(['status' => OrderStatus::CANCELLED]);
 
         return redirect()->route('events.show', $order->event->slug)
-            ->with('success', 'Order cancelled successfully.');
+            ->with('message', flash_success(
+                'Order cancelled.',
+                'Your order has been cancelled successfully.'
+            ));
     }
 }

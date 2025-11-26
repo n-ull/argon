@@ -6,6 +6,21 @@ import { computed } from 'vue';
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 
+// const toast = useToast();
+
+// watch(() => page.props.flash, (flash) => {
+//     if (flash.message) {
+//         toast.add({
+//             summary: flash.message.summary,
+//             detail: flash.message.detail,
+//             severity: flash.message.type,
+//             life: 3000,
+//             closable: true,
+//             group: 'flash'
+//         });
+//     }
+// });
+
 </script>
 
 <template>

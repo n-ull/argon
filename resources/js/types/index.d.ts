@@ -24,7 +24,13 @@ export type AppPageProps<
     auth: Auth;
     sidebarOpen: boolean;
     flash: {
-        message: string;
+        message: {
+            summary: string;
+            detail: string;
+            type: 'success' | 'error' | 'warning' | 'info';
+        };
+        data?: any;
+        error?: any;
     };
 };
 
