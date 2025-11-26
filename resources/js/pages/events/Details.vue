@@ -3,10 +3,13 @@ import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, Product, ProductPrice } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { Calendar, MapPin, Minus, Plus } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import { cancel, checkout, store } from '@/routes/orders';
+import { NButton } from 'naive-ui';
+import { useDialog } from '@/composables/useDialog';
+import { toast } from 'vue-sonner';
 
 interface Props {
     event: Event,
@@ -85,6 +88,8 @@ onMounted(() => {
 
 const isLoading = ref(false);
 
+const { open: openDialog } = useDialog();
+
 const handleCheckout = () => {
     isLoading.value = true;
     try {
@@ -92,8 +97,23 @@ const handleCheckout = () => {
             preserveScroll: true,
             preserveState: true,
             onError: (error) => {
-                // TODO: show order pending toast or dialog
-
+                if (error.orderId) {
+                    openDialog({
+                        title: 'Pending Order',
+                        description: 'You have a pending order. Would you like to view it?',
+                        confirmText: 'View Order',
+                        cancelText: 'Cancel Order',
+                        onConfirm: () => {
+                            window.location.href = checkout(parseInt(error.orderId)).url;
+                        },
+                        onCancel: () => {
+                            router.post(cancel(parseInt(error.orderId)).url, {
+                                preserveScroll: true,
+                                preserveState: true,
+                            });
+                        }
+                    });
+                }
             },
         });
     } catch (error) {
@@ -103,6 +123,12 @@ const handleCheckout = () => {
     }
 }
 
+const dialogTest = () => {
+    useDialog().open({
+        title: 'Order Pending',
+    });
+}
+
 const filterProductWithPrices = products.filter(product => product.product_prices.length > 0);
 
 </script>
@@ -110,27 +136,6 @@ const filterProductWithPrices = products.filter(product => product.product_price
 <template>
 
     <Head :title="event.title" />
-
-    <!-- <Toast position="top-center" group="pending-order">
-        <template #message="slotProps">
-            <div class="flex flex-col items-start flex-auto">
-                <div class="flex items-center gap-2">
-                    <span class="font-bold">Pending order</span>
-                </div>
-                <div class="font-medium text-lg my-4">{{ slotProps.message.summary }}</div>
-                <div class="flex gap-2 justify-between">
-                    <Link :href="checkout(slotProps.message.detail)"
-                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 bg-primary text-primary-foreground hover:bg-primary/90">
-                    View order</Link>
-                    <Link method="post" @click="toast.removeGroup('pending-order')" :preserve-scroll="true"
-                        :preserve-state="true" :href="cancel(slotProps.message.detail)"
-                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-9 px-3 bg-red-400 text-red-900 hover:bg-red-400/90">
-                    Cancel order</Link>
-                </div>
-            </div>
-        </template>
-</Toast> -->
-
     <SimpleLayout>
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-4">
@@ -174,7 +179,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                             <div class="flex flex-col mb-2">
                                 <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
                                 <span v-if="product.description" class="text-sm text-neutral-400">{{ product.description
-                                }}</span>
+                                    }}</span>
                             </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id"
@@ -193,7 +198,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                         </Button>
                                         <Button size="icon" variant="default">{{
                                             getQuantity(price.id)
-                                        }}</Button>
+                                            }}</Button>
                                         <Button size="icon" variant="default" @click="addToCart(product, price)">
                                             <Plus />
                                         </Button>
@@ -210,6 +215,9 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                 :disabled="form.items.length === 0" color="hsl(264, 100%, 84%)" size="large"
                                 text-color="hsl(242, 32%, 15%)" :block="true">Checkout</n-button>
                         </form>
+
+                        <n-button @click="dialogTest" color="hsl(264, 100%, 84%)" size="large"
+                            text-color="hsl(242, 32%, 15%)" :block="true">Dialog Test</n-button>
                     </ul>
                 </div>
             </div>

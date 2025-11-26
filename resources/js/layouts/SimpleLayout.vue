@@ -1,25 +1,43 @@
 <script setup lang="ts">
 import AppLogo from '@/components/AppLogo.vue';
+import GlobalDialog from '@/components/GlobalDialog.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
+import { Toaster, toast } from 'vue-sonner';
+import 'vue-sonner/style.css'
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 
-// const toast = useToast();
-
-// watch(() => page.props.flash, (flash) => {
-//     if (flash.message) {
-//         toast.add({
-//             summary: flash.message.summary,
-//             detail: flash.message.detail,
-//             severity: flash.message.type,
-//             life: 3000,
-//             closable: true,
-//             group: 'flash'
-//         });
-//     }
-// });
+watch(() => page.props.flash, (flash) => {
+    if (flash.message) {
+        switch (flash.message.type) {
+            case 'success':
+                toast.success(flash.message.summary, {
+                    duration: 3000,
+                });
+                break;
+            case 'error':
+                toast.error(flash.message.summary, {
+                    duration: 3000,
+                });
+                break;
+            default:
+                toast(flash.message.summary, {
+                    duration: 3000,
+                });
+                break;
+        }
+        // toast.add({
+        //     summary: flash.message.summary,
+        //     detail: flash.message.detail,
+        //     severity: flash.message.type,
+        //     life: 3000,
+        //     closable: true,
+        //     group: 'flash'
+        // });
+    }
+});
 
 </script>
 
@@ -88,5 +106,7 @@ const user = computed(() => page.props.auth?.user);
         <main>
             <slot />
         </main>
+        <Toaster />
+        <GlobalDialog />
     </div>
 </template>
