@@ -20,9 +20,8 @@ class DashboardController extends Controller
         $organizers = $user->organizers()->get();
 
         $latestEvents = Event::whereIn('organizer_id', $organizationIds)
-            ->where('start_date', '>=', now())
-            ->orderBy('start_date')
-            ->limit(5)
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
             ->get();
 
         return Inertia::render('Dashboard', [
