@@ -26,7 +26,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <Link :href="link" class="rounded-lg border border-moovin-green p-6 shadow-sm transition hover:shadow-md">
+    <Link :href="link" class="rounded-lg border bg-neutral-800 p-6 shadow-sm transition hover:shadow-md">
     <div class="flex items-center gap-4">
         <div :class="`rounded-lg p-3 dark:bg-${props.color}-900`">
             <svg class="h-6 w-6" :class="`text-${props.color}-600 dark:text-${props.color}-300`" fill="none"

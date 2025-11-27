@@ -3,13 +3,13 @@ import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, Product, ProductPrice } from '@/types';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { Calendar, MapPin, Minus, Plus } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import { cancel, checkout, store } from '@/routes/orders';
 import { NButton } from 'naive-ui';
 import { useDialog } from '@/composables/useDialog';
-import { toast } from 'vue-sonner';
+import { formatDate } from '@/lib/utils';
 
 interface Props {
     event: Event,
@@ -34,16 +34,6 @@ const form = useForm<Cart>({
     items: []
 });
 
-const formatDate = (date: string | null) => {
-    if (!date) return 'Not specified';
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-    });
-};
 
 const addToCart = (product: Product, price: ProductPrice) => {
     const existingItem = form.items.find(item => item.productPriceId === price.id);

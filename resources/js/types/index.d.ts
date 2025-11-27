@@ -54,8 +54,13 @@ export interface Event {
     products: Product[] | null;
     slug: string;
     organizer: Organizer;
+    status?: string | null;
     vertical_image_url: string | null;
     horizontal_image_url: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    deleted_at?: string | null;
+    organizer_id?: number;
 }
 
 export interface Location {
@@ -75,6 +80,9 @@ export interface Product {
     max_per_order: number | null;
     min_per_order: number;
     product_prices: ProductPrice[];
+    created_at?: string | null;
+    updated_at?: string | null;
+    deleted_at?: string | null;
 }
 
 export interface ProductPrice {
@@ -86,6 +94,9 @@ export interface ProductPrice {
     sales_start_date: string | null;
     sales_end_date: string | null;
     sales_start_date_diff: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    deleted_at?: string | null;
 }
 
 export interface Organizer {
@@ -99,6 +110,9 @@ export interface Organizer {
     deleted_at: string | null;
     events?: Event[];
     settings?: OrganizerSettings | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    deleted_at?: string | null;
 }
 
 export interface OrganizerSettings {
@@ -108,19 +122,19 @@ export interface OrganizerSettings {
     raise_money_account: string | null;
     is_modo_active: boolean;
     is_mercadopago_active: boolean;
-    created_at: string | null;
-    updated_at: string | null;
-    deleted_at: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    deleted_at?: string | null;
 }
 
 export interface Order {
     id: number;
     reference_id: string;
     subtotal: number;
-    created_at: string;
-    updated_at: string;
-    expires_at: string;
-    deleted_at: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    expires_at?: string | null;
+    deleted_at?: string | null;
     items_snapshot: OrderItem[];
     fees_snapshot: any;
     fees_total: number;

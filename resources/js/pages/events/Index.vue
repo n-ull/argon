@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
+import { formatDate } from '@/lib/utils';
 import { show } from '@/routes/events';
 import { Event, PaginatedResponse } from '@/types';
 import { Head, InfiniteScroll, Link } from '@inertiajs/vue3';
@@ -9,16 +10,7 @@ interface Props {
     events: PaginatedResponse<Event>;
 }
 
-const { events } = defineProps<Props>();
-
-const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
-};
-
+const { events } = defineProps<Props>();    
 </script>
 
 <template>
