@@ -39,7 +39,10 @@
             "Database\\Seeders\\": "database/seeders/",
             "Domain\\": "src/Domain",
             "Infrastructure\\": "src/Infrastructure"
-        }
+        },
+        "files": [
+            "app/Helpers/flash.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
