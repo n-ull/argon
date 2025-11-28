@@ -40,9 +40,10 @@ Route::group([
         ->name('cancel');
 });
 
+// organizer routes
 Route::group([
-    'prefix' => 'organizers',
-    'as' => 'organizers.',
+    'prefix' => 'o',
+    'as' => 'organizer.',
     'middleware' => ['auth', 'verified'],
 ], function () {
     Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
@@ -56,6 +57,9 @@ Route::group([
 
     Route::get('{organizer}', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'show'])
         ->name('show');
+
+    Route::get('{organizer}/event/{event}', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'dashboard'])
+        ->name('event.dashboard');
 });
 
 Route::group([

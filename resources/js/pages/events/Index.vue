@@ -1,10 +1,8 @@
 <script setup lang="ts">
+import EventVerticalCard from '@/components/EventVerticalCard.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { formatDate } from '@/lib/utils';
-import { show } from '@/routes/events';
 import { Event, PaginatedResponse } from '@/types';
-import { Head, InfiniteScroll, Link } from '@inertiajs/vue3';
-import { Calendar, Map } from 'lucide-vue-next';
+import { Head, InfiniteScroll } from '@inertiajs/vue3';
 
 interface Props {
     events: PaginatedResponse<Event>;
@@ -30,31 +28,9 @@ const { events } = defineProps<Props>();
 
             <div class="space-y-4">
                 <InfiniteScroll data="events">
-                    <div v-for="event in events.data" :key="event.id"
-                        class="rounded-lg border p-6 shadow-sm transition hover:shadow-md my-4 bg-moovin-green">
-                        <h2 class="text-xl font-black text-moovin-dark-green">
-                            <Link :href="show(event.slug)">
-                            {{ event.title }}
-                            </Link>
-                        </h2>
-                        <p v-if="event.description" class="mt-2">
-                            {{ event.description }}
-                        </p>
-                        <div class="mt-4 flex flex-wrap gap-4 text-sm text-neutral-300">
-                            <div class="flex items-center gap-2">
-                                <Calendar />
-                                <span>{{ formatDate(event.start_date) }}</span>
-                            </div>
-                            <div v-if="event.location_info" class="flex items-center gap-2">
-                                <Map />
-                                <div>
-                                    <span>{{ event.location_info.address }}</span>,
-                                    <span>{{ event.location_info.city }}</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <EventVerticalCard v-for="event in events.data" :key="event.id" :event="event" />
                     </div>
-
                     <!-- <template #next="{ loading, fetch, hasMore }">
                         <button v-if="hasMore" @click="fetch" :disabled="loading">
                             {{ loading ? 'Loading...' : 'Load more' }}
