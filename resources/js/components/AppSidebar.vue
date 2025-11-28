@@ -16,6 +16,7 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import AppLogo from './AppLogo.vue';
 import AppLogoIcon from './AppLogoIcon.vue';
+import { Component } from 'vue';
 
 const { state } = useSidebar();
 
@@ -23,6 +24,7 @@ interface Props {
     mainNavItems: NavItem[];
     footerNavItems: NavItem[];
     showUser?: boolean;
+    mainNavGroupLabel?: string;
 }
 
 withDefaults(defineProps<Props>(), {
@@ -50,7 +52,7 @@ withDefaults(defineProps<Props>(), {
         </SidebarHeader>
 
         <SidebarContent>
-            <NavMain :items="mainNavItems" />
+            <NavMain :items="mainNavItems" :group-label="mainNavGroupLabel" />
         </SidebarContent>
 
         <SidebarFooter>
