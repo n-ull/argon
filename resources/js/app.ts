@@ -2,8 +2,6 @@ import '../css/app.css';
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { i18nVue } from 'laravel-vue-i18n';
-import i18n from 'laravel-vue-i18n/vite';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 
