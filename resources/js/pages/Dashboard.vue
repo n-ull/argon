@@ -6,6 +6,8 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import Section from '@/components/argon/layout/Section.vue';
 import { Event, Organizer } from '@/types';
 import { formatDate, isFuture, isLive, now } from '@/lib/utils';
+import { dashboard } from '@/routes/manage/event';
+import { useDialog } from '@/composables/useDialog';
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -16,6 +18,12 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const { open: openDialog } = useDialog();
+
+const selectOrganizer = () => {
+
+}
 
 </script>
 
@@ -28,7 +36,7 @@ const props = defineProps<Props>();
             <div class="flex  not-sm:flex-col not-sm:items-start justify-between items-center">
                 <SectionHeader title="Dashboard"
                     :description="`Welcome back, ${user?.name}. This is a list of all your events`" />
-                <div
+                <div @click="selectOrganizer"
                     class="flex items-center gap-4 p-4 border bg-neutral-900 cursor-pointer rounded-lg hover:bg-neutral-800 transition-colors">
                     <div class="flex -space-x-2">
                         <img v-for="organizer in props.organizers.slice(0, 3)" :key="organizer.id"
@@ -50,7 +58,7 @@ const props = defineProps<Props>();
             <div class="flex flex-col gap-6">
                 <div v-for="event in props.latestEvents" :key="event.id"
                     class="p-4 border bg-neutral-900 rounded-lg hover:bg-neutral-800 transition-colors">
-                    <Link :href="`/o/${event.organizer_id}/event/${event.id}`">
+                    <Link :href="dashboard(event.id)">
                     <div class="flex justify-end text-xs">
                         {{ event.status }}
                     </div>
