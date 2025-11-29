@@ -9,6 +9,7 @@ import { onMounted, ref } from 'vue';
 import { cancel, checkout, store } from '@/routes/orders';
 import { NButton } from 'naive-ui';
 import { useDialog } from '@/composables/useDialog';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import { formatDate } from '@/lib/utils';
 
 interface Props {
@@ -89,18 +90,21 @@ const handleCheckout = () => {
             onError: (error) => {
                 if (error.orderId) {
                     openDialog({
-                        title: 'Pending Order',
-                        description: 'You have a pending order. Would you like to view it?',
-                        confirmText: 'View Order',
-                        cancelText: 'Cancel Order',
-                        onConfirm: () => {
-                            window.location.href = checkout(parseInt(error.orderId)).url;
-                        },
-                        onCancel: () => {
-                            router.post(cancel(parseInt(error.orderId)).url, {
-                                preserveScroll: true,
-                                preserveState: true,
-                            });
+                        component: ConfirmDialog,
+                        props: {
+                            title: 'Pending Order',
+                            description: 'You have a pending order. Would you like to view it?',
+                            confirmText: 'View Order',
+                            cancelText: 'Cancel Order',
+                            onConfirm: () => {
+                                window.location.href = checkout(parseInt(error.orderId)).url;
+                            },
+                            onCancel: () => {
+                                router.post(cancel(parseInt(error.orderId)).url, {
+                                    preserveScroll: true,
+                                    preserveState: true,
+                                });
+                            }
                         }
                     });
                 }
@@ -115,7 +119,10 @@ const handleCheckout = () => {
 
 const dialogTest = () => {
     useDialog().open({
-        title: 'Order Pending',
+        component: ConfirmDialog,
+        props: {
+            title: 'Order Pending',
+        }
     });
 }
 

@@ -41,25 +41,63 @@ Route::group([
 });
 
 // organizer routes
+// TODO: change o to organizer and separate the routes from event to manage 
 Route::group([
-    'prefix' => 'o',
-    'as' => 'organizer.',
+    'prefix' => 'manage',
+    'as' => 'manage.',
     'middleware' => ['auth', 'verified'],
 ], function () {
-    Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
-        ->name('index');
+    // manage organizer
+    Route::group([
+        'prefix' => 'organizer',
+        'as' => 'organizer.',
+    ], function () {
+        // Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
+        //     ->name('index');
 
-    Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
-        ->name('create');
+        // Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
+        //     ->name('create');
 
-    Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
-        ->name('store');
+        // Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
+        //     ->name('store');
 
-    Route::get('{organizer}', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'show'])
-        ->name('show');
+        Route::get('{organizer}', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'show'])
+            ->name('show');
+    });
 
-    Route::get('{organizer}/event/{event}', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'dashboard'])
-        ->name('event.dashboard');
+    // manage event
+    Route::group([
+        'prefix' => 'event',
+        'as' => 'event.',
+    ], function () {
+        Route::get('{event}', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'dashboard'])
+            ->name('dashboard');
+
+        Route::get('{event}/analyitics', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'analytics'])
+            ->name('analytics');
+
+        Route::get('{event}/products', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'products'])
+            ->name('products');
+
+        Route::get('{event}/orders', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'orders'])
+            ->name('orders');
+
+        Route::get('{event}/promoters', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'promoters'])
+            ->name('promoters');
+
+        Route::get('{event}/settings', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'settings'])
+            ->name('settings');
+
+        Route::get('{event}/attendees', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'attendees'])
+            ->name('attendees');
+
+        Route::get('{event}/doormen', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'doormen'])
+            ->name('doormen');
+
+        Route::get('{event}/vouchers', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'vouchers'])
+            ->name('vouchers');
+    });
+
 });
 
 Route::group([

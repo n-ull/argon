@@ -18,7 +18,7 @@ interface Props {
 const { order, settings } = defineProps<Props>();
 
 const paymentMethod = ref('cash');
-const timeLeft = ref(Math.max(0, Math.floor((new Date(order.expires_at).getTime() - new Date().getTime()) / 1000)));
+const timeLeft = ref(Math.max(0, Math.floor((new Date(order.expires_at!).getTime() - new Date().getTime()) / 1000)));
 let timerInterval: number | undefined;
 
 const formattedTime = computed(() => {
@@ -130,7 +130,7 @@ const cancelOrder = () => {
 
         <Section v-else class="space-y-4">
             <h1 class="text-2xl font-bold">Your order has expired!</h1>
-            <p>Order expired at {{ formatDate(order.expires_at) }}, back to event and try again.</p>
+            <p>Order expired at {{ formatDate(order.expires_at!) }}, back to event and try again.</p>
             <NButton type="primary" @click="router.visit(show(order.event?.slug!))">Back to event</NButton>
         </Section>
     </SimpleLayout>

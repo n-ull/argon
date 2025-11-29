@@ -35,6 +35,10 @@ export function formatDateTime(date: string) {
     });
 }
 
+export function formatDateTimeToUnix(date: string) {
+    return new Date(date).getTime();
+}
+
 export function formatDateDiff(date: string) {
     const diff = new Date(date).getTime() - new Date().getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
