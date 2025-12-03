@@ -33,6 +33,7 @@ class ManageEventController extends Controller
 
         return Inertia::render('organizers/event/Products', [
             'event' => $event,
+            'products' => $event->products()->with('product_prices')->get(),
         ]);
     }
 

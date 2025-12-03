@@ -3,8 +3,11 @@ import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
 import { dashboard, settings } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
-import { Form } from '@inertiajs/vue3';
 import GeneralInformationForm from './forms/GeneralInformationForm.vue';
+import UbicationForm from './forms/UbicationForm.vue';
+import PaymentForm from './forms/PaymentForm.vue';
+import { NTabPane, NTabs, NButton } from 'naive-ui';
+import MiscellaneousForm from './forms/MiscellaneousForm.vue';
 
 interface Props {
     event: Event;
@@ -33,15 +36,24 @@ const breadcrumbs: BreadcrumbItem[] = [
     <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
         <div class="m-4 space-y-4">
             <h1>Settings</h1>
+            <n-tabs type="line" animated>
+                <n-tab-pane name="general" tab="General">
+                    <GeneralInformationForm :event />
+                </n-tab-pane>
+                <n-tab-pane name="ubication" tab="Ubication">
+                    <UbicationForm :event />
+                </n-tab-pane>
+                <n-tab-pane name="payment" tab="Payment">
+                    <PaymentForm :event />
+                </n-tab-pane>
+                <n-tab-pane name="misc" tab="Miscellaneous">
+                    <MiscellaneousForm :event />
+                </n-tab-pane>
+            </n-tabs>
 
-            <div
-                class="p-4 border rounded bg-neutral-900 space-y-4 ring-moovin-lila hover:ring-1 duration-500 transition-all">
-                <h2 class="text-lg font-semibold">General</h2>
-                <hr>
-                <Form class="space-y-4">
-                    <GeneralInformationForm :event="event" />
-                </Form>
-            </div>
+            <n-button type="primary" class="float-right">
+                Save
+            </n-button>
         </div>
     </ManageEventLayout>
 </template>

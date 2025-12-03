@@ -59,15 +59,15 @@ const selectOrganizer = () => {
                 <div v-for="event in props.latestEvents" :key="event.id"
                     class="p-4 border bg-neutral-900 rounded-lg hover:bg-neutral-800 transition-colors">
                     <Link :href="dashboard(event.id)">
-                    <div class="flex justify-end text-xs">
-                        {{ event.status }}
-                    </div>
                     <div class="flex justify-between items-center">
                         <div class="flex flex-col">
                             <span class="text-xs text-neutral-500">Title</span>
                             <p class="text-lg font-semibold">{{ event.title }}</p>
                         </div>
                         <div class="flex flex-col text-right">
+                            <div class="flex justify-end text-xs">
+                                {{ event.status }}
+                            </div>
                             <span class="text-xs text-neutral-500">Start Date:</span>
                             <p v-if="isFuture(event.start_date)" class="text-sm text-neutral-400">{{
                                 formatDate(event.start_date) }}
