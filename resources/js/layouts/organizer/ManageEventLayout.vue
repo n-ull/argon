@@ -82,10 +82,17 @@ const footerNavItems: NavItem[] = [
 
 const dark: GlobalTheme = darkTheme;
 
+const themeOverrides = {
+    Button: {
+        colorPrimary: 'hsl(111, 95%, 77%)',
+        colorSecondary: 'hsl(264, 100%, 84%)',
+    },
+};
+
 </script>
 
 <template>
-    <n-config-provider :theme="dark">
+    <n-config-provider :theme="dark" :theme-overrides="themeOverrides">
         <AppLayout :breadcrumbs="breadcrumbs" :main-nav-items="mainNavItems" :footer-nav-items="footerNavItems">
             <slot />
         </AppLayout>

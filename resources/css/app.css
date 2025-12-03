@@ -105,6 +105,10 @@
     .ticket-shape-bottom {
         @apply before:absolute before:bottom-0 before:left-0 before:h-5 before:w-5 before:-translate-x-1/2 before:translate-y-1/2 before:rounded-full before:bg-behind after:absolute after:bottom-0 after:right-0 after:h-5 after:w-5 after:translate-x-1/2 after:translate-y-1/2 after:rounded-full after:bg-behind
     }
+
+    .required {
+        @apply after:content-["*"] after:ml-1 after:text-red-500;
+    }
 }
 
 @layer utilities {
