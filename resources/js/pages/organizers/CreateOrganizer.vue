@@ -5,6 +5,7 @@ import Button from '@/components/ui/button/Button.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
+import { store } from '@/routes/manage/organizer';
 import { Form } from '@inertiajs/vue3'
 </script>
 
@@ -17,7 +18,7 @@ import { Form } from '@inertiajs/vue3'
             <SectionHeader title="Create Organizer"
                 description="Create a new organizer to manage events and inventory" />
 
-            <Form method="post" action="/organizers/store">
+            <Form method="post" :action="store()">
                 <div class="flex flex-col gap-4">
                     <Label for="name">Name</Label>
                     <Input type="text" name="name" />

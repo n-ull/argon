@@ -43,6 +43,7 @@ class ManageEventController extends Controller
 
         return Inertia::render('organizers/event/Orders', [
             'event' => $event,
+            'orders' => $event->orders()->with('client:id,name,email')->withCount('orderItems')->latest()->paginate(10),
         ]);
     }
 

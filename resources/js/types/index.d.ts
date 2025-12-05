@@ -144,6 +144,18 @@ export interface Order {
     taxes_total: number;
     event?: Event | null;
     settings?: OrganizerSettings | null;
+    client: Client;
+    used_payment_gateway_snapshot: string;
+}
+
+export interface Client {
+    id: number;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    created_at?: string | null;
+    updated_at?: string | null;
+    deleted_at?: string | null;
 }
 
 export interface PaginationLink {

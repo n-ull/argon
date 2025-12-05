@@ -52,14 +52,14 @@ Route::group([
         'prefix' => 'organizer',
         'as' => 'organizer.',
     ], function () {
-        // Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
-        //     ->name('index');
+        Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
+            ->name('index');
 
-        // Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
-        //     ->name('create');
+        Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
+            ->name('create');
 
-        // Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
-        //     ->name('store');
+        Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
+            ->name('store');
 
         Route::get('{organizer}', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'show'])
             ->name('show');
@@ -87,6 +87,8 @@ Route::group([
 
         Route::get('{event}/settings', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'settings'])
             ->name('settings');
+        Route::post('{event}/settings', \App\Modules\EventManagement\Controllers\UpdateEventSettingsController::class)
+            ->name('settings.update');
 
         Route::get('{event}/attendees', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'attendees'])
             ->name('attendees');

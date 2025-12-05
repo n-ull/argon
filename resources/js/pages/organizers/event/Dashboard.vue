@@ -5,7 +5,8 @@ import { dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { BookA, DollarSign, Eye, Gift, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
+import { BookA, DollarSign, Eye, Gift, Plus, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
+import { NButton, NIcon } from 'naive-ui';
 
 interface Props {
     event: Event;
@@ -46,10 +47,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 
             <!-- Information -->
             <div class="mt-4 p-4 bg-neutral-900 rounded">
-                <div>
+                <div class="space-y-2">
                     <h2 class="text-lg font-semibold">Your event isn't ready yet</h2>
                     <p class="text-sm text-neutral-400">Once you've added your products and configured your event, you
                         can start selling tickets.</p>
+                    <NButton tertiary icon-placement="left" size="large">
+                        <template #icon>
+                            <NIcon>
+                                <Plus />
+                            </NIcon>
+                        </template>
+                        Create Product or Ticket
+                    </NButton>
                 </div>
             </div>
         </div>
