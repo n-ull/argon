@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
-import type { BreadcrumbItemType, NavItem } from '@/types';
+import { show } from '@/routes/manage/organizer';
+import type { BreadcrumbItemType, NavItem, Organizer } from '@/types';
 import { Calendar, LayoutGrid, LucideMessageCircleQuestion, Settings } from 'lucide-vue-next';
 
 interface Props {
+    organizer: Organizer;
     breadcrumbs?: BreadcrumbItemType[];
 }
 
-withDefaults(defineProps<Props>(), {
-    breadcrumbs: () => [],
-});
+const props = defineProps<Props>();
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: "#",
+        href: show({
+            organizer: props.organizer.id,
+        }),
         icon: LayoutGrid,
     },
     {

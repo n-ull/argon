@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { create, show } from '@/routes/organizers';
+import { create, show } from '@/routes/manage/organizer';
 import { Organizer } from '@/types';
 import { Link } from '@inertiajs/vue3';
 

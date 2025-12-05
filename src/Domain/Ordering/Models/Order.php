@@ -2,6 +2,7 @@
 
 namespace Domain\Ordering\Models;
 
+use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -63,7 +64,15 @@ class Order extends Model
         'fees_snapshot' => 'array',
         'expires_at' => 'datetime',
         'status' => OrderStatus::class,
+        'subtotal' => 'decimal:2',
+        'taxes_total' => 'decimal:2',
+        'fees_total' => 'decimal:2',
     ];
+
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function orderItems(): HasMany
     {

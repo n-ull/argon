@@ -20,7 +20,10 @@ const endDate = ref(formatDateTimeToUnix(event.end_date!) || null);
         <hr>
         <div class="space-y-2">
             <label for="title" class="required">Title</label>
-            <n-input placeholder="My awesome event" v-model:value="event.title" id="title"></n-input>
+            <n-input :input-props="{
+                required: true,
+                name: 'title'
+            }" placeholder="My awesome event" v-model:value="event.title" id="title"></n-input>
         </div>
 
         <div class="space-y-2">

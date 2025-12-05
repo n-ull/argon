@@ -19,6 +19,8 @@ class ManageOrganizations extends Controller
 
     public function show(Organizer $organizer)
     {
-        return Inertia::render('organizers/Manage');
+        return Inertia::render('organizers/Dashboard', [
+            'organizer' => $organizer,
+        ]);
     }
 }

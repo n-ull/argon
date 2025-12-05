@@ -47,19 +47,24 @@ onMounted(() => {
         <hr>
         <div class="space-y-2">
             <label for="site">Site name</label>
-            <n-input placeholder="e.g. The House of the Event" v-model:value="event.location_info.site"
-                id="site"></n-input>
+            <n-input :input-props="{
+                name: 'location_info[site]'
+            }" placeholder="e.g. The House of the Event" v-model:value="event.location_info.site" id="site"></n-input>
         </div>
 
         <div class="space-y-2">
             <label for="address" class="required">Address</label>
-            <n-input placeholder="e.g. 123 Main St" v-model:value="event.location_info.address" id="address"
+            <n-input :input-props="{
+                name: 'location_info[address]'
+            }" placeholder="e.g. 123 Main St" v-model:value="event.location_info.address" id="address"
                 required></n-input>
         </div>
 
         <div class="space-y-2">
             <label for="country" class="required">Country</label>
-            <n-input :value="event.location_info.country" id="country" disabled></n-input>
+            <n-input :input-props="{
+                name: 'location_info[country]'
+            }" :value="event.location_info.country" id="country" disabled></n-input>
         </div>
 
         <div class="space-y-2">
@@ -71,7 +76,9 @@ onMounted(() => {
             <label for="mapLink">URL of the map</label>
             <p class="text-xs text-neutral-400">The URL of the map where the event is located, if it is not provided the
                 map will be generated automatically using the address.</p>
-            <n-input placeholder="https://www.google.com/maps" v-model:value="event.location_info.mapLink"
+            <n-input :input-props="{
+                name: 'location_info[mapLink]'
+            }" placeholder="https://www.google.com/maps" v-model:value="event.location_info.mapLink"
                 id="mapLink"></n-input>
         </div>
     </div>
