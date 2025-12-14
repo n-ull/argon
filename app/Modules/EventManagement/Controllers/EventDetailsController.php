@@ -29,9 +29,15 @@ class EventDetailsController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // Update unique visitors statistics plus one
+        $event->statistics()->update([
+            'unique_visitors' => $event->statistics->unique_visitors + 1,
+        ]);
+
         return Inertia::render('events/Details', [
             'event' => EventResource::make($event)->resolve(),
             'products' => ProductResource::collection($products)->resolve(),
+            'userIsOrganizer' => $event->organizer->users->contains(auth()->user()->id),
         ]);
     }
 }

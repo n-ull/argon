@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -94,9 +95,17 @@ class Event extends Model
         return [
             'completed_orders_count' => $this->orders()->where('status', OrderStatus::COMPLETED)->count(),
             'total_revenue' => $this->orders()->where('status', OrderStatus::COMPLETED)->sum('total_gross'),
+            'unique_visitors' => $this->statistics->unique_visitors,
             // 'tickets_count' => $this->tickets()->count(),
             // 'courtesy_tickets_count' => $this->tickets()->where('is_courtesy', true)->count(),
         ];
+    }
+
+    public function statistics(): HasOne
+    {
+        return $this->hasOne(EventStatistics::class)->withDefault([
+            'unique_visitors' => 0,
+        ]);
     }
 
     public function organizer(): BelongsTo

@@ -79,7 +79,7 @@ export interface WidgetStats {
     scanned_tickets_count: number;
     selled_tickets_count: number;
     courtesy_tickets_count: number;
-    unique_visitors_count: number;
+    unique_visitors: number;
 }
 
 export interface Location {
