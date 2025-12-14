@@ -93,7 +93,7 @@ class Event extends Model
     {
         return [
             'completed_orders_count' => $this->orders()->where('status', OrderStatus::COMPLETED)->count(),
-            'total_revenue' => $this->orders()->where('status', OrderStatus::COMPLETED)->sum('subtotal'),
+            'total_revenue' => $this->orders()->where('status', OrderStatus::COMPLETED)->sum('total_gross'),
             // 'tickets_count' => $this->tickets()->count(),
             // 'courtesy_tickets_count' => $this->tickets()->where('is_courtesy', true)->count(),
         ];

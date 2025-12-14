@@ -71,7 +71,8 @@ console.log(event);
                 <InfoWidget title="Completed Orders" :icon="BookA"
                     :info="event.widget_stats!.completed_orders_count.toString()" />
                 <InfoWidget title="Unique Visitors" :icon="Eye" info="8,901" />
-                <InfoWidget title="Total Revenue" :icon="DollarSign" info="$123,456.78" />
+                <InfoWidget title="Total Revenue" :icon="DollarSign"
+                    :info="'$ ' + event.widget_stats!.total_revenue.toString()" />
                 <InfoWidget title="Courtesy Tickets" :icon="Gift" info="1,234" />
                 <InfoWidget title="Scanned Tickets" :icon="ScanQrCode" info="1,234" />
             </div>
