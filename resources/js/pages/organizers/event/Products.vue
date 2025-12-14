@@ -3,7 +3,8 @@ import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
 import { products as productsRoute, dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event, Product } from '@/types';
-import { LucideChevronDown, LucideChevronUp, LucideTickets, MoreVerticalIcon } from 'lucide-vue-next';
+import ProductCard from '@/components/dashboard/ProductCard.vue';
+import { LucideTickets } from 'lucide-vue-next';
 import { NButton, NIcon } from 'naive-ui';
 
 interface Props {
@@ -28,7 +29,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     }
 ];
 
-console.log(products);
+const handleEdit = (product: Product) => { };
+const handleDelete = (product: Product) => { };
+const handleDuplicate = (product: Product) => { };
+
 </script>
 
 <template>
@@ -43,30 +47,7 @@ console.log(products);
                 </template>
                 Add Product or Ticket</n-button>
             <div class="mt-4 space-y-4 bg-neutral-900 border rounded divide-y">
-                <div class="flex space-x-4 items-center p-4" v-for="product in products" :key="product.id">
-                    <!-- Sort handle -->
-                    <div class="flex flex-col shrink-0 bg-neutral-800 p-2 rounded">
-                        <LucideChevronUp />
-                        <LucideChevronDown />
-                    </div>
-
-                    <!-- Information -->
-                    <div class="flex flex-col grow">
-                        <div class="flex flex-col">
-                            <h2 class="text-lg font-semibold">{{ product.name }}</h2>
-                            <p class="text-sm text-neutral-400">{{ product.description }}</p>
-                        </div>
-                        <div class="flex">
-                            <p class="text-sm text-neutral-400">${{ product.product_prices[0].price }} – ${{
-                                product.product_prices[product.product_prices.length - 1].price }}</p>
-                        </div>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="flex flex-col shrink-0 bg-neutral-800 p-2 rounded">
-                        <MoreVerticalIcon />
-                    </div>
-                </div>
+                <ProductCard v-for="product in products" :key="product.id" :product="product" />
             </div>
         </div>
     </ManageEventLayout>

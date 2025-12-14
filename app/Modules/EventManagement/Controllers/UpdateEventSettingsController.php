@@ -3,14 +3,18 @@
 namespace App\Modules\EventManagement\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\EventManagement\Requests\StoreOrUpdateEventSettingsRequest;
 use Domain\EventManagement\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Sleep;
 
 class UpdateEventSettingsController extends Controller
 {
-    public function __invoke(Request $request, int $eventId)
+    public function __invoke(StoreOrUpdateEventSettingsRequest $request, int $eventId)
     {
-        dd($request->all());
+        $validated = $request->validated();
+
+        dd($validated);
         $event = Event::findOrFail($eventId);
 
         $event->update($request->all());

@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
+import { formatDate } from '@/lib/utils';
 import { orders, dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event, Order, PaginatedResponse } from '@/types';
 import { router } from '@inertiajs/vue3';
-import { NDataTable, NTag, PaginationProps } from 'naive-ui';
+import { NDataTable, NTag, PaginationProps, NDrawer, NDrawerContent, DrawerPlacement } from 'naive-ui';
 import { computed, h, ref } from 'vue';
+
+console.log(orders);
 
 interface Props {
     event: Event;
@@ -34,7 +37,8 @@ const createColumns = () => {
         {
             title: 'Client',
             key: 'client',
-            minWidth: 200,
+            minWidth: 100,
+            maxWidth: 120,
             render(row: Order) {
                 return h('div', {}, [
                     h('div', {}, row.client.name),
@@ -82,7 +86,8 @@ const createColumns = () => {
         {
             title: 'Date',
             key: 'created_at',
-            minWidth: 180,
+            minWidth: 80,
+            maxWidth: 120,
             render(row: Order) {
                 return new Date(row.created_at!).toLocaleString();
             }
@@ -149,6 +154,21 @@ const pagination = computed<PaginationProps>(() => ({
 }));
 
 const loading = ref(false);
+
+const selectedOrder = ref<Order | null>(null);
+
+const active = ref(false)
+const placement = ref<DrawerPlacement>('right')
+function activate(place: DrawerPlacement) {
+    active.value = true
+    placement.value = place
+}
+
+const handleRowClick = (row: Order) => {
+    console.log(row);
+    selectedOrder.value = row;
+    activate('right');
+}
 </script>
 
 <template>
@@ -157,8 +177,69 @@ const loading = ref(false);
             <h1>Orders</h1>
             <div class="mt-4 space-y-4 bg-neutral-900 border rounded divide-y p-4">
                 <NDataTable :loading remote :columns="columns" :data="props.orders.data" :pagination="pagination"
-                    :bordered="true" :scroll-x="1000" />
+                    :bordered="true" :scroll-x="1000" :row-props="(row) => ({
+                        style: { cursor: 'pointer' },
+                        onClick: () => handleRowClick(row)
+                    })" />
             </div>
         </div>
+        <n-drawer v-model:show="active" :width="502" :placement="placement">
+            <n-drawer-content v-if="selectedOrder" :title="'#' + selectedOrder.reference_id">
+                <div class="flex flex-col space-y-4">
+                    <div class="flex flex-col space-y-2">
+                        <h2 class="text-lg font-bold">
+                            Order Information
+                        </h2>
+                        <div>
+                            <p>Client:</p>
+                            <p>{{ selectedOrder.client.name }}</p>
+                        </div>
+                        <div>
+                            <p>Reference:</p>
+                            <p>{{ selectedOrder.reference_id }}</p>
+                        </div>
+                        <div>
+                            <p>Status:</p>
+                            <p>{{ selectedOrder.status }}</p>
+                        </div>
+                        <div>
+                            <p>Total:</p>
+                            <p>{{ selectedOrder.subtotal }}</p>
+                        </div>
+                        <div v-if="selectedOrder.used_payment_gateway_snapshot">
+                            <p>Payment Method:</p>
+                            <p>{{ selectedOrder.used_payment_gateway_snapshot }}</p>
+                        </div>
+                        <div class="flex justify-between">
+                            <div v-if="selectedOrder.paid_at">
+                                <p>Paid at:</p>
+                                <p>
+                                    {{ formatDate(selectedOrder.paid_at) }}
+                                </p>
+                            </div>
+                            <div>
+                                <p>Order Date:</p>
+                                <p>{{ formatDate(selectedOrder.created_at!) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-lg font-bold">
+                            Order Items
+                        </h2>
+                        <div class="flex flex-col border p-2 rounded bg-neutral-900 ring ring-moovin-lila/50 my-2"
+                            v-for="item in selectedOrder.items_snapshot" :key="item.id">
+                            <p class="font-bold">{{ item.product_name }}</p>
+                            <p class="font-bold text-sm">{{ item.product_price_label }}</p>
+                            <div class="flex justify-between">
+                                <p class="text-sm">Quantity: {{ item.quantity }}</p>
+                                <p class="text-sm">Subtotal: ${{ item.subtotal }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </n-drawer-content>
+        </n-drawer>
     </ManageEventLayout>
 </template>

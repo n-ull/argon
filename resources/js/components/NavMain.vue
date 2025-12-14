@@ -41,8 +41,10 @@ const groupedItems = computed(() => {
             <SidebarMenuItem v-for="item in groupItems" :key="item.title">
                 <SidebarMenuButton as-child :is-active="urlIsActive(item.href, page.url)" :tooltip="item.title">
                     <Link :href="item.href">
-                    <component :is="item.icon" />
-                    <span>{{ item.title }}</span>
+                        <component :is="item.icon" />
+                        <span>{{ item.title }}</span>
+                        <component v-if="item.badge" :is="item.badge" />
+                        <component v-if="item.extra" :is="item.extra" />
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
