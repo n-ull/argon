@@ -3,21 +3,23 @@ import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, Product, ProductPrice } from '@/types';
-import { Head, router, useForm } from '@inertiajs/vue3';
-import { Calendar, MapPin, Minus, Plus } from 'lucide-vue-next';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Calendar, MapPin, Minus, Pencil, Plus } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import { cancel, checkout, store } from '@/routes/orders';
 import { NButton } from 'naive-ui';
 import { useDialog } from '@/composables/useDialog';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import { formatDate } from '@/lib/utils';
+import { dashboard } from '@/routes/manage/event';
 
 interface Props {
     event: Event,
-    products: Product[]
+    products: Product[],
+    userIsOrganizer: boolean
 }
 
-const { event, products } = defineProps<Props>();
+const { event, products, userIsOrganizer } = defineProps<Props>();
 
 interface CartItem {
     productId: number;
@@ -134,7 +136,15 @@ const filterProductWithPrices = products.filter(product => product.product_price
 
     <Head :title="event.title" />
     <SimpleLayout>
-        <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 relative">
+            <Link v-if="userIsOrganizer" :href="dashboard(event.id)" class="absolute top-4 right-4">
+                <NButton type="primary">
+                    <template #icon>
+                        <Pencil />
+                    </template>
+                    Edit Event
+                </NButton>
+            </Link>
             <div class="flex flex-col gap-4">
                 <div>
                     <img v-if="!isPhone" :src="event.horizontal_image_url ?? 'https://placehold.co/1480x600/png'"
