@@ -4,6 +4,7 @@ namespace Domain\EventManagement\Models;
 
 use Domain\EventManagement\Casts\LocationInfoJson;
 use Domain\EventManagement\Enums\EventStatus;
+use Domain\Ordering\Enums\OrderStatus;
 use Domain\Ordering\Models\Order;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
@@ -78,6 +79,25 @@ class Event extends Model
         'location_info' => LocationInfoJson::class,
         'is_featured' => 'boolean',
     ];
+
+    protected $appends = [
+        'orders_count',
+    ];
+
+    public function getOrdersCountAttribute()
+    {
+        return $this->orders()->count();
+    }
+
+    public function getWidgetStatsAttribute()
+    {
+        return [
+            'completed_orders_count' => $this->orders()->where('status', OrderStatus::COMPLETED)->count(),
+            'total_revenue' => $this->orders()->where('status', OrderStatus::COMPLETED)->sum('subtotal'),
+            // 'tickets_count' => $this->tickets()->count(),
+            // 'courtesy_tickets_count' => $this->tickets()->where('is_courtesy', true)->count(),
+        ];
+    }
 
     public function organizer(): BelongsTo
     {

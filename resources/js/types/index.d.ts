@@ -1,5 +1,6 @@
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
+import { VNode } from 'vue';
 
 export interface Auth {
     user: User;
@@ -16,6 +17,8 @@ export interface NavItem {
     icon?: LucideIcon;
     isActive?: boolean;
     group?: string;
+    badge?: VNode | string | null;
+    extra?: VNode | null;
 }
 
 export type AppPageProps<
@@ -45,6 +48,8 @@ export interface User {
     updated_at: string;
 }
 
+export type EventStatus = 'draft' | 'published' | 'ended' | 'cancelled' | 'deleted' | 'archived';
+
 export interface Event {
     id: number;
     title: string;
@@ -55,13 +60,26 @@ export interface Event {
     products: Product[] | null;
     slug: string;
     organizer: Organizer;
-    status?: string | null;
+    status?: EventStatus | null;
     vertical_image_url: string | null;
     horizontal_image_url: string | null;
     created_at?: string | null;
     updated_at?: string | null;
     deleted_at?: string | null;
     organizer_id?: number;
+    products_count?: number | null;
+    orders_count?: number | null;
+    taxes_and_fees: string[];
+    widget_stats?: WidgetStats;
+}
+
+export interface WidgetStats {
+    completed_orders_count: number;
+    total_revenue: number;
+    scanned_tickets_count: number;
+    selled_tickets_count: number;
+    courtesy_tickets_count: number;
+    unique_visitors_count: number;
 }
 
 export interface Location {
@@ -135,6 +153,7 @@ export interface Order {
     created_at?: string | null;
     updated_at?: string | null;
     expires_at?: string | null;
+    paid_at?: string | null;
     deleted_at?: string | null;
     items_snapshot: OrderItem[];
     fees_snapshot: any;

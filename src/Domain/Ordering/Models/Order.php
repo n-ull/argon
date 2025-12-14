@@ -69,6 +69,15 @@ class Order extends Model
         'fees_total' => 'decimal:2',
     ];
 
+    protected $appends = [
+        'total',
+    ];
+
+    public function getTotalAttribute()
+    {
+        return $this->subtotal + $this->taxes_total + $this->fees_total;
+    }
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

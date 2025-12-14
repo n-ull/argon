@@ -1,10 +1,16 @@
 <script setup lang="ts">
+import AppLogo from '@/components/AppLogo.vue';
+import OrderCountInfoTooltip from '@/components/dashboard/OrderCountInfoTooltip.vue';
+import GlobalDialog from '@/components/GlobalDialog.vue';
 import AppLayout from '@/layouts/app/AppSidebarManageEventLayout.vue';
 import { analytics, dashboard, settings, products, orders, attendees, doormen, vouchers, promoters } from '@/routes/manage/event';
 import type { BreadcrumbItemType, Event, NavItem } from '@/types';
 import { BookA, ChartLine, DiamondPercent, LayoutGrid, LucideMessageCircleQuestion, MessageSquareHeart, Settings, ShieldAlert, Tickets, User, Users } from 'lucide-vue-next';
 import { darkTheme, NConfigProvider } from 'naive-ui';
 import type { GlobalTheme } from 'naive-ui'
+import { h } from 'vue';
+import { Toaster } from 'vue-sonner';
+import 'vue-sonner/style.css'
 
 interface Props {
     event: Event;
@@ -95,6 +101,8 @@ const themeOverrides = {
     <n-config-provider :theme="dark" :theme-overrides="themeOverrides">
         <AppLayout :breadcrumbs="breadcrumbs" :main-nav-items="mainNavItems" :footer-nav-items="footerNavItems">
             <slot />
+            <Toaster />
+            <GlobalDialog />
         </AppLayout>
     </n-config-provider>
 </template>

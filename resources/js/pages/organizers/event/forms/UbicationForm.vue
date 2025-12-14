@@ -76,9 +76,7 @@ onMounted(() => {
             <label for="mapLink">URL of the map</label>
             <p class="text-xs text-neutral-400">The URL of the map where the event is located, if it is not provided the
                 map will be generated automatically using the address.</p>
-            <n-input :input-props="{
-                name: 'location_info[mapLink]'
-            }" placeholder="https://www.google.com/maps" v-model:value="event.location_info.mapLink"
+            <n-input placeholder="https://www.google.com/maps" v-model:value="event.location_info.mapLink"
                 id="mapLink"></n-input>
         </div>
     </div>

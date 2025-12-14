@@ -11,7 +11,9 @@ class ManageEventController extends Controller
 {
     public function dashboard(int $eventId)
     {
-        $event = Event::where('id', $eventId)->first()->load('organizer');
+        $event = Event::find($eventId)->load('organizer');
+        $event->loadCount('products');
+        $event->append('widget_stats');
 
         return Inertia::render('organizers/event/Dashboard', [
             'event' => $event,

@@ -8,8 +8,7 @@ import UbicationForm from './forms/UbicationForm.vue';
 import PaymentForm from './forms/PaymentForm.vue';
 import { NTabPane, NTabs, NButton } from 'naive-ui';
 import MiscellaneousForm from './forms/MiscellaneousForm.vue';
-import { Form } from '@inertiajs/vue3';
-import { update } from '@/routes/manage/event/settings';
+import { useForm } from '@inertiajs/vue3';
 
 interface Props {
     event: Event;
@@ -32,32 +31,37 @@ const breadcrumbs: BreadcrumbItem[] = [
     }
 ];
 
+type SettingsForm = Event;
+
+const form = useForm<SettingsForm>(event);
+
 </script>
 
 <template>
     <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
-        <Form method="POST" :action="update(event.id)">
+        <form method="POST" @submit.prevent="form.post(settings(event.id).url)">
             <div class="m-4 space-y-4">
                 <h1>Settings</h1>
                 <n-tabs type="line" animated>
                     <n-tab-pane name="general" tab="General">
-                        <GeneralInformationForm :event />
+                        <GeneralInformationForm :event="form" />
                     </n-tab-pane>
                     <n-tab-pane name="ubication" tab="Ubication">
-                        <UbicationForm :event />
+                        <UbicationForm :event="form" />
                     </n-tab-pane>
                     <n-tab-pane name="payment" tab="Payment">
-                        <PaymentForm :event />
+                        <PaymentForm :event="form" />
                     </n-tab-pane>
                     <n-tab-pane name="misc" tab="Miscellaneous">
-                        <MiscellaneousForm :event />
+                        <MiscellaneousForm :event="form" />
                     </n-tab-pane>
                 </n-tabs>
 
-                <n-button tag="button" attr-type="submit" type="primary" class="float-right">
+                <n-button :loading="form.processing" :disabled="form.processing" tag="button" attr-type="submit"
+                    type="primary" class="float-right">
                     Save
                 </n-button>
             </div>
-        </Form>
+        </form>
     </ManageEventLayout>
 </template>
