@@ -5,10 +5,9 @@ import { orders, dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event, Order, PaginatedResponse } from '@/types';
 import { router } from '@inertiajs/vue3';
-import { NDataTable, NTag, PaginationProps, NDrawer, NDrawerContent, DrawerPlacement } from 'naive-ui';
+import { NDataTable, NTag, PaginationProps, NDrawer, NDrawerContent, DrawerPlacement, NInput, NSelect, NSpace, NIcon } from 'naive-ui';
 import { computed, h, ref } from 'vue';
-
-console.log(orders);
+import { Search } from 'lucide-vue-next';
 
 interface Props {
     event: Event;
@@ -133,6 +132,11 @@ const handlePageChange = (page: number) => {
     router.visit(orders(props.event.id).url, {
         data: {
             page: page,
+            search: searchQuery.value || undefined,
+            status: statusFilter.value || undefined,
+            payment_method: paymentMethodFilter.value || undefined,
+            sort_by: sortField.value,
+            sort_direction: sortDirection.value,
         },
         preserveState: true,
         preserveScroll: true,
@@ -146,6 +150,10 @@ const handlePageChange = (page: number) => {
     });
 };
 
+const handleFilterChange = () => {
+    handlePageChange(1); // Reset to first page when filters change
+};
+
 const pagination = computed<PaginationProps>(() => ({
     page: props.orders.current_page,
     pageSize: props.orders.per_page,
@@ -154,6 +162,38 @@ const pagination = computed<PaginationProps>(() => ({
 }));
 
 const loading = ref(false);
+
+// Filter and search state
+const searchQuery = ref('');
+const statusFilter = ref<string | null>(null);
+const paymentMethodFilter = ref<string | null>(null);
+const sortField = ref('created_at');
+const sortDirection = ref<'asc' | 'desc'>('desc');
+
+// Filter options
+const statusOptions: any[] = [
+    { label: 'All Statuses', value: null },
+    { label: 'Completed', value: 'completed' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Failed', value: 'failed' },
+];
+
+const paymentMethodOptions: any[] = [
+    { label: 'All Payment Methods', value: null },
+    { label: 'MercadoPago', value: 'mercadopago' },
+    { label: 'Modo', value: 'modo' },
+];
+
+const sortFieldOptions = [
+    { label: 'Order Date', value: 'created_at' },
+    { label: 'Total Amount', value: 'total' },
+    { label: 'Products Count', value: 'order_items_count' },
+];
+
+const sortDirectionOptions = [
+    { label: 'Descending', value: 'desc' },
+    { label: 'Ascending', value: 'asc' },
+];
 
 const selectedOrder = ref<Order | null>(null);
 
@@ -174,6 +214,42 @@ const handleRowClick = (row: Order) => {
     <ManageEventLayout :event="props.event" :breadcrumbs="breadcrumbs">
         <div class="m-4">
             <h1>Orders</h1>
+
+            <!-- Filter and Search Controls -->
+            <div class="mt-4 space-y-4 bg-neutral-900 border rounded p-4">
+                <n-space vertical :size="12">
+                    <n-space :size="12" wrap>
+                        <!-- Search Input -->
+                        <n-input v-model:value="searchQuery" placeholder="Search by client name, email, or reference"
+                            clearable style="min-width: 300px" @update:value="handleFilterChange">
+                            <template #prefix>
+                                <n-icon>
+                                    <Search :size="16" />
+                                </n-icon>
+                            </template>
+                        </n-input>
+
+                        <!-- Status Filter -->
+                        <n-select v-model:value="statusFilter" :options="statusOptions" placeholder="Filter by status"
+                            style="min-width: 180px" @update:value="handleFilterChange" />
+
+                        <!-- Payment Method Filter -->
+                        <n-select v-model:value="paymentMethodFilter" :options="paymentMethodOptions"
+                            placeholder="Filter by payment method" style="min-width: 220px"
+                            @update:value="handleFilterChange" />
+
+                        <!-- Sort Field -->
+                        <n-select v-model:value="sortField" :options="sortFieldOptions" placeholder="Sort by"
+                            style="min-width: 180px" @update:value="handleFilterChange" />
+
+                        <!-- Sort Direction -->
+                        <n-select v-model:value="sortDirection" :options="sortDirectionOptions" placeholder="Direction"
+                            style="min-width: 150px" @update:value="handleFilterChange" />
+                    </n-space>
+                </n-space>
+            </div>
+
+            <!-- Data Table -->
             <div class="mt-4 space-y-4 bg-neutral-900 border rounded divide-y p-4">
                 <NDataTable :loading remote :columns="columns" :data="props.orders.data" :pagination="pagination"
                     :bordered="true" :scroll-x="1000" :row-props="(row) => ({
