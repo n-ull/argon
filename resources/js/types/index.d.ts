@@ -165,6 +165,8 @@ export interface Order {
     settings?: OrganizerSettings | null;
     client: Client;
     used_payment_gateway_snapshot: string;
+    total_gross: number;
+    total: number;
 }
 
 export interface Client {

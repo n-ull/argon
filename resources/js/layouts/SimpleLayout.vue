@@ -5,6 +5,7 @@ import { NavItem } from '@/types';
 import { usePage } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
 import { Toaster, toast } from 'vue-sonner';
+import { darkTheme, GlobalTheme, NConfigProvider } from 'naive-ui';
 import 'vue-sonner/style.css'
 
 const page = usePage();
@@ -31,6 +32,15 @@ watch(() => page.props.flash, (flash) => {
         }
     }
 });
+
+const dark: GlobalTheme = darkTheme;
+
+const themeOverrides = {
+    Button: {
+        colorPrimary: 'hsl(111, 95%, 77%)',
+        colorSecondary: 'hsl(264, 100%, 84%)',
+    },
+};
 
 const items = computed<NavItem[]>(() => {
     const navItems: NavItem[] = [
@@ -59,15 +69,17 @@ const items = computed<NavItem[]>(() => {
 </script>
 
 <template>
-    <div class="min-h-screen">
-        <!-- Horizontal Navbar -->
-        <HorizontalNavbar :items="items" />
+    <n-config-provider :theme="dark" :theme-overrides="themeOverrides">
+        <div class="min-h-screen">
+            <!-- Horizontal Navbar -->
+            <HorizontalNavbar :items="items" />
 
-        <!-- Main Content -->
-        <main>
-            <slot />
-        </main>
-        <Toaster />
-        <GlobalDialog />
-    </div>
+            <!-- Main Content -->
+            <main>
+                <slot />
+            </main>
+            <Toaster />
+            <GlobalDialog />
+        </div>
+    </n-config-provider>
 </template>

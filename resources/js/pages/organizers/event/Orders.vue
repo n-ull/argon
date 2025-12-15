@@ -9,6 +9,8 @@ import { NDataTable, NTag, PaginationProps, NDrawer, NDrawerContent, DrawerPlace
 import { computed, h, ref } from 'vue';
 import { Search } from 'lucide-vue-next';
 
+import OrderStatusBadge from '@/pages/orders/partials/OrderStatusBadge.vue';
+
 interface Props {
     event: Event;
     orders: PaginatedResponse<Order>;
@@ -55,16 +57,7 @@ const createColumns = () => {
             key: 'status',
             minWidth: 100,
             render(row: Order) {
-                return h(
-                    NTag,
-                    {
-                        type: row.status === 'completed' ? 'success' : row.status === 'pending' ? 'warning' : 'error',
-                        bordered: false,
-                    },
-                    {
-                        default: () => row.status
-                    }
-                );
+                return h(OrderStatusBadge, { status: row.status });
             }
         },
         {
@@ -275,7 +268,7 @@ const handleRowClick = (row: Order) => {
                         </div>
                         <div>
                             <p>Status:</p>
-                            <p>{{ selectedOrder.status }}</p>
+                            <OrderStatusBadge :status="selectedOrder.status" />
                         </div>
                         <div>
                             <p>Total:</p>
