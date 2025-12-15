@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Event } from '@/types';
 import { formatDateTimeToUnix } from '@/lib/utils';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { NInput, NDatePicker } from 'naive-ui';
 
 interface Props {
@@ -22,6 +22,12 @@ const { event } = defineProps<Props>();
                 required: true,
             }" placeholder="My awesome event" v-model:value="event.title" id="title"></n-input>
             <p class="text-xs text-red-500">{{ event.errors.title }}</p>
+        </div>
+
+        <div>
+            <label for="slug">Slug</label>
+            <n-input placeholder="my-awesome-event" :value="event.slug" id="slug" disabled></n-input>
+            <p class="text-xs text-red-500">{{ event.errors.slug }}</p>
         </div>
 
         <div class="space-y-2">

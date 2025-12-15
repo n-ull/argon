@@ -8,14 +8,40 @@ import type { BreadcrumbItemType, Event, NavItem } from '@/types';
 import { BookA, ChartLine, DiamondPercent, Gift, LayoutGrid, LucideMessageCircleQuestion, MessageSquareHeart, Settings, ShieldAlert, Tickets, User, Users } from 'lucide-vue-next';
 import { darkTheme, NConfigProvider } from 'naive-ui';
 import type { GlobalTheme } from 'naive-ui'
-import { h } from 'vue';
 import { Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css'
+import { usePage } from '@inertiajs/vue3';
+import { computed, watch } from 'vue';
+import { toast } from 'vue-sonner';
 
 interface Props {
     event: Event;
     breadcrumbs?: BreadcrumbItemType[];
 }
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
+
+watch(() => page.props.flash, (flash) => {
+    if (flash.message) {
+        switch (flash.message.type) {
+            case 'success':
+                toast.success(flash.message.summary, {
+                    duration: 3000,
+                });
+                break;
+            case 'error':
+                toast.error(flash.message.summary, {
+                    duration: 3000,
+                });
+                break;
+            default:
+                toast(flash.message.summary, {
+                    duration: 3000,
+                });
+                break;
+        }
+    }
+});
 
 const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],

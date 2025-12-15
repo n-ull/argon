@@ -168,7 +168,7 @@ const statusOptions: any[] = [
     { label: 'All Statuses', value: null },
     { label: 'Completed', value: 'completed' },
     { label: 'Pending', value: 'pending' },
-    { label: 'Failed', value: 'failed' },
+    { label: 'Cancelled', value: 'cancelled' },
 ];
 
 const paymentMethodOptions: any[] = [

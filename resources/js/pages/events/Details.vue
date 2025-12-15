@@ -159,8 +159,8 @@ const filterProductWithPrices = products.filter(product => product.product_price
                         formatDate(event.start_date),
                     ]" />
                     <div class="flex flex-col p-4 gap-2">
-                        <span v-if="event.description">{{ event.description }}</span>
-                        <span class="flex items-center gap-2 text-sm text-neutral-400">
+                        <span v-if="event.description" v-html="event.description.replace(/\n/g, '<br>')"></span>
+                        <span class="flex mt-4 items-center gap-2 text-sm text-neutral-400">
                             <MapPin />
                             {{ event.location_info.address }}, {{ event.location_info.city }}, {{
                                 event.location_info.country

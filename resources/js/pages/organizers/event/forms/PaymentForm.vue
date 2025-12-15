@@ -25,18 +25,19 @@ const { event } = defineProps<Props>();
                     money method
                     and vinculate your payment accounts.</span>
             </div>
+            <!-- TODO: maybe this should be only in the organizer settings and not event dependent -->
             <!-- !: check if organizer has a valid MODO and MercadoPago account if he has 'split' as raise money method -->
-            <div class="space-y-2">
+            <!-- <div class="space-y-2">
                 <label for="mode">MODO</label>
                 <p class="text-xs text-neutral-400">Enable MODO payment method</p>
-                <n-switch />
+                <n-switch v-model:value="event.is_modo_active" />
             </div>
 
             <div class="space-y-2">
                 <label for="mode">MercadoPago</label>
                 <p class="text-xs text-neutral-400">Enable MercadoPago payment method</p>
-                <n-switch />
-            </div>
+                <n-switch v-model:value="event.is_mercadopago_active" />
+            </div> -->
 
             <div class="space-y-2">
                 <label for="taxesAndFees">Taxes and Fees</label>
