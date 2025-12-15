@@ -39,13 +39,51 @@ class ManageEventController extends Controller
         ]);
     }
 
-    public function orders(int $eventId)
+    public function orders(Request $request, int $eventId)
     {
         $event = Event::where('id', $eventId)->first()->load('organizer');
 
+        $query = $event->orders()->with('client:id,name,email')->withCount('orderItems');
+
+        // Search by client name, email, or reference ID
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('reference_id', 'like', "%{$search}%")
+                    ->orWhereHas('client', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Filter by payment method
+        if ($request->filled('payment_method')) {
+            $query->where('used_payment_gateway_snapshot', $request->input('payment_method'));
+        }
+
+        // Sorting
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        // Map frontend sort field to actual column
+        $sortColumn = match ($sortBy) {
+            'created_at' => 'created_at',
+            'total' => 'subtotal', // or you might want to sort by a computed total
+            'order_items_count' => 'order_items_count',
+            default => 'created_at'
+        };
+
+        $query->orderBy($sortColumn, $sortDirection);
+
         return Inertia::render('organizers/event/Orders', [
             'event' => $event,
-            'orders' => $event->orders()->with('client:id,name,email')->withCount('orderItems')->latest()->paginate(10),
+            'orders' => $query->paginate(10),
         ]);
     }
 
