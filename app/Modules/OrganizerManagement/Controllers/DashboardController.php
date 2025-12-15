@@ -19,14 +19,45 @@ class DashboardController extends Controller
 
         $organizers = $user->organizers()->get();
 
-        $latestEvents = Event::whereIn('organizer_id', $organizationIds)
+        // Build the query with eager loading
+        $query = Event::with('organizer')->whereIn('organizer_id', $organizationIds);
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        // Apply organization filter
+        if ($request->filled('organizer_id')) {
+            $query->where('organizer_id', $request->organizer_id);
+        }
+
+        // Apply status filter
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        } else {
+            // By default, exclude archived events
+            $query->whereNot('status', 'archived');
+        }
+
+        // Get per_page value with default of 10
+        $perPage = $request->input('per_page', 10);
+
+        // Validate per_page is one of the allowed values
+        if (!in_array($perPage, [10, 20, 30, 50])) {
+            $perPage = 10;
+        }
+
+        // Get paginated events
+        $events = $query
             ->orderBy('updated_at', 'desc')
-            ->take(5)
-            ->get();
+            ->paginate($perPage)
+            ->withQueryString();
 
         return Inertia::render('Dashboard', [
-            'latestEvents' => $latestEvents,
+            'events' => $events,
             'organizers' => $organizers,
+            'filters' => $request->only(['search', 'organizer_id', 'status']),
         ]);
     }
 }
