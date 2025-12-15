@@ -117,8 +117,21 @@ class OrderService
         }, $items);
     }
 
-    public function completePendingOrder(?int $orderId, ?string $referenceId): Order
+    /**
+     * Summary of completePendingOrder
+     * @param ?int $orderId
+     * @param ?string $referenceId
+     * @throws OrderNotFoundException
+     * @throws OrderAlreadyCompletedException
+     * @throws \DomainException
+     * @return Order
+     */
+    public function completePendingOrder(?int $orderId = null, ?string $referenceId = null): Order
     {
+        if (!$orderId && !$referenceId) {
+            throw new \DomainException('Order ID or Reference ID is required.');
+        }
+
         $order = Order::find($orderId) ?? Order::where('reference_id', $referenceId)->first();
 
         if (!$order) {

@@ -210,7 +210,7 @@ class TestOrderCommand extends Command
             $order = $orderService->createPendingOrder($orderData);
 
             // Mark order as completed for testing
-            $order->update(['status' => OrderStatus::COMPLETED]);
+            $orderService->completePendingOrder($order->id);
 
             $this->newLine();
             $this->info('✨ Test order created successfully!');
