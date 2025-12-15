@@ -77,7 +77,7 @@ export interface WidgetStats {
     completed_orders_count: number;
     total_revenue: number;
     scanned_tickets_count: number;
-    selled_tickets_count: number;
+    products_sold_count: number;
     courtesy_tickets_count: number;
     unique_visitors: number;
 }

@@ -67,7 +67,8 @@ console.log(event);
             </div>
             <!-- Widgets -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                <InfoWidget title="Products Sold" :icon="ShoppingCart" info="1,234" />
+                <InfoWidget title="Products Sold" :icon="ShoppingCart"
+                    :info="event.widget_stats!.products_sold_count.toString()" />
                 <InfoWidget title="Completed Orders" :icon="BookA"
                     :info="event.widget_stats!.completed_orders_count.toString()" />
                 <InfoWidget title="Unique Visitors" :icon="Eye"

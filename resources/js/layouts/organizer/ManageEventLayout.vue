@@ -5,7 +5,7 @@ import GlobalDialog from '@/components/GlobalDialog.vue';
 import AppLayout from '@/layouts/app/AppSidebarManageEventLayout.vue';
 import { analytics, dashboard, settings, products, orders, attendees, doormen, vouchers, promoters } from '@/routes/manage/event';
 import type { BreadcrumbItemType, Event, NavItem } from '@/types';
-import { BookA, ChartLine, DiamondPercent, LayoutGrid, LucideMessageCircleQuestion, MessageSquareHeart, Settings, ShieldAlert, Tickets, User, Users } from 'lucide-vue-next';
+import { BookA, ChartLine, DiamondPercent, Gift, LayoutGrid, LucideMessageCircleQuestion, MessageSquareHeart, Settings, ShieldAlert, Tickets, User, Users } from 'lucide-vue-next';
 import { darkTheme, NConfigProvider } from 'naive-ui';
 import type { GlobalTheme } from 'naive-ui'
 import { h } from 'vue';
@@ -50,7 +50,7 @@ const mainNavItems: NavItem[] = [
         title: 'Orders',
         href: orders(props.event.id).url,
         icon: BookA,
-        group: 'Manage',
+        group: 'Clients',
     },
     {
         title: 'Promoters',
@@ -62,7 +62,7 @@ const mainNavItems: NavItem[] = [
         title: 'Attendees',
         href: attendees(props.event.id).url,
         icon: Users,
-        group: 'Manage',
+        group: 'Clients',
     },
     {
         title: 'Doormen',
@@ -76,6 +76,24 @@ const mainNavItems: NavItem[] = [
         icon: DiamondPercent,
         group: 'Manage',
     },
+    {
+        title: 'Courtesies',
+        href: '#',
+        icon: Gift,
+        group: 'Manage',
+    },
+    {
+        title: 'Messages',
+        href: '#',
+        icon: MessageSquareHeart,
+        group: 'Clients',
+    },
+    {
+        title: 'Questions',
+        href: '#',
+        icon: LucideMessageCircleQuestion,
+        group: 'Manage',
+    }
 ];
 
 const footerNavItems: NavItem[] = [
