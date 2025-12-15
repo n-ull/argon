@@ -25,7 +25,11 @@ withDefaults(defineProps<Props>(), {
             :main-nav-group-label="mainNavGroupLabel" />
         <AppContent variant="sidebar" class="overflow-x-hidden">
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
-            <slot />
+            <Transition name="page" mode="out-in" appear>
+                <div :key="$page.url">
+                    <slot />
+                </div>
+            </Transition>
         </AppContent>
     </AppShell>
 </template>

@@ -17,7 +17,11 @@ withDefaults(defineProps<Props>(), {
     <AppShell class="flex-col">
         <AppHeader :breadcrumbs="breadcrumbs" />
         <AppContent>
-            <slot />
+            <Transition name="page" mode="out-in" appear>
+                <div :key="$page.url">
+                    <slot />
+                </div>
+            </Transition>
         </AppContent>
     </AppShell>
 </template>

@@ -76,7 +76,11 @@ const items = computed<NavItem[]>(() => {
 
             <!-- Main Content -->
             <main>
-                <slot />
+                <Transition name="page" mode="out-in" appear>
+                    <div :key="$page.url">
+                        <slot />
+                    </div>
+                </Transition>
             </main>
             <Toaster />
             <GlobalDialog />
