@@ -57,8 +57,6 @@ class OrderService
             $orderData->gateway ?? null
         );
 
-        ds($priceBreakdown);
-
         // Create order with all calculated values
         $order = $event->orders()->create([
             'user_id' => $orderData->userId,
