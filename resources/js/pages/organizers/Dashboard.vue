@@ -6,6 +6,8 @@ import { BreadcrumbItem, Order, Organizer, Event } from '@/types';
 import { LucideCalendar, LucideShoppingCart } from 'lucide-vue-next';
 import { NButton } from 'naive-ui';
 import OrderStatusBadge from '@/pages/orders/partials/OrderStatusBadge.vue';
+import { Link } from '@inertiajs/vue3';
+import { dashboard } from '@/routes/manage/event';
 
 interface Props {
     organizer: Organizer;
@@ -48,7 +50,9 @@ console.log(props.last_orders);
                     <div class="space-y-4">
                         <div class="bg-neutral-800 p-4 rounded-lg shadow" v-for="event in last_events" :key="event.id">
                             <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">{{ event.title }}</h3>
+                                <Link :href="dashboard(event.id)">
+                                    <h3 class="text-lg font-semibold underline text-moovin-lime">{{ event.title }}</h3>
+                                </Link>
                                 <span class="text-sm text-neutral-400">{{ formatDate(event.start_date) }}</span>
                             </div>
                             <p class="text-sm text-neutral-400">{{ event.location_info.address }}</p>

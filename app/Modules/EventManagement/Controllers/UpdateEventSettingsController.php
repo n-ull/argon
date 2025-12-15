@@ -5,8 +5,6 @@ namespace App\Modules\EventManagement\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\EventManagement\Requests\StoreOrUpdateEventSettingsRequest;
 use Domain\EventManagement\Models\Event;
-use Illuminate\Http\Request;
-use Illuminate\Support\Sleep;
 
 class UpdateEventSettingsController extends Controller
 {
@@ -14,11 +12,13 @@ class UpdateEventSettingsController extends Controller
     {
         $validated = $request->validated();
 
-        dd($validated);
         $event = Event::findOrFail($eventId);
 
-        $event->update($request->all());
+        $event->update($validated);
 
-        return redirect()->route('manage.event.settings', $event->id);
+        return redirect()->route('manage.event.settings', $event->id)->with('message', flash_success(
+            'Event settings updated.',
+            'Your event settings has been updated successfully.'
+        ));
     }
 }
