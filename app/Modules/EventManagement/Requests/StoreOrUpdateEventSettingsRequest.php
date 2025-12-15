@@ -32,6 +32,8 @@ class StoreOrUpdateEventSettingsRequest extends FormRequest
             "location_info.city" => "required|string|max:255",
             "location_info.country" => "required|string|max:255",
             "location_info.mapLink" => "nullable|string|max:255",
+            "taxes_and_fees" => "nullable|array",
+            "taxes_and_fees.*" => "required|exists:taxes_and_fees,id",
         ];
     }
 }
