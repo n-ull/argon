@@ -19,7 +19,8 @@ class OrderService
         private OrderValidatorService $orderValidatorService,
         private PriceCalculationService $priceCalculationService,
         private ReferenceIdService $referenceIdService
-    ) {}
+    ) {
+    }
 
     public function createPendingOrder(CreateOrderData $orderData): Order
     {
@@ -27,7 +28,7 @@ class OrderService
         $event = Event::with(['products.product_prices', 'taxesAndFees', 'organizer.settings'])
             ->find($orderData->eventId);
 
-        if (! $event) {
+        if (!$event) {
             throw new \DomainException("Event doesn't exist.");
         }
 
@@ -55,6 +56,8 @@ class OrderService
             $event,
             $orderData->gateway ?? null
         );
+
+        ds($priceBreakdown);
 
         // Create order with all calculated values
         $order = $event->orders()->create([
@@ -120,7 +123,7 @@ class OrderService
     {
         $order = Order::find($orderId) ?? Order::where('reference_id', $referenceId)->first();
 
-        if (! $order) {
+        if (!$order) {
             throw new OrderNotFoundException;
         }
 

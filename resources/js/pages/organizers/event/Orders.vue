@@ -41,8 +41,8 @@ const createColumns = () => {
             maxWidth: 120,
             render(row: Order) {
                 return h('div', {}, [
-                    h('div', {}, row.client.name),
-                    h('div', { style: { fontSize: '12px', color: '#888' } }, row.client.email!),
+                    h('div', {}, row.client?.name ?? 'Unknown'),
+                    h('div', { style: { fontSize: '12px', color: '#888' } }, row.client?.email!),
                 ]);
             }
         },
@@ -165,7 +165,6 @@ function activate(place: DrawerPlacement) {
 }
 
 const handleRowClick = (row: Order) => {
-    console.log(row);
     selectedOrder.value = row;
     activate('right');
 }
@@ -190,7 +189,7 @@ const handleRowClick = (row: Order) => {
                         <h2 class="text-lg font-bold">
                             Order Information
                         </h2>
-                        <div>
+                        <div v-if="selectedOrder.client">
                             <p>Client:</p>
                             <p>{{ selectedOrder.client.name }}</p>
                         </div>

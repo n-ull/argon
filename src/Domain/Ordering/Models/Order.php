@@ -50,6 +50,7 @@ class Order extends Model
         'items_snapshot',
         'taxes_snapshot',
         'fees_snapshot',
+        'total_gross',
         'status',
         'reference_id',
         'organizer_raise_method_snapshot',
