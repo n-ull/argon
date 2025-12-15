@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Event } from '@/types';
-import { onMounted } from 'vue';
+
 import { NInput, NSelect } from 'naive-ui';
 
 interface Props {
@@ -35,9 +35,7 @@ const argentinianCities = [
     { label: 'Tucumán', value: 'Tucumán' },
 ];
 
-onMounted(() => {
-    event.location_info.country = 'Argentina';
-});
+
 
 </script>
 
