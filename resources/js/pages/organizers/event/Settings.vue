@@ -33,7 +33,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 type SettingsForm = Event;
 
-const form = useForm<SettingsForm>(event);
+const form = useForm<SettingsForm>({
+    ...event,
+    location_info: {
+        ...event.location_info,
+        country: event.location_info.country || 'Argentina',
+    }
+});
 
 </script>
 
@@ -57,9 +63,9 @@ const form = useForm<SettingsForm>(event);
                     </n-tab-pane>
                 </n-tabs>
 
-                <n-button :loading="form.processing" :disabled="form.processing" tag="button" attr-type="submit"
-                    type="primary" class="float-right">
-                    Save
+                <n-button :loading="form.processing" :disabled="form.processing || !form.isDirty" tag="button"
+                    attr-type="submit" type="primary" class="float-right">
+                    Save Changes
                 </n-button>
             </div>
         </form>
