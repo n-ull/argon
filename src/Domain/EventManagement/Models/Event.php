@@ -6,6 +6,7 @@ use Domain\EventManagement\Casts\LocationInfoJson;
 use Domain\EventManagement\Enums\EventStatus;
 use Domain\Ordering\Enums\OrderStatus;
 use Domain\Ordering\Models\Order;
+use Domain\Ordering\Models\OrderItem;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -96,6 +97,10 @@ class Event extends Model
             'completed_orders_count' => $this->orders()->where('status', OrderStatus::COMPLETED)->count(),
             'total_revenue' => $this->orders()->where('status', OrderStatus::COMPLETED)->sum('total_gross'),
             'unique_visitors' => $this->statistics->unique_visitors,
+            'products_sold_count' => OrderItem::whereHas('order', function ($query) {
+                $query->where('event_id', $this->id)
+                    ->where('status', OrderStatus::COMPLETED);
+            })->sum('quantity'),
             // 'tickets_count' => $this->tickets()->count(),
             // 'courtesy_tickets_count' => $this->tickets()->where('is_courtesy', true)->count(),
         ];
