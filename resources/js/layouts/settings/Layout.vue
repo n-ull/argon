@@ -56,7 +56,7 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
             <div class="flex-1 md:max-w-2xl">
                 <section class="max-w-xl space-y-12">
                     <Transition name="page" mode="out-in" appear>
-                        <div :key="$page.url">
+                        <div :key="$page.url.split('?')[0]">
                             <slot />
                         </div>
                     </Transition>

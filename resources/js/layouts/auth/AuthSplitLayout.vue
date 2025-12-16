@@ -22,14 +22,6 @@ defineProps<{
                 <AppLogoIcon class="mr-2 size-8 fill-current text-white" />
                 {{ name }}
             </Link>
-            <div v-if="quote" class="relative z-20 mt-auto">
-                <blockquote class="space-y-2">
-                    <p class="text-lg">&ldquo;{{ quote.message }}&rdquo;</p>
-                    <footer class="text-sm text-neutral-300">
-                        {{ quote.author }}
-                    </footer>
-                </blockquote>
-            </div>
         </div>
         <div class="lg:p-8">
             <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
@@ -42,7 +34,7 @@ defineProps<{
                     </p>
                 </div>
                 <Transition name="page" mode="out-in" appear>
-                    <div :key="$page.url">
+                    <div :key="$page.url.split('?')[0]">
                         <slot />
                     </div>
                 </Transition>
