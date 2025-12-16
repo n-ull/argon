@@ -45,8 +45,12 @@ class ManageOrganizations extends Controller
 
     public function cooperators(Organizer $organizer)
     {
+        $cooperators = $organizer->users()->get()->except($organizer->owner_id);
+
         return Inertia::render('organizers/Cooperators', [
             'organizer' => $organizer,
+            'cooperators' => $cooperators,
+            'userIsOwner' => $organizer->owner_id === auth()->id(),
         ]);
     }
 }
