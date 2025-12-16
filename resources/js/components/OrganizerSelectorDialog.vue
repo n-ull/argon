@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/dialog';
 import { Organizer } from '@/types';
 import { computed, ref } from 'vue';
-import { useDialog } from '@/composables/useDialog';
 import { Link } from '@inertiajs/vue3';
 import { show } from '@/routes/manage/organizer';
 
@@ -21,12 +20,6 @@ const props = withDefaults(defineProps<Props>(), {
     title: 'Select Organization',
     description: 'Choose an organization to view its events',
 });
-
-const emit = defineEmits<{
-    select: [organizer: Organizer];
-}>();
-
-const { close } = useDialog();
 
 // Pagination state
 const currentPage = ref(1);
@@ -55,7 +48,6 @@ const goToPage = (page: number) => {
         currentPage.value = page;
     }
 };
-
 
 </script>
 
