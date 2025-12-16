@@ -68,10 +68,11 @@ console.log(props.last_orders);
                                 <h3 class="text-lg font-semibold">{{ order.reference_id }}</h3>
                                 <span class="text-sm text-neutral-400">{{ formatDate(order.created_at!) }}</span>
                             </div>
-                            <div class="flex items-center space-x-2 text-neutral-400 my-2">
+                            <Link :href="dashboard(order.event!.id)"
+                                class="flex items-center hover:underline space-x-2 text-neutral-400 my-2">
                                 <LucideCalendar :size="16" />
                                 <h2 class="text-sm font-semibold">{{ order.event?.title }}</h2>
-                            </div>
+                            </Link>
                             <div class="flex items-center justify-between">
                                 <OrderStatusBadge :status="order.status" />
                                 <p class="text-sm text-neutral-400">${{ order.total_gross }}</p>
