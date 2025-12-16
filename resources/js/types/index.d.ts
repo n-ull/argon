@@ -120,6 +120,7 @@ export interface ProductPrice {
 
 export interface Organizer {
     id: number;
+    owner_id: number;
     name: string;
     email: string | null;
     phone: string | null;
@@ -129,9 +130,6 @@ export interface Organizer {
     deleted_at: string | null;
     events?: Event[];
     settings?: OrganizerSettings | null;
-    created_at?: string | null;
-    updated_at?: string | null;
-    deleted_at?: string | null;
 }
 
 export interface OrganizerSettings {
@@ -197,3 +195,12 @@ export interface PaginatedResponse<T> {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+export type Cooperator = {
+    id: number;
+    name: string;
+    email: string;
+    created_at?: string | null;
+    updated_at?: string | null;
+    deleted_at?: string | null;
+}
