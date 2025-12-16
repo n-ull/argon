@@ -18,7 +18,7 @@ withDefaults(defineProps<Props>(), {
         <AppHeader :breadcrumbs="breadcrumbs" />
         <AppContent>
             <Transition name="page" mode="out-in" appear>
-                <div :key="$page.url">
+                <div :key="$page.url.split('?')[0]">
                     <slot />
                 </div>
             </Transition>

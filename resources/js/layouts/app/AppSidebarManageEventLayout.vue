@@ -26,7 +26,7 @@ withDefaults(defineProps<Props>(), {
         <AppContent variant="sidebar" class="overflow-x-hidden">
             <AppSidebarHeader :breadcrumbs="breadcrumbs" />
             <Transition name="page" mode="out-in" appear>
-                <div :key="$page.url">
+                <div :key="$page.url.split('?')[0]">
                     <slot />
                 </div>
             </Transition>

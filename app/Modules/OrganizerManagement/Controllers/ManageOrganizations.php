@@ -39,7 +39,7 @@ class ManageOrganizations extends Controller
     {
         return Inertia::render('organizers/Events', [
             'organizer' => $organizer,
-            'events' => $organizer->events()->get(),
+            'events' => $organizer->events()->paginate(10),
         ]);
     }
 
