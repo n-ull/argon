@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
-import { show } from '@/routes/manage/organizer';
+import { cooperators, events, settings, show } from '@/routes/manage/organizer';
 import type { BreadcrumbItemType, NavItem, Organizer } from '@/types';
-import { Calendar, LayoutGrid, LucideMessageCircleQuestion, Settings } from 'lucide-vue-next';
+import { Calendar, LayoutGrid, LucideMessageCircleQuestion, Settings, UsersRound } from 'lucide-vue-next';
 
 interface Props {
     organizer: Organizer;
@@ -21,12 +21,17 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Events',
-        href: "#",
+        href: events(props.organizer.id),
         icon: Calendar,
     },
     {
+        title: 'Cooperators',
+        href: cooperators(props.organizer.id),
+        icon: UsersRound,
+    },
+    {
         title: 'Settings',
-        href: "#",
+        href: settings(props.organizer.id),
         icon: Settings,
     }
 ];

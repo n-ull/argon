@@ -10,15 +10,6 @@ use Inertia\Inertia;
 
 class ManageOrganizations extends Controller
 {
-    public function index()
-    {
-        $organizers = auth()->user()->organizers()->get();
-
-        return Inertia::render('organizers/Index', [
-            'organizers' => $organizers,
-        ]);
-    }
-
     public function show(Organizer $organizer)
     {
         $last_orders = Order::whereHas('event', function ($query) use ($organizer) {
@@ -34,6 +25,28 @@ class ManageOrganizations extends Controller
             'events_count' => $organizer->events()->count(),
             'last_orders' => $last_orders,
             'last_events' => $last_events,
+        ]);
+    }
+
+    public function settings(Organizer $organizer)
+    {
+        return Inertia::render('organizers/Settings', [
+            'organizer' => $organizer,
+        ]);
+    }
+
+    public function events(Organizer $organizer)
+    {
+        return Inertia::render('organizers/Events', [
+            'organizer' => $organizer,
+            'events' => $organizer->events()->get(),
+        ]);
+    }
+
+    public function cooperators(Organizer $organizer)
+    {
+        return Inertia::render('organizers/Cooperators', [
+            'organizer' => $organizer,
         ]);
     }
 }

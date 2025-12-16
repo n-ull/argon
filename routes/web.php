@@ -52,17 +52,26 @@ Route::group([
         'prefix' => 'organizer',
         'as' => 'organizer.',
     ], function () {
-        Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
-            ->name('index');
+        // Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
+        //     ->name('index');
 
-        Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
-            ->name('create');
+        // Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
+        //     ->name('create');
 
-        Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
-            ->name('store');
+        // Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
+        //     ->name('store');
 
         Route::get('{organizer}', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'show'])
             ->name('show');
+
+        Route::get('{organizer}/events', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'events'])
+            ->name('events');
+
+        Route::get('{organizer}/cooperators', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'cooperators'])
+            ->name('cooperators');
+
+        Route::get('{organizer}/settings', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'settings'])
+            ->name('settings');
     });
 
     // manage event
