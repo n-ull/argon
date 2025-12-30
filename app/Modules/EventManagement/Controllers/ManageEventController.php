@@ -99,9 +99,11 @@ class ManageEventController extends Controller
     public function settings(int $eventId)
     {
         $event = Event::where('id', $eventId)->first()->load('organizer');
+        $taxAndFees = $event->taxesAndFees()->get();
 
         return Inertia::render('organizers/event/Settings', [
             'event' => $event,
+            'taxAndFees' => $taxAndFees,
         ]);
     }
 

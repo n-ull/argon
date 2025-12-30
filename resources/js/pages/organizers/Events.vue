@@ -99,7 +99,7 @@ const handlePageChange = (page: number) => {
 
     <Head title="Events" />
     <OrganizerLayout :organizer="props.organizer" :breadcrumbs="breadcrumbItems">
-        <div class="m-6 space-y-6">
+        <div class="m-4 space-y-6">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold tracking-tight">Events</h1>

@@ -67,6 +67,7 @@ class Product extends Model
         'hide_after_sale_end_date',
         'hide_when_sold_out',
         'show_stock',
+        'is_hidden',
         'start_sale_date',
         'end_sale_date',
         'event_id',
@@ -77,6 +78,11 @@ class Product extends Model
         'product_type' => ProductType::class,
         'start_sale_date' => 'datetime',
         'end_sale_date' => 'datetime',
+        'hide_before_sale_start_date' => 'boolean',
+        'hide_after_sale_end_date' => 'boolean',
+        'hide_when_sold_out' => 'boolean',
+        'show_stock' => 'boolean',
+        'is_hidden' => 'boolean',
     ];
 
     public function product_prices(): HasMany

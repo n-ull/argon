@@ -88,6 +88,15 @@ Route::group([
         Route::get('{event}/products', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'products'])
             ->name('products');
 
+        Route::post('{event}/products', \Domain\EventManagement\Actions\CreateEventProduct::class)
+            ->name('products.store');
+
+        Route::delete('{event}/products/{product}', \Domain\EventManagement\Actions\DeleteEventProduct::class)
+            ->name('products.delete');
+
+        Route::put('{event}/products/{product}', \Domain\EventManagement\Actions\EditEventProduct::class)
+            ->name('products.update');
+
         Route::get('{event}/orders', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'orders'])
             ->name('orders');
 

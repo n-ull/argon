@@ -58,7 +58,7 @@ const form = useForm<SettingsForm>({
                     <n-tab-pane name="payment" tab="Payment">
                         <PaymentForm :event="form" />
                     </n-tab-pane>
-                    <n-tab-pane name="misc" tab="Miscellaneous">
+                    <n-tab-pane disabled name="misc" tab="Miscellaneous">
                         <MiscellaneousForm :event="form" />
                     </n-tab-pane>
                 </n-tabs>

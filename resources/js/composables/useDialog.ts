@@ -9,12 +9,14 @@ interface DialogState {
     isOpen: boolean;
     component?: Component;
     props?: Record<string, any>;
+    key?: string;
 }
 
 const dialogState = ref<DialogState>({
     isOpen: false,
     component: undefined,
     props: {},
+    key: '',
 });
 
 export function useDialog() {
@@ -23,6 +25,7 @@ export function useDialog() {
             isOpen: true,
             component: markRaw(options.component),
             props: options.props || {},
+            key: crypto.randomUUID(),
         };
     };
 

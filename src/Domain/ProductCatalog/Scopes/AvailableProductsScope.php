@@ -14,23 +14,30 @@ class AvailableProductsScope implements Scope
         $builder->leftJoin('events', 'products.event_id', '=', 'events.id')
             ->where(function (Builder $query) {
                 // Start Date Logic
-                $query->whereRaw('COALESCE(products.start_sale_date, events.start_date) <= ?', [now()]);
+                $query->where(function (Builder $q) {
+                    // Show if: no start date, OR start date has passed, OR we don't hide before start date
+                    $q->whereRaw('COALESCE(products.start_sale_date, events.start_date) IS NULL')
+                        ->orWhereRaw('COALESCE(products.start_sale_date, events.start_date) <= ?', [now()])
+                        ->orWhere('products.hide_before_sale_start_date', false);
+                });
 
                 // End Date Logic
                 $query->where(function (Builder $q) {
-                    $q->whereRaw('COALESCE(products.end_sale_date, events.end_date) >= ?', [now()])
-                      ->orWhereRaw('COALESCE(products.end_sale_date, events.end_date) IS NULL');
+                    // Show if: no end date, OR end date hasn't passed, OR we don't hide after end date
+                    $q->whereRaw('COALESCE(products.end_sale_date, events.end_date) IS NULL')
+                        ->orWhereRaw('COALESCE(products.end_sale_date, events.end_date) >= ?', [now()])
+                        ->orWhere('products.hide_after_sale_end_date', false);
                 });
             })
             ->where(function (Builder $query) {
                 // Stock Logic
                 $query->where('products.show_stock', false)
-                      ->orWhere(function (Builder $q) {
-                          $q->where('products.show_stock', true)
-                            ->whereHas('product_prices', function (Builder $subQuery) {
-                                $subQuery->whereRaw('COALESCE(stock, 999999999) > quantity_sold');
-                            });
-                      });
+                    ->orWhere(function (Builder $q) {
+                    $q->where('products.show_stock', true)
+                        ->whereHas('product_prices', function (Builder $subQuery) {
+                            $subQuery->whereRaw('COALESCE(stock, 999999999) > quantity_sold');
+                        });
+                });
             })
             ->where('products.is_hidden', false)
             ->select('products.*'); // Ensure we select products columns to avoid ambiguity or missing fields

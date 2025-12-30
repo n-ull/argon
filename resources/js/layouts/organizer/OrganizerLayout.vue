@@ -2,8 +2,10 @@
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
 import { cooperators, events, settings, show } from '@/routes/manage/organizer';
 import type { BreadcrumbItemType, NavItem, Organizer } from '@/types';
+import { usePage } from '@inertiajs/vue3';
 import { Calendar, LayoutGrid, LucideMessageCircleQuestion, Settings, UsersRound } from 'lucide-vue-next';
 import { GlobalTheme, NConfigProvider, darkTheme } from 'naive-ui';
+import { computed } from 'vue';
 
 interface Props {
     organizer: Organizer;
@@ -11,6 +13,13 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
+
+const userIsOwner = computed(() => {
+    return props.organizer.owner_id === user.value?.id;
+});
 
 const mainNavItems: NavItem[] = [
     {
@@ -30,11 +39,15 @@ const mainNavItems: NavItem[] = [
         href: cooperators(props.organizer.id),
         icon: UsersRound,
     },
-    {
-        title: 'Settings',
-        href: settings(props.organizer.id),
-        icon: Settings,
-    }
+    ...(userIsOwner.value
+        ? [
+            {
+                title: 'Settings',
+                href: settings(props.organizer.id),
+                icon: Settings,
+            },
+        ]
+        : []),
 ];
 
 const footerNavItems: NavItem[] = [
