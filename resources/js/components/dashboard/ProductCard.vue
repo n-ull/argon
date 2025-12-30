@@ -2,7 +2,7 @@
 import { Product } from '@/types';
 import { LucideChevronUp, LucideChevronDown, MoreVerticalIcon, LucidePencil, LucideTrash2, LucideCopy } from 'lucide-vue-next';
 import { NDropdown, NIcon } from 'naive-ui';
-import { h, type Component } from 'vue';
+import { computed, h, type Component } from 'vue';
 import type { DropdownOption } from 'naive-ui';
 
 interface Props {
@@ -21,19 +21,26 @@ const renderIcon = (icon: Component) => {
     return () => h(NIcon, null, { default: () => h(icon) });
 };
 
+const productTypeLabel = computed(() => {
+    if (product.product_type === 'general') {
+        return 'Product';
+    }
+    return 'Ticket';
+});
+
 const menuOptions: DropdownOption[] = [
     {
-        label: 'Edit Product',
+        label: 'Edit ' + productTypeLabel.value,
         key: 'edit',
         icon: renderIcon(LucidePencil),
     },
     {
-        label: 'Delete Product',
+        label: 'Delete ' + productTypeLabel.value,
         key: 'delete',
         icon: renderIcon(LucideTrash2),
     },
     {
-        label: 'Duplicate Product',
+        label: 'Duplicate ' + productTypeLabel.value,
         key: 'duplicate',
         icon: renderIcon(LucideCopy),
     },

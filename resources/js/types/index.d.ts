@@ -99,9 +99,16 @@ export interface Product {
     max_per_order: number | null;
     min_per_order: number;
     product_prices: ProductPrice[];
+    start_sale_date?: string | null;
+    end_sale_date?: string | null;
+    is_hidden?: boolean;
+    hide_when_sold_out?: boolean;
     created_at?: string | null;
     updated_at?: string | null;
     deleted_at?: string | null;
+    hide_before_sale_start_date?: boolean;
+    hide_after_sale_end_date?: boolean;
+    show_stock?: boolean;
 }
 
 export interface ProductPrice {

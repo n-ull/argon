@@ -63,6 +63,11 @@ class ProductPrice extends Model
     ];
 
     protected $casts = [
+        'price' => 'float',
+        'stock' => 'integer',
+        'quantity_sold' => 'integer',
+        'is_hidden' => 'boolean',
+        'sort_order' => 'integer',
         'start_sale_date' => 'datetime',
         'end_sale_date' => 'datetime',
     ];

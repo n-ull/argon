@@ -22,6 +22,7 @@ class ProductResource extends JsonResource
             'min_per_order' => $this->min_per_order,
             'product_type' => $this->product_type,
             'product_price_type' => $this->product_price_type,
+            'is_hidden' => $this->is_hidden,
             'hide_before_sale_start_date' => $this->hide_before_sale_start_date,
             'hide_after_sale_end_date' => $this->hide_after_sale_end_date,
             'hide_when_sold_out' => $this->hide_when_sold_out,

@@ -3,7 +3,7 @@ import InfoWidget from '@/components/dashboard/InfoWidget.vue';
 import OrganizerLayout from '@/layouts/organizer/OrganizerLayout.vue';
 import { formatDate } from '@/lib/utils';
 import { BreadcrumbItem, Order, Organizer, Event } from '@/types';
-import { LucideCalendar, LucideShoppingCart } from 'lucide-vue-next';
+import { LucideCalendar, LucideShoppingCart, Plus } from 'lucide-vue-next';
 import { NButton } from 'naive-ui';
 import OrderStatusBadge from '@/pages/orders/partials/OrderStatusBadge.vue';
 import { Link } from '@inertiajs/vue3';
@@ -36,7 +36,12 @@ console.log(props.last_orders);
 
             <!-- Control Actions -->
             <div class="flex justify-end">
-                <NButton type="primary">Add Event</NButton>
+                <NButton size="large" type="primary">
+                    <template #icon>
+                        <Plus />
+                    </template>
+                    Create Event
+                </NButton>
             </div>
 
             <div class="flex flex-row *:grow space-x-4 ">

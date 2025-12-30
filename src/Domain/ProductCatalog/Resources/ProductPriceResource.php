@@ -20,7 +20,7 @@ class ProductPriceResource extends JsonResource
             'label' => $this->label,
             'stock' => $this->whenNotNull($this->stock),
             'sales_start_date' => $this->whenNotNull($this->start_sale_date),
-            'sales_start_date_diff' => $this->whenNotNull($this->start_sale_date->diffForHumans()),
+            'sales_end_date' => $this->whenNotNull($this->end_sale_date),
             'sort_order' => $this->sort_order,
         ];
     }

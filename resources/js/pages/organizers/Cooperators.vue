@@ -107,19 +107,21 @@ const columns = [
 
     <Head title="Cooperators" />
     <OrganizerLayout :breadcrumbs="breadcrumbs" :organizer="organizer">
-        <div class="mx-4">
-            <n-card>
-                <template #header>
-                    <n-flex justify="space-between" align="center">
-                        <h1 class="text-xl font-bold">Cooperators</h1>
-                        <n-button v-if="userIsOwner" type="primary" @click="showAddModal = true">
-                            Add Cooperator
-                        </n-button>
-                    </n-flex>
-                </template>
-
-                <n-data-table :columns="columns" :data="props.cooperators" />
-            </n-card>
+        <div class="flex flex-col gap-4 m-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">Cooperators</h1>
+                    <p class="text-gray-500 mt-1">Manage and monitor all your cooperators.</p>
+                </div>
+                <n-button v-if="userIsOwner" type="primary" @click="showAddModal = true">
+                    Add Cooperator
+                </n-button>
+            </div>
+            <div
+                class="bg-white dark:bg-neutral-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                <NDataTable :columns="columns" :data="props.cooperators" :bordered="false" striped
+                    class="rounded-lg overflow-hidden" />
+            </div>
 
             <n-modal v-if="userIsOwner" v-model:show="showAddModal" preset="card" title="Add Cooperator"
                 class="w-full max-w-md">
