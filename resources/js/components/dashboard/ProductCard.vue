@@ -15,6 +15,7 @@ const emit = defineEmits<{
     edit: [product: Product];
     delete: [product: Product];
     duplicate: [product: Product];
+    'sort-order': [product: Product, direction: 'up' | 'down'];
 }>();
 
 const renderIcon = (icon: Component) => {
@@ -65,8 +66,10 @@ const handleSelect = (key: string) => {
     <div class="flex space-x-4 items-center p-4" :key="product.id">
         <!-- Sort handle -->
         <div class="flex flex-col shrink-0 bg-neutral-800 p-2 rounded">
-            <LucideChevronUp />
-            <LucideChevronDown />
+            <LucideChevronUp class="cursor-pointer hover:text-primary-500 transition-colors"
+                @click="emit('sort-order', product, 'up')" />
+            <LucideChevronDown class="cursor-pointer hover:text-primary-500 transition-colors"
+                @click="emit('sort-order', product, 'down')" />
         </div>
 
         <!-- Information -->

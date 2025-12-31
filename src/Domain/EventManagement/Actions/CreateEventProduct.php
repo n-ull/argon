@@ -76,6 +76,6 @@ class CreateEventProduct
 
         $this->handle($event, $data);
 
-        return redirect()->back();
+        return redirect()->back()->with('message', flash_success('Product created successfully', 'Product created successfully'));
     }
 }

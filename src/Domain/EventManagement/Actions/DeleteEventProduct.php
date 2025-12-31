@@ -9,15 +9,22 @@ class DeleteEventProduct
 {
     use AsAction;
 
-    public function handle(Product $product)
+    public function handle($eventId, $productId)
     {
-        $product->delete();
+        try {
+            $product = Product::findOrFail($productId);
+            $product->delete();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
-    public function asController(Product $product)
+    // TODO: if tickets exists, cant delete product
+    public function asController($eventId, $productId)
     {
-        $this->handle($product);
+        $this->handle($eventId, $productId);
 
-        return back()->with(flash_message('Product deleted successfully', 'success'));
+        return back()->with('message', flash_success('Product deleted successfully', 'Product deleted successfully'));
     }
 }

@@ -100,6 +100,6 @@ class EditEventProduct
 
         $this->handle($event, $product, $data);
 
-        return redirect()->back();
+        return redirect()->back()->with('message', flash_success('Product updated successfully', 'Product updated successfully'));
     }
 }
