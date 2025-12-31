@@ -11,6 +11,8 @@ import ProductForm from './forms/ProductForm.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import { deleteMethod } from '@/routes/manage/event/products';
 
+import { router } from '@inertiajs/vue3';
+
 interface Props {
     event: Event;
     products: Product[];
@@ -54,7 +56,8 @@ const handleDelete = (product: Product) => {
             title: 'Delete Product',
             description: 'Are you sure you want to delete this product?',
             onConfirm: () => {
-                deleteMethod({ event: event.id, product: product.id }).url;
+                console.log('confirmed');
+                router.delete(deleteMethod({ event: event.id, product: product.id }).url);
             }
         }
     })
@@ -74,6 +77,15 @@ const handleCreate = () => {
     });
 };
 
+const handleSortOrder = (product: Product, direction: 'up' | 'down') => {
+    console.log('going to sort', product, direction);
+    router.patch(`/manage/event/${event.id}/products/${product.id}/sort`, {
+        direction: direction
+    }, {
+        preserveScroll: true,
+    });
+}
+
 </script>
 
 <template>
@@ -89,7 +101,7 @@ const handleCreate = () => {
                 Add Product or Ticket</n-button>
             <div class="mt-4 space-y-4 bg-neutral-900 border rounded divide-y">
                 <ProductCard v-for="product in products" :key="product.id" :product="product" @edit="handleEdit"
-                    @delete="handleDelete" @duplicate="handleDuplicate" />
+                    @delete="handleDelete" @duplicate="handleDuplicate" @sort-order="handleSortOrder" />
             </div>
         </div>
     </ManageEventLayout>

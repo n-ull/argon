@@ -97,6 +97,9 @@ Route::group([
         Route::put('{event}/products/{product}', \Domain\EventManagement\Actions\EditEventProduct::class)
             ->name('products.update');
 
+        Route::patch('{event}/products/{product}/sort', \Domain\EventManagement\Actions\SortEventProduct::class)
+            ->name('products.sort');
+
         Route::get('{event}/orders', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'orders'])
             ->name('orders');
 
