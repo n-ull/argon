@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Event } from '@/types';
 import { LucideBadgeDollarSign } from 'lucide-vue-next';
-import { NSwitch, NSelect } from 'naive-ui';
+import { NSelect } from 'naive-ui';
 
 interface Props {
     event: Event;
@@ -17,7 +17,8 @@ const { event } = defineProps<Props>();
         <hr>
         <div class="space-y-4">
             <div class="text-xs text-neutral-400">
-                <span>To see more options, visit the <a href="/manage/organizer/4/settings"
+                <span>To see more options, visit the <a
+                        :href="`/manage/organizer/${event.organizer_id}/settings#payment`"
                         class="text-moovin-lime underline">organizer
                         settings</a>, where
                     you can select the
@@ -25,19 +26,7 @@ const { event } = defineProps<Props>();
                     money method
                     and vinculate your payment accounts.</span>
             </div>
-            <!-- TODO: maybe this should be only in the organizer settings and not event dependent -->
             <!-- !: check if organizer has a valid MODO and MercadoPago account if he has 'split' as raise money method -->
-            <!-- <div class="space-y-2">
-                <label for="mode">MODO</label>
-                <p class="text-xs text-neutral-400">Enable MODO payment method</p>
-                <n-switch v-model:value="event.is_modo_active" />
-            </div>
-
-            <div class="space-y-2">
-                <label for="mode">MercadoPago</label>
-                <p class="text-xs text-neutral-400">Enable MercadoPago payment method</p>
-                <n-switch v-model:value="event.is_mercadopago_active" />
-            </div> -->
 
             <div class="space-y-2">
                 <label for="taxesAndFees">Taxes and Fees</label>

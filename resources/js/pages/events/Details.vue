@@ -37,6 +37,7 @@ const form = useForm<Cart>({
     items: []
 });
 
+console.log(products);
 
 const addToCart = (product: Product, price: ProductPrice) => {
     const existingItem = form.items.find(item => item.productPriceId === price.id);
@@ -192,23 +193,37 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                 <li v-for="price in product.product_prices" :key="price.id"
                                     class="flex flex-row justify-between items-center py-2 px-4 bg-neutral-800 rounded">
                                     <div class="flex flex-col gap-2">
-                                        <span class="text-xl">{{ price.label }}</span>
-                                        <span class="text-moovin-lime text-md">${{ price.price }}</span>
+                                        <div class="flex flex-row items-center gap-2">
+                                            <span class="text-xl">{{ price.label }}</span>
+                                            <span class="text-xs text-neutral-400" v-if="product.show_stock">Stock: {{
+                                                price.stock
+                                                }}</span>
+                                        </div>
+                                        <span class="text-moovin-lime text-md font-bold" v-if="price.price > 0">${{
+                                            price.price
+                                        }}</span>
+                                        <span class="text-moovin-lime text-md font-bold" v-else>Free</span>
                                     </div>
                                     <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
                                         class="text-sm text-neutral-400">
                                         Sales start in {{ price.sales_start_date_diff }}
                                     </div>
                                     <div v-else class="flex flex-row gap-2">
-                                        <Button size="icon" variant="default" @click="removeFromCart(product, price)">
-                                            <Minus />
-                                        </Button>
-                                        <Button size="icon" variant="default">{{
-                                            getQuantity(price.id)
-                                        }}</Button>
-                                        <Button size="icon" variant="default" @click="addToCart(product, price)">
-                                            <Plus />
-                                        </Button>
+                                        <div v-if="price.is_sold_out" class="text-lg text-moovin-lila font-bold">
+                                            Sold out
+                                        </div>
+                                        <div class="flex flex-row gap-2" v-else>
+                                            <Button size="icon" variant="default"
+                                                @click="removeFromCart(product, price)">
+                                                <Minus />
+                                            </Button>
+                                            <Button size="icon" variant="default">{{
+                                                getQuantity(price.id)
+                                            }}</Button>
+                                            <Button size="icon" variant="default" @click="addToCart(product, price)">
+                                                <Plus />
+                                            </Button>
+                                        </div>
                                     </div>
                                 </li>
                             </ul>
