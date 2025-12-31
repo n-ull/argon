@@ -123,6 +123,7 @@ export interface ProductPrice {
     created_at?: string | null;
     updated_at?: string | null;
     deleted_at?: string | null;
+    is_sold_out?: boolean;
 }
 
 export interface Organizer {

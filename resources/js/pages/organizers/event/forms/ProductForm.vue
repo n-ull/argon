@@ -129,8 +129,8 @@ const form = useForm({
         id: p.id,
         price: p.price,
         label: p.label,
-        stock: p.stock,
-        has_limited_stock: (p.stock || 0) > 0,
+        stock: p.stock ?? null,
+        has_limited_stock: p.stock !== null,
         // @ts-ignore: sales_start_date comes from API resource but missing in incomplete ProductPrice type
         start_sale_date: formatDateForPicker(p.sales_start_date),
         // @ts-ignore: sales_end_date comes from API resource but missing in incomplete ProductPrice type
@@ -139,7 +139,7 @@ const form = useForm({
         id: null,
         price: 0,
         label: 'Standard Price',
-        stock: 0,
+        stock: null,
         has_limited_stock: false,
         start_sale_date: null,
         end_sale_date: null,
@@ -188,7 +188,7 @@ const addPrice = () => {
         id: null,
         price: 0,
         label: '',
-        stock: 0,
+        stock: null,
         has_limited_stock: false,
         start_sale_date: null,
         end_sale_date: null,
@@ -278,8 +278,8 @@ const renderPriceTypeLabel = (option: any) => {
 
                 <!-- Product Price -->
                 <div v-if="form.product_price_type === 'standard' || form.product_price_type === 'free'">
-                    <div v-if="form.product_price_type === 'standard'" class="grid grid-cols-2 gap-4">
-                        <div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div v-if="form.product_price_type === 'standard'">
                             <label class="required block mb-1">Price</label>
                             <NInputNumber v-model:value="form.prices[0].price" :min="0" :show-button="false">
                                 <template #prefix>$</template>

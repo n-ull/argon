@@ -29,9 +29,10 @@ class CreateEventProduct
             'hide_before_sale_start_date' => $data['hide_before_sale_start_date'] ?? false,
             'hide_after_sale_end_date' => $data['hide_after_sale_end_date'] ?? false,
             'show_stock' => $data['show_stock'] ?? false,
+            'sort_order' => $event->products()->max('sort_order') + 1,
         ]);
 
-        if (!empty($data['prices'])) {
+        if (!empty($data['prices']) && $data['product_price_type'] !== ProductPriceType::FREE) {
             foreach ($data['prices'] as $priceData) {
                 $product->product_prices()->create([
                     'price' => $priceData['price'],
