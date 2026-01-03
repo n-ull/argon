@@ -79,7 +79,7 @@ class AvailableProductPricesScopeTest extends TestCase
 
         $this->assertTrue($results->contains($price1), 'Price 1 should be available');
         $this->assertFalse($results->contains($price2), 'Price 2 should be unavailable (hidden)');
-        $this->assertTrue($results->contains($price3), 'Price 3 should be unavailable (future start)');
+        $this->assertFalse($results->contains($price3), 'Price 3 should be unavailable (future start)');
         $this->assertFalse($results->contains($price4), 'Price 4 should be unavailable (past end)');
         $this->assertFalse($results->contains($price5), 'Price 5 should be unavailable (no stock)');
         $this->assertTrue($results->contains($price6), 'Price 6 should be available (hide_when_sold_out true)');

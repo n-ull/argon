@@ -23,10 +23,11 @@ class AvailableProductsScope implements Scope
 
                 // End Date Logic
                 $query->where(function (Builder $q) {
-                    // Show if: no end date, OR end date hasn't passed, OR we don't hide after end date
-                    $q->whereRaw('COALESCE(products.end_sale_date, events.end_date) IS NULL')
-                        ->orWhereRaw('COALESCE(products.end_sale_date, events.end_date) >= ?', [now()])
-                        ->orWhere('products.hide_after_sale_end_date', false);
+                    // Show if: (end date is null OR end date >= now) OR we don't hide after end date
+                    $q->where(function ($sub) {
+                        $sub->whereRaw('COALESCE(products.end_sale_date, events.end_date) IS NULL')
+                            ->orWhereRaw('COALESCE(products.end_sale_date, events.end_date) >= ?', [now()]);
+                    })->orWhere('products.hide_after_sale_end_date', false);
                 });
             })
             ->where(function (Builder $query) {
@@ -35,7 +36,10 @@ class AvailableProductsScope implements Scope
                     ->orWhere(function (Builder $q) {
                     $q->where('products.show_stock', true)
                         ->whereHas('product_prices', function (Builder $subQuery) {
-                            $subQuery->whereRaw('COALESCE(stock, 999999999) > quantity_sold');
+                            $subQuery->where(function ($sq) {
+                                $sq->whereNull('stock')
+                                    ->orWhereRaw('stock > quantity_sold');
+                            });
                         });
                 });
             })

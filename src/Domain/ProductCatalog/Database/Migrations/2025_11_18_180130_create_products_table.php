@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -20,8 +19,8 @@ return new class extends Migration
             $table->unsignedInteger('min_per_order')->nullable();
             $table->string('product_type')->default('ticket');
             $table->string('product_price_type')->default('standard');
-            $table->boolean('hide_before_sale_start_date')->default(false);
-            $table->boolean('hide_after_sale_end_date')->default(false);
+            $table->boolean('hide_before_sale_start_date')->default(true);
+            $table->boolean('hide_after_sale_end_date')->default(true);
             $table->boolean('hide_when_sold_out')->default(false);
             $table->boolean('show_stock')->default(false);
             $table->dateTime('start_sale_date')->nullable();

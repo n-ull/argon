@@ -60,7 +60,7 @@ class OrderValidatorService
 
             // check stock
             if ($selectedPrice->stock !== null && $selectedPrice->stock < $quantity) {
-                throw new \DomainException('Product with this price is not available');
+                throw new \DomainException('Product is not available');
             }
         }
     }
