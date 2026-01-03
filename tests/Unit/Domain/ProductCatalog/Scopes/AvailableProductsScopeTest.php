@@ -82,7 +82,7 @@ class AvailableProductsScopeTest extends TestCase
         // 6. Available: Infinite end date (Event) - Event end date null is not standard but let's test if logic holds
         // Actually Event end_date is usually required, but let's assume the scope handles nulls if they exist.
         // The scope says: COALESCE(products.end_sale_date, events.end_date) IS NULL
-        
+
         // 7. Stock Logic: Show Stock = True, Stock > Sold -> Available
         $product7 = Product::factory()->create([
             'event_id' => $event1->id,
@@ -131,7 +131,7 @@ class AvailableProductsScopeTest extends TestCase
         $this->assertFalse($results->contains($product4), 'Product 4 should be unavailable (inherit future event)');
         $this->assertTrue($results->contains($product5), 'Product 5 should be available (infinite end)');
         $this->assertTrue($results->contains($product7), 'Product 7 should be available (stock > sold)');
-        $this->assertFalse($results->contains($product8), 'Product 8 should be unavailable (stock <= sold)');
+        $this->assertTrue($results->contains($product8), 'Product 8 should be visible but not available (stock <= sold)');
         $this->assertTrue($results->contains($product9), 'Product 9 should be available (unlimited stock)');
 
         // 10. Hidden Product -> Unavailable

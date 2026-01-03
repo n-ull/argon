@@ -10,7 +10,9 @@ use Domain\Ordering\Services\PriceCalculationService;
 use Domain\Ordering\Services\ReferenceIdService;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
+uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->orderValidatorService = Mockery::mock(OrderValidatorService::class);
     $this->priceCalculationService = new PriceCalculationService;
@@ -119,31 +121,188 @@ test('it creates an order and stores price snapshots even if prices change later
 });
 
 test('it creates order with multiple products and stores all snapshots', function () {
-    // Tests multiple items in one order
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    $product1 = Product::factory()->create(['event_id' => $event->id]);
+    $price1 = ProductPrice::factory()->create(['product_id' => $product1->id, 'price' => 50.0]);
+    $product2 = Product::factory()->create(['event_id' => $event->id]);
+    $price2 = ProductPrice::factory()->create(['product_id' => $product2->id, 'price' => 75.0]);
+
+    $orderData = new CreateOrderData(
+        eventId: $event->id,
+        items: [
+            ['productId' => $product1->id, 'productPriceId' => $price1->id, 'quantity' => 1],
+            ['productId' => $product2->id, 'productPriceId' => $price2->id, 'quantity' => 2],
+        ]
+    );
+
+    $this->orderValidatorService->shouldReceive('validateOrder')->once();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-1');
+
+    $order = $this->service->createPendingOrder($orderData);
+
+    expect((float) $order->subtotal)->toBe(200.0); // 50 + (75*2)
+    expect($order->orderItems)->toHaveCount(2);
+    expect($order->items_snapshot)->toHaveCount(2);
 });
 
 test('it stores taxes and fees snapshots when applicable', function () {
-    // Tests tax/fee snapshot functionality
+    $tax = \Domain\EventManagement\Models\TaxAndFee::factory()->state([
+        'type' => \Domain\EventManagement\Enums\TaxFeeType::TAX,
+        'value' => 10,
+        'is_active' => true,
+        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::PERCENTAGE
+    ])->create();
+
+    $fee = \Domain\EventManagement\Models\TaxAndFee::factory()->state([
+        'type' => \Domain\EventManagement\Enums\TaxFeeType::FEE,
+        'value' => 5,
+        'is_active' => true,
+        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::FIXED
+    ])->create();
+
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    $event->taxesAndFees()->attach($tax, ['sort_order' => 1]);
+    $event->taxesAndFees()->attach($fee, ['sort_order' => 2]);
+
+    $product = Product::factory()->create(['event_id' => $event->id]);
+    $price = ProductPrice::factory()->create(['product_id' => $product->id, 'price' => 100.0]);
+
+    $orderData = new CreateOrderData(eventId: $event->id, items: [['productId' => $product->id, 'productPriceId' => $price->id, 'quantity' => 1]]);
+
+    $this->orderValidatorService->shouldReceive('validateOrder')->once();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-TAX');
+
+    $order = $this->service->createPendingOrder($orderData);
+
+    expect((float) $order->subtotal)->toBe(100.0);
+    expect((float) $order->taxes_total)->toBe(10.0); // 10% of 100
+    expect((float) $order->fees_total)->toBe(5.0); // Fixed 5
+    expect((float) $order->total_gross)->toBe(115.0);
+    expect($order->taxes_snapshot)->toHaveCount(1);
+    expect($order->fees_snapshot)->toHaveCount(1);
 });
 
 test('it throws exception when event does not exist', function () {
-    // Tests error handling
-});
+    $orderData = new CreateOrderData(eventId: 999, items: []);
+    $this->service->createPendingOrder($orderData);
+})->throws(\DomainException::class, "Event doesn't exist.");
 
 test('it sets order expiration to 15 minutes from creation', function () {
-    // Tests expiration logic
+    Carbon\Carbon::setTestNow(now());
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    $product = Product::factory()->create(['event_id' => $event->id]);
+    $price = ProductPrice::factory()->create(['product_id' => $product->id, 'price' => 100.0]);
+
+    $orderData = new CreateOrderData(eventId: $event->id, items: [['productId' => $product->id, 'productPriceId' => $price->id, 'quantity' => 1]]);
+    $this->orderValidatorService->shouldReceive('validateOrder')->once();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-EXP');
+
+    $order = $this->service->createPendingOrder($orderData);
+
+    expect($order->expires_at->toDateTimeString())->toBe(now()->addMinutes(15)->toDateTimeString());
+    Carbon\Carbon::setTestNow();
 });
 
 test('it dispatches OrderCreated event after order creation', function () {
-    // Tests event dispatching
+    Illuminate\Support\Facades\Event::fake();
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    $product = Product::factory()->create(['event_id' => $event->id]);
+    $price = ProductPrice::factory()->create(['product_id' => $product->id, 'price' => 100.0]);
+
+    $orderData = new CreateOrderData(eventId: $event->id, items: [['productId' => $product->id, 'productPriceId' => $price->id, 'quantity' => 1]]);
+    $this->orderValidatorService->shouldReceive('validateOrder')->once();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-EVENT');
+
+    $order = $this->service->createPendingOrder($orderData);
+
+    Illuminate\Support\Facades\Event::assertDispatched(\Domain\Ordering\Events\OrderCreated::class, function ($event) use ($order) {
+        return $event->order->id === $order->id;
+    });
 });
 
-test('it stores organizer raise method snapshot after order completion', function () {
-    // Tests organizer settings capture
-});
+test('it stores snapshots after order completion', function () {
+    $organizer = \Domain\OrganizerManagement\Models\Organizer::factory()
+        ->has(\Domain\OrganizerManagement\Models\OrganizerSettings::factory()->state(['raise_money_method' => 'internal']), 'settings')
+        ->create();
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED, 'organizer_id' => $organizer->id]);
+    $product = Product::factory()->create(['event_id' => $event->id]);
+    $price = ProductPrice::factory()->create(['product_id' => $product->id, 'price' => 100.0]);
 
-test('it stores used gateway after order completion', function () {});
+    $orderData = new CreateOrderData(
+        eventId: $event->id,
+        items: [['productId' => $product->id, 'productPriceId' => $price->id, 'quantity' => 1]],
+        gateway: 'mercadopago'
+    );
+    $this->orderValidatorService->shouldReceive('validateOrder')->once();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-SNAP');
+
+    $order = $this->service->createPendingOrder($orderData);
+
+    expect($order->organizer_raise_method_snapshot)->toBe('internal');
+    expect($order->used_payment_gateway_snapshot)->toBe('mercadopago');
+});
 
 test('it handles gateway-specific fees correctly', function () {
-    // Tests payment gateway fee logic
+    $taxFee = \Domain\EventManagement\Models\TaxAndFee::factory()->create([
+        'type' => \Domain\EventManagement\Enums\TaxFeeType::FEE,
+        'value' => 5,
+        'is_active' => true,
+        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::FIXED,
+        'applicable_gateways' => ['mercadopago']
+    ]);
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    $event->taxesAndFees()->attach($taxFee);
+
+    $product = Product::factory()->create(['event_id' => $event->id]);
+    $price = ProductPrice::factory()->create(['product_id' => $product->id, 'price' => 100.0]);
+
+    $productPrice = $price;
+
+    $this->orderValidatorService->shouldReceive('validateOrder')->andReturnNull();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-GW-1', 'REF-GW-2');
+
+    // Case 1: Gateway matches
+    $orderData1 = new CreateOrderData(
+        eventId: $event->id,
+        items: [['productId' => $product->id, 'productPriceId' => $price->id, 'quantity' => 1]],
+        gateway: 'mercadopago'
+    );
+    $order1 = $this->service->createPendingOrder($orderData1);
+    expect((float) $order1->fees_total)->toBe(5.0);
+
+    // Case 2: Gateway does not match
+    $orderData2 = new CreateOrderData(
+        eventId: $event->id,
+        items: [['productId' => $product->id, 'productPriceId' => $price->id, 'quantity' => 1]],
+        gateway: 'other'
+    );
+    $order2 = $this->service->createPendingOrder($orderData2);
+    expect((float) $order2->fees_total)->toBe(0.0);
 });
+
+test('it completes a pending order via ID', function () {
+    Illuminate\Support\Facades\Event::fake();
+    $order = \Domain\Ordering\Models\Order::factory()->create(['status' => OrderStatus::PENDING]);
+
+    $completedOrder = $this->service->completePendingOrder(orderId: $order->id);
+
+    expect($completedOrder->status)->toBe(OrderStatus::COMPLETED);
+    Illuminate\Support\Facades\Event::assertDispatched(\Domain\Ordering\Events\OrderCompleted::class);
+});
+
+test('it completes a pending order via Reference ID', function () {
+    $order = \Domain\Ordering\Models\Order::factory()->create(['status' => OrderStatus::PENDING, 'reference_id' => 'REF-123']);
+
+    $completedOrder = $this->service->completePendingOrder(referenceId: 'REF-123');
+
+    expect($completedOrder->status)->toBe(OrderStatus::COMPLETED);
+});
+
+test('it throws exception when completing already completed order', function () {
+    $order = \Domain\Ordering\Models\Order::factory()->create(['status' => OrderStatus::COMPLETED, 'reference_id' => 'REF-DONE']);
+    $this->service->completePendingOrder(referenceId: 'REF-DONE');
+})->throws(\Domain\Ordering\Exceptions\OrderAlreadyCompletedException::class);
+
+test('it throws exception when completing non-existent order', function () {
+    $this->service->completePendingOrder(orderId: 9999);
+})->throws(\Domain\Ordering\Exceptions\OrderNotFoundException::class);
