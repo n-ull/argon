@@ -114,6 +114,7 @@ Route::group([
 
         Route::get('{event}/settings', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'settings'])
             ->name('settings');
+
         Route::post('{event}/settings', \App\Modules\EventManagement\Controllers\UpdateEventSettingsController::class)
             ->name('settings.update');
 

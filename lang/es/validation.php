@@ -194,6 +194,16 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'start_date' => 'Fecha de inicio',
+        'end_date' => 'Fecha de fin',
+        'title' => 'Título',
+        'location_info.address' => 'Dirección',
+        'location_info.city' => 'Ciudad',
+        'location_info.state' => 'Estado',
+        'location_info.zip' => 'Código postal',
+        'location_info.country' => 'País',
+        'location_info.phone' => 'Teléfono',
+    ],
 
 ];

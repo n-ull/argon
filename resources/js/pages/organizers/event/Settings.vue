@@ -2,9 +2,9 @@
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
 import { dashboard, settings } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
-import type { BreadcrumbItem, Event } from '@/types';
+import type { BreadcrumbItem, Event, EventForm } from '@/types';
 import GeneralInformationForm from './forms/GeneralInformationForm.vue';
-import UbicationForm from './forms/UbicationForm.vue';
+import LocationForm from './forms/LocationForm.vue';
 import PaymentForm from './forms/PaymentForm.vue';
 import { NTabPane, NTabs, NButton } from 'naive-ui';
 import MiscellaneousForm from './forms/MiscellaneousForm.vue';
@@ -32,10 +32,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     }
 ];
 
-type SettingsForm = Event;
+type SettingsForm = EventForm;
 
 const form = useForm<SettingsForm>({
     ...event,
+    organizer_id: event.organizer_id!,
     start_date: formatDateForPicker(event.start_date)!,
     end_date: formatDateForPicker(event.end_date),
     location_info: {
@@ -55,8 +56,8 @@ const form = useForm<SettingsForm>({
                     <n-tab-pane name="general" tab="General">
                         <GeneralInformationForm :event="form" />
                     </n-tab-pane>
-                    <n-tab-pane name="ubication" tab="Ubication">
-                        <UbicationForm :event="form" />
+                    <n-tab-pane name="location" tab="Location">
+                        <LocationForm :event="form" />
                     </n-tab-pane>
                     <n-tab-pane name="payment" tab="Payment">
                         <PaymentForm :event="form" />

@@ -73,6 +73,10 @@ export interface Event {
     widget_stats?: WidgetStats;
 }
 
+export interface EventForm extends Omit<Event, 'organizer' | 'products'> {
+    organizer_id: number;
+}
+
 export interface WidgetStats {
     completed_orders_count: number;
     total_revenue: number;

@@ -22,7 +22,7 @@ class StoreOrUpdateEventSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|string|max:255",
+            "title" => "required|string|max:50",
             "description" => "nullable|string|max:8000",
             "start_date" => "required|date",
             "end_date" => "nullable|date",

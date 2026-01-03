@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { InertiaForm } from '@inertiajs/vue3';
+import type { EventForm } from '@/types';
 import { NInput, NDatePicker } from 'naive-ui';
 
 interface Props {
-    event: any;
+    event: InertiaForm<EventForm>;
 }
 
 const { event } = defineProps<Props>();
@@ -45,7 +47,7 @@ const isEndTimeDisabled = (ts: number) => {
         <div>
             <label for="slug">Slug</label>
             <n-input placeholder="my-awesome-event" :value="event.slug" id="slug" disabled></n-input>
-            <p class="text-xs text-red-500">{{ event.errors.slug }}</p>
+            <p v-if="event.errors.slug" class="text-xs text-red-500">{{ event.errors.slug }}</p>
         </div>
 
         <div class="space-y-2">
@@ -54,7 +56,7 @@ const isEndTimeDisabled = (ts: number) => {
                 minRows: 3,
                 maxRows: 6,
             }" v-model:value="event.description" id="description"></n-input>
-            <p class="text-xs text-red-500">{{ event.errors.description }}</p>
+            <p v-if="event.errors.description" class="text-xs text-red-500">{{ event.errors.description }}</p>
         </div>
 
         <div class="flex gap-4 items-center">
@@ -63,6 +65,7 @@ const isEndTimeDisabled = (ts: number) => {
                 <p class="text-xs text-neutral-400">The start date of the event, it's required.</p>
                 <n-date-picker v-model:formatted-value="event.start_date" id="start_date" type="datetime"
                     value-format="yyyy-MM-dd HH:mm:ss"></n-date-picker>
+                <p v-if="event.errors.start_date" class="text-xs text-red-500">{{ event.errors.start_date }}</p>
             </div>
 
             <div class="space-y-2 w-full">
@@ -72,6 +75,7 @@ const isEndTimeDisabled = (ts: number) => {
                 <n-date-picker v-model:formatted-value="event.end_date" id="end_date" type="datetime"
                     :is-date-disabled="isEndDateDisabled" :is-time-disabled="isEndTimeDisabled"
                     value-format="yyyy-MM-dd HH:mm:ss" clearable></n-date-picker>
+                <p v-if="event.errors.end_date" class="text-xs text-red-500">{{ event.errors.end_date }}</p>
             </div>
         </div>
     </div>
