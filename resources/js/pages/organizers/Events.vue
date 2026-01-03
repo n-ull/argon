@@ -4,16 +4,26 @@ import { Organizer, BreadcrumbItem, PaginatedResponse, Event } from '@/types';
 import { events as eventsRoute } from '@/routes/manage/organizer';
 import { dashboard } from '@/routes/manage/event';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { NDataTable, NButton, NIcon, NPagination, NTag, NCard } from 'naive-ui';
+import { NDataTable, NButton, NIcon, NPagination, NTag, NInput, NSelect, NSpace } from 'naive-ui';
+import { useDialog } from '@/composables/useDialog';
 import type { DataTableColumns } from 'naive-ui';
-import { h } from 'vue';
+import { h, ref } from 'vue';
 import { formatDate } from '@/lib/utils';
-import { Plus } from 'lucide-vue-next';
+import { Plus, Search } from 'lucide-vue-next';
+import CreateEventForm from './forms/CreateEventForm.vue';
 
 interface Props {
     organizer: Organizer;
     events: PaginatedResponse<Event>;
+    filters: {
+        search?: string;
+        status?: string;
+        sort_by?: string;
+        sort_direction?: 'asc' | 'desc';
+    };
 }
+
+const { open: openDialog } = useDialog();
 
 const props = defineProps<Props>();
 
@@ -55,10 +65,11 @@ const columns: DataTableColumns<Event> = [
 
             switch (status) {
                 case 'published': type = 'success'; break;
-                case 'draft': type = 'warning'; break; // Draft often yellow
+                case 'draft': type = 'warning'; break;
                 case 'ended': type = 'default'; break;
                 case 'cancelled': type = 'error'; break;
                 case 'deleted': type = 'error'; break;
+                case 'archived': type = 'default'; break;
             }
 
             return h(NTag, { type, bordered: false, round: true, size: 'small' }, {
@@ -85,14 +96,60 @@ const columns: DataTableColumns<Event> = [
     }
 ];
 
+const searchQuery = ref(props.filters.search || '');
+const statusFilter = ref(props.filters.status || null);
+const sortField = ref(props.filters.sort_by || 'created_at');
+const sortDirection = ref(props.filters.sort_direction || 'desc');
+
+const statusOptions: any[] = [
+    { label: 'All Statuses', value: null },
+    { label: 'Draft', value: 'draft' },
+    { label: 'Published', value: 'published' },
+    { label: 'Archived', value: 'archived' },
+];
+
+const sortFieldOptions = [
+    { label: 'Start Date', value: 'start_date' },
+    { label: 'Title', value: 'title' },
+    { label: 'Creation Date', value: 'created_at' },
+];
+
+const sortDirectionOptions = [
+    { label: 'Descending', value: 'desc' },
+    { label: 'Ascending', value: 'asc' },
+];
+
+const handleFilterChange = () => {
+    handlePageChange(1);
+};
+
 const handlePageChange = (page: number) => {
     router.visit(eventsRoute(props.organizer.id).url, {
-        data: { page },
+        data: {
+            page,
+            search: searchQuery.value || undefined,
+            status: statusFilter.value || undefined,
+            sort_by: sortField.value,
+            sort_direction: sortDirection.value,
+        },
         preserveScroll: true,
         preserveState: true,
-        only: ['events'],
+        only: ['events', 'filters'],
     });
 };
+
+const openCreateEventDialog = () => {
+    openDialog({
+        component: CreateEventForm,
+        props: {
+            organizer: props.organizer,
+            title: 'Create Event',
+            description: 'Create a new event',
+        }
+    })
+}
+
+
 </script>
 
 <template>
@@ -106,14 +163,37 @@ const handlePageChange = (page: number) => {
                     <p class="text-gray-500 mt-1">Manage and monitor all your events.</p>
                 </div>
                 <!-- TODO: Link to create event page -->
-                <NButton type="primary" size="large">
+                <NButton type="primary" size="large" @click="openCreateEventDialog">
                     <template #icon>
                         <NIcon>
                             <Plus />
                         </NIcon>
                     </template>
-                    Create Event
                 </NButton>
+            </div>
+
+            <!-- Filter Controls -->
+            <div
+                class="bg-white dark:bg-neutral-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                <NSpace :size="12" wrap>
+                    <NInput v-model:value="searchQuery" placeholder="Search by event title" clearable
+                        style="min-width: 300px" @update:value="handleFilterChange">
+                        <template #prefix>
+                            <NIcon>
+                                <Search :size="16" />
+                            </NIcon>
+                        </template>
+                    </NInput>
+
+                    <NSelect v-model:value="statusFilter" :options="statusOptions" placeholder="Filter by status"
+                        style="min-width: 180px" @update:value="handleFilterChange" />
+
+                    <NSelect v-model:value="sortField" :options="sortFieldOptions" placeholder="Sort by"
+                        style="min-width: 180px" @update:value="handleFilterChange" />
+
+                    <NSelect v-model:value="sortDirection" :options="sortDirectionOptions" placeholder="Direction"
+                        style="min-width: 150px" @update:value="handleFilterChange" />
+                </NSpace>
             </div>
 
             <div

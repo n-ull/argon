@@ -1,4 +1,5 @@
 import { ref, Component, markRaw } from 'vue';
+import { router } from '@inertiajs/vue3';
 
 export interface DialogOptions {
     component: Component;
@@ -17,6 +18,10 @@ const dialogState = ref<DialogState>({
     component: undefined,
     props: {},
     key: '',
+});
+
+router.on('navigate', () => {
+    dialogState.value.isOpen = false;
 });
 
 export function useDialog() {

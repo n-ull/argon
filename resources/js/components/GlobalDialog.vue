@@ -8,6 +8,6 @@ const { dialogState, close } = useDialog();
 <template>
     <Dialog :open="dialogState.isOpen" @update:open="(open) => !open && close()">
         <component v-if="dialogState.component" :is="dialogState.component" v-bind="dialogState.props"
-            :key="dialogState.key" />
+            :key="dialogState.key" @close="close" />
     </Dialog>
 </template>

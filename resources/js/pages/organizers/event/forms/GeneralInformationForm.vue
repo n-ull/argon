@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { Event } from '@/types';
-import { formatDateTimeToUnix } from '@/lib/utils';
-import { computed, ref } from 'vue';
 import { NInput, NDatePicker } from 'naive-ui';
 
 interface Props {
@@ -9,6 +6,27 @@ interface Props {
 }
 
 const { event } = defineProps<Props>();
+
+const isEndDateDisabled = (ts: number) => {
+    if (!event.start_date) return false;
+    const startDate = new Date(event.start_date);
+    startDate.setHours(0, 0, 0, 0);
+    return ts < startDate.getTime();
+};
+
+const isEndTimeDisabled = (ts: number) => {
+    if (!event.start_date) return {};
+    const start = new Date(event.start_date);
+    const current = new Date(ts);
+
+    if (current.toDateString() !== start.toDateString()) return {};
+
+    return {
+        isHourDisabled: (h: number) => h < start.getHours(),
+        isMinuteDisabled: (m: number, h: number | null) => h === start.getHours() && m < start.getMinutes(),
+        isSecondDisabled: (s: number, m: number | null, h: number | null) => h === start.getHours() && m === start.getMinutes() && s < start.getSeconds()
+    };
+};
 
 </script>
 
@@ -39,23 +57,21 @@ const { event } = defineProps<Props>();
             <p class="text-xs text-red-500">{{ event.errors.description }}</p>
         </div>
 
-        <div class="flex gap-4">
+        <div class="flex gap-4 items-center">
             <div class="space-y-2 w-full">
                 <label for="start_date" class="required">Start date</label>
                 <p class="text-xs text-neutral-400">The start date of the event, it's required.</p>
-                <input type="datetime-local" class="bg-neutral-700 p-2 rounded w-full" id="start_date">
-                <!-- <n-date-picker :value="formatDateTimeToUnix(event.start_date)" id="start_date" type="datetime"
-                    clearable></n-date-picker> -->
+                <n-date-picker v-model:formatted-value="event.start_date" id="start_date" type="datetime"
+                    value-format="yyyy-MM-dd HH:mm:ss"></n-date-picker>
             </div>
 
             <div class="space-y-2 w-full">
                 <label for="end_date">End date</label>
                 <p class="text-xs text-neutral-400">The end date of the event, if it is not provided the event will not
                     end.</p>
-                <input type="datetime-local" class="bg-neutral-700 p-2 rounded w-full"
-                    :value="formatDateTimeToUnix(event.end_date!)" id="end_date">
-                <!-- <n-date-picker :value="formatDateTimeToUnix(event.end_date!)" id="end_date" type="datetime"
-                    clearable></n-date-picker> -->
+                <n-date-picker v-model:formatted-value="event.end_date" id="end_date" type="datetime"
+                    :is-date-disabled="isEndDateDisabled" :is-time-disabled="isEndTimeDisabled"
+                    value-format="yyyy-MM-dd HH:mm:ss" clearable></n-date-picker>
             </div>
         </div>
     </div>
