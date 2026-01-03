@@ -21,9 +21,8 @@ class OrderController extends Controller
 
             return redirect(route('orders.checkout', $order->id));
         } catch (\Domain\Ordering\Exceptions\OrderAlreadyPendingException $e) {
-            return back()->withErrors([
-                'orderId' => $e->orderId,
-            ]);
+            return redirect(route('orders.checkout', $e->orderId))
+                ->with('error', 'You already have a pending order.');
         }
     }
 }
