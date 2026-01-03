@@ -67,6 +67,9 @@ Route::group([
         Route::get('{organizer}/events', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'events'])
             ->name('events');
 
+        Route::post('{organizer}/events', \Domain\EventManagement\Actions\CreateEvent::class)
+            ->name('events.store');
+
         Route::get('{organizer}/cooperators', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'cooperators'])
             ->name('cooperators');
 
@@ -99,6 +102,9 @@ Route::group([
 
         Route::patch('{event}/products/{product}/sort', \Domain\EventManagement\Actions\SortEventProduct::class)
             ->name('products.sort');
+
+        Route::post('{event}/products/{product}/duplicate', \Domain\EventManagement\Actions\DuplicateEventProduct::class)
+            ->name('products.duplicate');
 
         Route::get('{event}/orders', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'orders'])
             ->name('orders');

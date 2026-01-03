@@ -72,6 +72,8 @@ class Event extends Model
         'start_date',
         'end_date',
         'event_category_id',
+        'organizer_id',
+        'slug'
     ];
 
     protected $casts = [

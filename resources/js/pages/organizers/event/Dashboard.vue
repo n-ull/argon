@@ -2,12 +2,12 @@
 import InfoWidget from '@/components/dashboard/InfoWidget.vue';
 import EventStatusBadge from '@/components/EventStatusBadge.vue';
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
-import { dashboard } from '@/routes/manage/event';
+import { dashboard, products } from '@/routes/manage/event';
 import { show as eventShow } from '@/routes/events';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
-import { Head } from '@inertiajs/vue3';
-import { BookA, CheckCircle, Copy, DollarSign, Download, Eye, EyeClosed, Gift, Plus, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
+import { Head, Link } from '@inertiajs/vue3';
+import { BookA, Copy, DollarSign, Download, Eye, EyeClosed, Gift, Plus, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
 import { NButton, NIcon, NInput } from 'naive-ui';
 import { toast } from 'vue-sonner';
 
@@ -48,7 +48,8 @@ const downloadQrCode = () => {
     link.click();
 }
 
-console.log(event);
+// TODO: handle publish event
+
 
 </script>
 
@@ -86,14 +87,16 @@ console.log(event);
                     <p class="text-sm text-neutral-400">Once you've added your products and configured your event, you
                         can start selling tickets.</p>
                     <div class="flex items-center gap-2">
-                        <NButton tertiary icon-placement="left" size="large" v-if="event.products_count === 0">
-                            <template #icon>
-                                <NIcon>
-                                    <Plus />
-                                </NIcon>
-                            </template>
-                            Create Product or Ticket
-                        </NButton>
+                        <Link :href="products(event.id).url">
+                            <NButton tertiary icon-placement="left" size="large" v-if="event.products_count === 0">
+                                <template #icon>
+                                    <NIcon>
+                                        <Plus />
+                                    </NIcon>
+                                </template>
+                                Create Product or Ticket
+                            </NButton>
+                        </Link>
 
                         <NButton v-if="event.status !== 'published'" tertiary size="large">
                             <template #icon>

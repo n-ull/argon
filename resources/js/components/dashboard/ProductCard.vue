@@ -78,11 +78,14 @@ const handleSelect = (key: string) => {
                 <h2 class="text-lg font-semibold">{{ product.name }}</h2>
                 <p class="text-sm text-neutral-400">{{ product.description }}</p>
             </div>
-            <div class="flex">
+            <div class="flex" v-if="product.product_price_type !== 'free'">
                 <p v-if="product.product_prices.length > 1" class="text-sm text-neutral-400">${{
                     product.product_prices[0].price }} – ${{
                         product.product_prices[product.product_prices.length - 1].price }}</p>
                 <p v-else class="text-sm text-neutral-400">${{ product.product_prices[0].price }}</p>
+            </div>
+            <div class="flex" v-else>
+                <p class="text-sm text-neutral-400">Free</p>
             </div>
         </div>
 

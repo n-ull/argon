@@ -6,6 +6,9 @@ import { usePage } from '@inertiajs/vue3';
 import { Calendar, LayoutGrid, LucideMessageCircleQuestion, Settings, UsersRound } from 'lucide-vue-next';
 import { GlobalTheme, NConfigProvider, darkTheme } from 'naive-ui';
 import { computed } from 'vue';
+import GlobalDialog from '@/components/GlobalDialog.vue';
+import { Toaster } from 'vue-sonner';
+import 'vue-sonner/style.css'
 
 interface Props {
     organizer: Organizer;
@@ -73,6 +76,8 @@ const themeOverrides = {
     <n-config-provider :theme="dark" :theme-overrides="themeOverrides">
         <AppLayout :breadcrumbs="breadcrumbs" :main-nav-items="mainNavItems" :footer-nav-items="footerNavItems">
             <slot />
+            <Toaster />
+            <GlobalDialog />
         </AppLayout>
     </n-config-provider>
 </template>

@@ -35,11 +35,38 @@ class ManageOrganizations extends Controller
         ]);
     }
 
-    public function events(Organizer $organizer)
+    public function events(\Illuminate\Http\Request $request, Organizer $organizer)
     {
+        $query = $organizer->events();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('title', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        } else {
+            $query->where('status', '!=', \Domain\EventManagement\Enums\EventStatus::ARCHIVED);
+        }
+
+        // Sorting logic
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $sortColumn = match ($sortBy) {
+            'title' => 'title',
+            'start_date' => 'start_date',
+            'created_at' => 'created_at',
+            default => 'created_at'
+        };
+
+        $query->orderBy($sortColumn, $sortDirection);
+
         return Inertia::render('organizers/Events', [
             'organizer' => $organizer,
-            'events' => $organizer->events()->paginate(10),
+            'events' => $query->paginate(10)->withQueryString(),
+            'filters' => $request->only(['search', 'status', 'sort_by', 'sort_direction']),
         ]);
     }
 

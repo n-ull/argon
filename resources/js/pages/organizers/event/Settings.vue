@@ -9,6 +9,7 @@ import PaymentForm from './forms/PaymentForm.vue';
 import { NTabPane, NTabs, NButton } from 'naive-ui';
 import MiscellaneousForm from './forms/MiscellaneousForm.vue';
 import { useForm } from '@inertiajs/vue3';
+import { formatDateForPicker } from '@/lib/utils';
 
 interface Props {
     event: Event;
@@ -35,9 +36,11 @@ type SettingsForm = Event;
 
 const form = useForm<SettingsForm>({
     ...event,
+    start_date: formatDateForPicker(event.start_date)!,
+    end_date: formatDateForPicker(event.end_date),
     location_info: {
         ...event.location_info,
-        country: event.location_info.country || 'Argentina',
+        country: event.location_info?.country || 'Argentina',
     }
 });
 

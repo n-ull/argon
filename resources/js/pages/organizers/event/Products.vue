@@ -5,11 +5,11 @@ import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event, Product } from '@/types';
 import ProductCard from '@/components/dashboard/ProductCard.vue';
 import { LucideTickets } from 'lucide-vue-next';
-import { NButton, NIcon } from 'naive-ui';
+import { NButton, NIcon, NEmpty } from 'naive-ui';
 import { useDialog } from '@/composables/useDialog';
 import ProductForm from './forms/ProductForm.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import { deleteMethod } from '@/routes/manage/event/products';
+import { deleteMethod, duplicate } from '@/routes/manage/event/products';
 
 import { router } from '@inertiajs/vue3';
 
@@ -56,7 +56,6 @@ const handleDelete = (product: Product) => {
             title: 'Delete Product',
             description: 'Are you sure you want to delete this product?',
             onConfirm: () => {
-                console.log('confirmed');
                 router.delete(deleteMethod({ event: event.id, product: product.id }).url);
             }
         }
@@ -64,8 +63,16 @@ const handleDelete = (product: Product) => {
 };
 
 const handleDuplicate = (product: Product) => {
-    // TODO: Implement duplicate logic
-    console.log('Duplicate', product);
+    openDialog({
+        component: ConfirmDialog,
+        props: {
+            title: 'Duplicate Product',
+            description: 'Are you sure you want to duplicate this product?',
+            onConfirm: () => {
+                router.post(duplicate({ event: event.id, product: product.id }).url);
+            }
+        }
+    });
 };
 
 const handleCreate = () => {
@@ -73,6 +80,8 @@ const handleCreate = () => {
         component: ProductForm,
         props: {
             event: event,
+            title: 'Create Product',
+            description: 'Create a new product',
         }
     });
 };
@@ -102,6 +111,16 @@ const handleSortOrder = (product: Product, direction: 'up' | 'down') => {
             <div class="mt-4 space-y-4 bg-neutral-900 border rounded divide-y">
                 <ProductCard v-for="product in products" :key="product.id" :product="product" @edit="handleEdit"
                     @delete="handleDelete" @duplicate="handleDuplicate" @sort-order="handleSortOrder" />
+
+                <div v-if="products.length === 0" class="flex items-center justify-center p-4">
+                    <n-empty description="You can't find anything">
+                        <template #extra>
+                            <n-button size="small" @click="handleCreate">
+                                Add Product or Ticket
+                            </n-button>
+                        </template>
+                    </n-empty>
+                </div>
             </div>
         </div>
     </ManageEventLayout>

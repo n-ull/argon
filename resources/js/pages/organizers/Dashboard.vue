@@ -60,7 +60,7 @@ console.log(props.last_orders);
                                 </Link>
                                 <span class="text-sm text-neutral-400">{{ formatDate(event.start_date) }}</span>
                             </div>
-                            <p class="text-sm text-neutral-400">{{ event.location_info.address }}</p>
+                            <p class="text-sm text-neutral-400">{{ event.location_info?.address ?? 'TBD' }}</p>
                         </div>
                     </div>
                 </div>

@@ -43,7 +43,7 @@ class EventDetailsController extends Controller
         return Inertia::render('events/Details', [
             'event' => EventResource::make($event)->resolve(),
             'products' => ProductResource::collection($products)->resolve(),
-            'userIsOrganizer' => $event->organizer->users->contains(auth()->user()->id),
+            'userIsOrganizer' => auth()->check() && $event->organizer->users->contains(auth()->user()->id),
         ]);
     }
 }
