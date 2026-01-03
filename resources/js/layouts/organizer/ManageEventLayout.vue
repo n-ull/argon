@@ -21,27 +21,30 @@ interface Props {
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 
-watch(() => page.props.flash, (flash) => {
-    if (flash.message) {
-        switch (flash.message.type) {
+watch(() => page.props.flash?.message, (message) => {
+    if (message) {
+        switch (message.type) {
             case 'success':
-                toast.success(flash.message.summary, {
+                toast.success(message.summary, {
+                    description: message.detail,
                     duration: 3000,
                 });
                 break;
             case 'error':
-                toast.error(flash.message.summary, {
+                toast.error(message.summary, {
+                    description: message.detail,
                     duration: 3000,
                 });
                 break;
             default:
-                toast(flash.message.summary, {
+                toast(message.summary, {
+                    description: message.detail,
                     duration: 3000,
                 });
                 break;
         }
     }
-});
+}, { deep: true });
 
 const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],

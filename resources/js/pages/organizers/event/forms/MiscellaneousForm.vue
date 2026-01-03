@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { Event } from '@/types';
+import type { InertiaForm } from '@inertiajs/vue3';
+import type { EventForm } from '@/types';
 import { LucideBadgeDollarSign } from 'lucide-vue-next';
 import { NSelect } from 'naive-ui';
 
 interface Props {
-    event: Event;
+    event: InertiaForm<EventForm>;
 }
 
 const { event } = defineProps<Props>();
