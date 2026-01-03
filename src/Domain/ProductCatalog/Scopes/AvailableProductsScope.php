@@ -38,7 +38,7 @@ class AvailableProductsScope implements Scope
                         ->whereHas('product_prices', function (Builder $subQuery) {
                             $subQuery->where(function ($sq) {
                                 $sq->whereNull('stock')
-                                    ->orWhereRaw('stock > quantity_sold');
+                                    ->orWhereRaw('stock >= quantity_sold');
                             });
                         });
                 });
