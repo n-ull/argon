@@ -2,11 +2,18 @@
 
 namespace Domain\OrganizerManagement\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * @property int $id
+ * @property int $organizer_id
+ * @property string|null $raise_money_method
+ * @property string|null $raise_money_account
+ * @property bool $is_modo_active
+ * @property bool $is_mercadopago_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -20,7 +27,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class OrganizerSettings extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'organizer_id',
         'raise_money_method',
@@ -32,5 +39,10 @@ class OrganizerSettings extends Model
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(Organizer::class);
+    }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\OrganizerManagement\Models\OrganizerSettingsFactory::new();
     }
 }
