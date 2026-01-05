@@ -36,9 +36,9 @@ class GenerateTickets implements ShouldQueue
             return;
         }
 
-        foreach ($order->items as $item) {
+        foreach ($order->orderItems as $item) {
             for ($i = 0; $i < $item->quantity; $i++) {
-                $order->tickets()->create([
+                $ticket = Ticket::create([
                     'token' => $this->google2fa->generateSecretKey(),
                     'event_id' => $order->event_id,
                     'product_id' => $item->product_id,
