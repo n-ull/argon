@@ -1,5 +1,8 @@
 <?php
 
+use Domain\ProductCatalog\Models\Product;
+use Domain\ProductCatalog\Models\ProductPrice;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -41,7 +44,17 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function setupAvailableProduct()
 {
-    // ..
+    $event = Event::factory()->create();
+    $product = Product::factory()->create([
+        'event_id' => $event->id,
+        'is_hidden' => false,
+    ]);
+    ProductPrice::factory()->create([
+        'product_id' => $product->id,
+        'price' => 10,
+        'stock' => 10,
+    ]);
+    return $product;
 }

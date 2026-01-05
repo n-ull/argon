@@ -5,6 +5,7 @@ namespace Domain\Ordering\Models;
 use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Enums\OrderStatus;
+use Domain\Ticketing\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -92,6 +93,11 @@ class Order extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
     }
 
     protected static function newFactory()

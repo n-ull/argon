@@ -35,7 +35,13 @@ class OrderItem extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'quantity',
+        'unit_price',
+        'product_price_id',
+    ];
 
     public function order(): BelongsTo
     {
