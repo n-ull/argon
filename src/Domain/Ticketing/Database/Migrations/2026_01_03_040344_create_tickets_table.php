@@ -24,6 +24,12 @@ return new class extends Migration {
             $table->timestamp('used_at')->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();
+
+            $table->index('status');
+            $table->index(['ordedr_id', 'status']);
+            $table->index(['event_id', 'status']);
+            $table->index(['user_id', 'status']);
+            $table->index(['product_id', 'status']);
         });
     }
 
