@@ -44,17 +44,20 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function setupAvailableProduct()
+function setupAvailableProduct(array $productOverrides = [], array $priceOverrides = [])
 {
     $event = Event::factory()->create();
-    $product = Product::factory()->create([
+
+    $product = Product::factory()->create(array_merge([
         'event_id' => $event->id,
         'is_hidden' => false,
-    ]);
-    ProductPrice::factory()->create([
+    ], $productOverrides));
+
+    ProductPrice::factory()->create(array_merge([
         'product_id' => $product->id,
         'price' => 10,
         'stock' => 10,
-    ]);
+    ], $priceOverrides));
+
     return $product;
 }

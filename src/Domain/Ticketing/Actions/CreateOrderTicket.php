@@ -2,8 +2,6 @@
 
 namespace Domain\Ticketing\Actions;
 
-use Domain\Ordering\Models\Order;
-use Domain\Ordering\Models\OrderItem;
 use Domain\ProductCatalog\Models\Product;
 use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Enums\TicketType;

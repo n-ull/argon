@@ -8,6 +8,7 @@ use Domain\Ticketing\Enums\TicketType;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Log;
 use PragmaRX\Google2FA\Google2FA;
 
 class GenerateTickets implements ShouldQueue
@@ -31,14 +32,15 @@ class GenerateTickets implements ShouldQueue
         $order = Order::find($this->orderId);
 
         if (!$order) {
+            Log::warning("GenerateTickets job failed: Order {$this->orderId} not found");
             return;
         }
 
         foreach ($order->items as $item) {
             for ($i = 0; $i < $item->quantity; $i++) {
-                $ticket = Ticket::create([
+                $order->tickets()->create([
                     'token' => $this->google2fa->generateSecretKey(),
-                    'event_id' => $item->event_id,
+                    'event_id' => $order->event_id,
                     'product_id' => $item->product_id,
                     'type' => TicketType::DYNAMIC,
                     'status' => TicketStatus::ACTIVE,
@@ -47,8 +49,6 @@ class GenerateTickets implements ShouldQueue
                     'used_at' => null,
                     'expired_at' => null,
                 ]);
-
-                $order->tickets->attach($ticket);
             }
         }
     }

@@ -16,9 +16,11 @@ class TicketFactory extends Factory
 {
     protected $model = Ticket::class;
 
-    public function dynamic(Google2FA $google2fa)
+    public function dynamic()
     {
-        return $this->state(function (array $attributes) use ($google2fa) {
+        return $this->state(function (array $attributes) {
+            $google2fa = app(Google2FA::class);
+
             return [
                 'token' => $google2fa->generateSecretKey(),
                 'type' => TicketType::DYNAMIC,
@@ -30,7 +32,7 @@ class TicketFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'type' => TicketType::STATIC ,
+                'type' => TicketType::STATIC
             ];
         });
     }
