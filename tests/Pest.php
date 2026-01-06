@@ -1,5 +1,6 @@
 <?php
 
+use Domain\EventManagement\Models\Event;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
 
