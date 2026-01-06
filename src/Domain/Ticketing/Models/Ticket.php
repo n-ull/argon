@@ -6,6 +6,7 @@ use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Models\Order;
 use Domain\ProductCatalog\Models\Product;
+use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Enums\TicketType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
