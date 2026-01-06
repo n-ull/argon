@@ -80,6 +80,11 @@ class Order extends Model
         return $this->subtotal + $this->taxes_total + $this->fees_total;
     }
 
+    public function getIsPaidAttribute()
+    {
+        return $this->status === OrderStatus::COMPLETED;
+    }
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

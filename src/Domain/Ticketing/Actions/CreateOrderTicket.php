@@ -18,7 +18,7 @@ class CreateOrderTicket
     ) {
     }
 
-    public function handle(Product $product)
+    public function handle(Product $product, $orderId)
     {
         $ticket = Ticket::create([
             'token' => $this->google2fa->generateSecretKey(),
@@ -30,13 +30,14 @@ class CreateOrderTicket
             'is_courtesy' => false,
             'used_at' => null,
             'expired_at' => null,
+            'order_id' => $orderId
         ]);
 
         return $ticket;
     }
 
-    public function asController(Product $product)
+    public function asController(Product $product, $orderId)
     {
-        $this->handle($product);
+        $this->handle($product, $orderId);
     }
 }

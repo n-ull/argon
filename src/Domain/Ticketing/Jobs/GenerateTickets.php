@@ -36,20 +36,28 @@ class GenerateTickets implements ShouldQueue
             return;
         }
 
-        foreach ($order->orderItems as $item) {
-            for ($i = 0; $i < $item->quantity; $i++) {
-                $ticket = Ticket::create([
-                    'token' => $this->google2fa->generateSecretKey(),
-                    'event_id' => $order->event_id,
-                    'product_id' => $item->product_id,
-                    'type' => TicketType::DYNAMIC,
-                    'status' => TicketStatus::ACTIVE,
-                    'transfers_left' => 0,
-                    'is_courtesy' => false,
-                    'used_at' => null,
-                    'expired_at' => null,
-                ]);
-            }
+        if (!$order->isPaid) {
+            Log::warning("GenerateTickets job failed: Order {$this->orderId} is not paid");
+            return;
         }
+
+        \DB::transaction(function () use ($order) {
+            foreach ($order->orderItems as $item) {
+                for ($i = 0; $i < $item->quantity; $i++) {
+                    Ticket::create([
+                        'token' => $this->google2fa->generateSecretKey(),
+                        'event_id' => $order->event_id,
+                        'product_id' => $item->product_id,
+                        'order_id' => $order->id,
+                        'type' => TicketType::DYNAMIC,
+                        'status' => TicketStatus::ACTIVE,
+                        'transfers_left' => 0,
+                        'is_courtesy' => false,
+                        'used_at' => null,
+                        'expired_at' => null,
+                    ]);
+                }
+            }
+        });
     }
 }

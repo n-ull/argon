@@ -1,6 +1,8 @@
 <?php
 
 use Domain\EventManagement\Models\Event;
+use Domain\Ordering\Models\Order;
+use Domain\Ordering\Models\OrderItem;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
 
@@ -61,4 +63,37 @@ function setupAvailableProduct(array $productOverrides = [], array $priceOverrid
     ], $priceOverrides));
 
     return $product;
+}
+
+function setupOrder(array $orderOverrides = [])
+{
+    $event = Event::factory()->create();
+
+    $product = Product::factory()->create([
+        'event_id' => $event->id,
+        'is_hidden' => false,
+    ]);
+
+    ProductPrice::factory()->create([
+        'product_id' => $product->id,
+        'price' => 10,
+        'stock' => 10,
+    ]);
+
+    $order = Order::factory()->create(array_merge([
+        'event_id' => $event->id,
+        'user_id' => 1,
+    ], $orderOverrides));
+
+    OrderItem::create([
+        'order_id' => $order->id,
+        'product_id' => $product->id,
+        'quantity' => 1,
+        'unit_price' => 10
+    ]);
+
+    return [
+        'order' => $order,
+        'product' => $product
+    ];
 }
