@@ -5,6 +5,7 @@ namespace Domain\Ordering\Models;
 use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Enums\OrderStatus;
+use Domain\Ordering\Events\OrderCompleted;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -103,6 +104,19 @@ class Order extends Model
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function complete()
+    {
+        if ($this->status !== OrderStatus::PENDING) {
+            throw new \Exception('Order is not in PENDING state');
+        }
+
+        $this->status = OrderStatus::COMPLETED;
+
+        event(new OrderCompleted($this));
+
+        $this->save();
     }
 
     protected static function newFactory()

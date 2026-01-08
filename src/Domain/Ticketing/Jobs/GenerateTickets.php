@@ -7,13 +7,16 @@ use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Enums\TicketType;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Log;
 use PragmaRX\Google2FA\Google2FA;
 
 class GenerateTickets implements ShouldQueue
 {
-    use Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.

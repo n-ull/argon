@@ -24,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(
+            OrderCompleted::class,
+            GenerateTicketsForOrder::class
+        );
+
         Inertia::share([
             'locale' => fn() => App::getLocale()
         ]);

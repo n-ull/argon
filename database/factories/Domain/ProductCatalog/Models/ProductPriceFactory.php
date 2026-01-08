@@ -12,6 +12,7 @@ class ProductPriceFactory extends Factory
     public function definition(): array
     {
         return [
+            'product_id' => \Domain\ProductCatalog\Models\Product::factory(),
             'price' => $this->faker->randomFloat(2, 10, 100),
             'label' => $this->faker->word,
             'start_sale_date' => null,

@@ -59,4 +59,9 @@ class OrderItem extends Model
     {
         return $this->belongsTo(\Domain\ProductCatalog\Models\ProductPrice::class);
     }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\Ordering\Models\OrderItemFactory::new();
+    }
 }
