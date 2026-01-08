@@ -6,7 +6,7 @@ import { show } from '@/routes/events';
 import { cancel } from '@/routes/orders';
 import { Order, OrganizerSettings } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { LucideInfo } from 'lucide-vue-next';
+import { Clock, LucideInfo } from 'lucide-vue-next';
 import { NButton, NIcon, NPopover } from 'naive-ui';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
@@ -53,12 +53,15 @@ const cancelOrder = () => {
     <Head :title="`Checkout #${order.id}`" />
     <SimpleLayout>
         <Section class="space-y-4" v-if="timeLeft > 0">
-            <div class="flex justify-between p-4 border border-moovin-lila rounded-lg">
+            <div class="flex justify-between p-4 border bg-moovin-lila rounded-lg">
                 <div>
-                    <p>Checkout #{{ order.id }}</p>
-                    <p class="text-sm text-neutral-400">{{ order.reference_id }}</p>
+                    <p class="text-neutral-900 font-bold">Checkout #{{ order.id }}</p>
+                    <p class="text-sm text-neutral-700">#{{ order.reference_id }}</p>
                 </div>
-                <p>Time Remaining: {{ formattedTime }}</p>
+                <p class="text-neutral-900 font-bold flex items-center gap-2">
+                    <Clock :size="16" />
+                    Time Remaining: {{ formattedTime }}
+                </p>
             </div>
 
             <div class="p-4 border border-moovin-lime rounded-lg">
