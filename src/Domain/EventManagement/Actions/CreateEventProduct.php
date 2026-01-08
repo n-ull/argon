@@ -54,8 +54,8 @@ class CreateEventProduct
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'product_type' => 'required|string',
-            'product_price_type' => 'required|string',
+            'product_type' => 'required|string|in:ticket,general',
+            'product_price_type' => 'required|string|in:free,staggered,standard',
             'min_per_order' => 'nullable|integer|min:1',
             'max_per_order' => 'nullable|integer|min:1',
             'start_sale_date' => 'nullable|date',
