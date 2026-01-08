@@ -19,7 +19,6 @@ class GenerateTickets implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private Google2FA $google2fa,
         public int $orderId
     ) {
     }
@@ -27,7 +26,7 @@ class GenerateTickets implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(Google2FA $google2fa): void
     {
         $order = Order::find($this->orderId);
 
@@ -41,11 +40,11 @@ class GenerateTickets implements ShouldQueue
             return;
         }
 
-        \DB::transaction(function () use ($order) {
+        \DB::transaction(function () use ($order, $google2fa) {
             foreach ($order->orderItems as $item) {
                 for ($i = 0; $i < $item->quantity; $i++) {
                     Ticket::create([
-                        'token' => $this->google2fa->generateSecretKey(),
+                        'token' => $google2fa->generateSecretKey(),
                         'event_id' => $order->event_id,
                         'product_id' => $item->product_id,
                         'order_id' => $order->id,
