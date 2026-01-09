@@ -76,8 +76,10 @@ const downloadQrCode = () => {
                     :info="event.widget_stats!.unique_visitors.toString()" />
                 <InfoWidget title="Total Revenue" :icon="DollarSign"
                     :info="'$ ' + event.widget_stats!.total_revenue.toString()" />
-                <InfoWidget title="Courtesy Tickets" :icon="Gift" info="1,234" />
-                <InfoWidget title="Scanned Tickets" :icon="ScanQrCode" info="1,234" />
+                <InfoWidget title="Courtesy Tickets" :icon="Gift"
+                    :info="event.widget_stats!.courtesy_tickets_count.toString()" />
+                <InfoWidget title="Scanned Tickets" :icon="ScanQrCode"
+                    :info="event.widget_stats!.scanned_tickets_count.toString()" />
             </div>
 
             <!-- Information -->
