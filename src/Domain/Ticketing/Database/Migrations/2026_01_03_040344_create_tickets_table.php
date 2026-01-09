@@ -23,7 +23,6 @@ return new class extends Migration {
             $table->boolean('is_courtesy')->default(false);
             $table->timestamp('used_at')->nullable();
             $table->timestamp('expired_at')->nullable();
-            $table->softDeletes();
             $table->timestamps();
 
             $table->index('status');

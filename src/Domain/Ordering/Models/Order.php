@@ -106,19 +106,6 @@ class Order extends Model
         return $this->hasMany(Ticket::class);
     }
 
-    public function complete()
-    {
-        if ($this->status !== OrderStatus::PENDING) {
-            throw new \Exception('Order is not in PENDING state');
-        }
-
-        $this->status = OrderStatus::COMPLETED;
-
-        event(new OrderCompleted($this));
-
-        $this->save();
-    }
-
     protected static function newFactory()
     {
         return \Database\Factories\Domain\Ordering\Models\OrderFactory::new();

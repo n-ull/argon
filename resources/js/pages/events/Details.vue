@@ -194,16 +194,17 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                     class="flex flex-row justify-between items-center py-2 px-4 bg-neutral-800 rounded">
                                     <div class="flex flex-col gap-2">
                                         <div class="flex flex-row items-center gap-2">
-                                            <span class="text-xl">{{ price.label }}</span>
+                                            <span v-if="product.product_prices.length > 1" class="text-xl">{{
+                                                price.label }}</span>
                                             <span class="text-xs text-neutral-400"
                                                 v-if="product.show_stock && price.stock !== null">Stock: {{
                                                     price.stock
                                                 }}</span>
                                         </div>
-                                        <span class="text-moovin-lime text-md font-bold" v-if="price.price > 0">${{
+                                        <span class="text-moovin-lime text-lg font-bold" v-if="price.price > 0">${{
                                             price.price
                                             }}</span>
-                                        <span class="text-moovin-lime text-md font-bold" v-else>Free</span>
+                                        <span class="text-moovin-lime text-lg font-bold" v-else>Free</span>
                                     </div>
                                     <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
                                         class="text-sm text-neutral-400">

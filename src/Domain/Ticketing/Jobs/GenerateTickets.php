@@ -51,6 +51,7 @@ class GenerateTickets implements ShouldQueue
                         'event_id' => $order->event_id,
                         'product_id' => $item->product_id,
                         'order_id' => $order->id,
+                        'user_id' => $order->user_id,
                         'type' => TicketType::DYNAMIC,
                         'status' => TicketStatus::ACTIVE,
                         'transfers_left' => 0,

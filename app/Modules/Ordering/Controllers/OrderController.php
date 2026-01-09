@@ -19,6 +19,10 @@ class OrderController extends Controller
 
             $order = $createOrder->handle($orderDTO);
 
+            if ($order->status === \Domain\Ordering\Enums\OrderStatus::COMPLETED) {
+                return redirect(route('orders.show', $order->id));
+            }
+
             return redirect(route('orders.checkout', $order->id));
         } catch (\Domain\Ordering\Exceptions\OrderAlreadyPendingException $e) {
             throw \Illuminate\Validation\ValidationException::withMessages([

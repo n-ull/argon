@@ -59,6 +59,8 @@ class OrderService
                 $orderData->gateway ?? null
             );
 
+            $status = $priceBreakdown->totalGross <= 0 ? OrderStatus::COMPLETED : OrderStatus::PENDING;
+
             // Create order with all calculated values
             $order = $event->orders()->create([
                 'user_id' => $orderData->userId,
@@ -74,7 +76,7 @@ class OrderService
                 'organizer_raise_method_snapshot' => $event->organizer->settings->raise_money_method ?? null,
                 'used_payment_gateway_snapshot' => $orderData->gateway ?? null,
                 'expires_at' => now()->addMinutes(15),
-                'status' => OrderStatus::PENDING,
+                'status' => $status,
             ]);
 
             // Create order items and increment quantity_sold
@@ -92,8 +94,12 @@ class OrderService
 
             event(new OrderCreated($order));
 
-            \Domain\Ordering\Jobs\ExpireOrder::dispatch($order->id)
-                ->delay(now()->addMinutes(15));
+            if ($status === OrderStatus::COMPLETED) {
+                event(new OrderCompleted($order));
+            } else {
+                \Domain\Ordering\Jobs\ExpireOrder::dispatch($order->id)
+                    ->delay(now()->addMinutes(15));
+            }
 
             return $order;
         });

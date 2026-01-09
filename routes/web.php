@@ -36,6 +36,9 @@ Route::group([
     Route::get('checkout/{order}', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'checkout'])
         ->name('checkout');
 
+    Route::get('{order}', [\App\Modules\Ordering\Controllers\OrderDetailsController::class, 'show'])
+        ->name('show');
+
     Route::post('checkout/{order}/cancel', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'cancel'])
         ->name('cancel');
 });
