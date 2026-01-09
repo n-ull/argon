@@ -57,8 +57,8 @@ const items = computed<NavItem[]>(() => {
                 href: '/dashboard',
             },
             {
-                title: 'Inventory',
-                href: '/inventory',
+                title: 'Tickets',
+                href: '/tickets',
             },
         );
     }

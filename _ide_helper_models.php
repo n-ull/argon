@@ -70,6 +70,7 @@ namespace Domain\EventManagement\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Order> $orders
  * @property-read int|null $orders_count
  * @property-read Organizer $organizer
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Ticket> $tickets
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Product> $products
  * @property-read int|null $products_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newModelQuery()
@@ -94,6 +95,7 @@ namespace Domain\EventManagement\Models{
  * @property-read \Domain\EventManagement\Models\EventStatistics $statistics
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\EventManagement\Models\TaxAndFee> $taxesAndFees
  * @property-read int|null $taxes_and_fees_count
+ * @property-read int|null $tickets_count
  * @method static \Database\Factories\Domain\EventManagement\Models\EventFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereDeletedAt($value)
@@ -222,8 +224,11 @@ namespace Domain\Ordering\Models{
  * @property int|null $user_id
  * @property-read \App\Models\User|null $client
  * @property-read \Domain\EventManagement\Models\Event $event
+ * @property-read mixed $is_paid
  * @property-read mixed $total
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ordering\Models\OrderItem> $orderItems
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ticketing\Models\Ticket> $tickets
+ * @property-read int|null $tickets_count
  * @method static \Database\Factories\Domain\Ordering\Models\OrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeletedAt($value)
@@ -248,7 +253,9 @@ namespace Domain\Ordering\Models{
  * @property int $id
  * @property int $order_id
  * @property int $product_id
+ * @property int $product_price_id
  * @property int|null $quantity
+ * @property float $unit_price
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -264,9 +271,8 @@ namespace Domain\Ordering\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereQuantity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property int|null $product_price_id
- * @property string $unit_price
  * @property-read \Domain\ProductCatalog\Models\ProductPrice|null $productPrice
+ * @method static \Database\Factories\Domain\Ordering\Models\OrderItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereProductPriceId($value)
@@ -460,21 +466,25 @@ namespace Domain\Ticketing\Models{
  * @property int|null $user_id
  * @property int|null $order_id
  * @property int|null $product_id
- * @property mixed $status
+ * @property \Domain\Ticketing\Enums\TicketStatus $status
  * @property int $transfers_left
  * @property bool $is_courtesy
  * @property \Illuminate\Support\Carbon|null $used_at
  * @property \Illuminate\Support\Carbon|null $expired_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Domain\EventManagement\Models\Event|null $event
  * @property-read \Domain\Ordering\Models\Order|null $order
  * @property-read \Domain\ProductCatalog\Models\Product|null $product
  * @property-read \App\Models\User|null $user
+ * @method static \Domain\Ticketing\Database\Factories\TicketFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereEventId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereExpiredAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereId($value)
@@ -488,6 +498,8 @@ namespace Domain\Ticketing\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereUsedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket withoutTrashed()
  */
 	class Ticket extends \Eloquent {}
 }

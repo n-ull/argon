@@ -157,6 +157,23 @@ export interface OrganizerSettings {
     deleted_at?: string | null;
 }
 
+export interface Ticket {
+    token: string;
+    type: string;
+    status: string;
+    is_courtesy: boolean;
+    used_at: string | null;
+    expired_at: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+    deleted_at: string | null;
+    transfers_left: number;
+    event: Event;
+    order: Order;
+    product: Product;
+    user: User;
+}
+
 export interface Order {
     id: number;
     reference_id: string;

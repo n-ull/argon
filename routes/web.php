@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
+use App\Modules\Ticketing\Controllers\TicketIndexController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -12,6 +13,14 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+Route::group([
+    'prefix' => 'tickets',
+    'as' => 'tickets.',
+], function () {
+    Route::get('/', [TicketIndexController::class, 'index'])
+        ->name('index');
+});
 
 Route::group([
     'prefix' => 'events',
