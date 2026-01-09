@@ -30,7 +30,7 @@ Route::group([
     'middleware' => ['auth', 'verified'],
 ], function () {
     Route::post('store', [\App\Modules\Ordering\Controllers\OrderController::class, 'store'])
-        // ->middleware('throttle:5,1')
+        ->middleware('throttle:5,1')
         ->name('store');
 
     Route::get('checkout/{order}', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'checkout'])
