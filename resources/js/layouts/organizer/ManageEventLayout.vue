@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import AppLogo from '@/components/AppLogo.vue';
-import OrderCountInfoTooltip from '@/components/dashboard/OrderCountInfoTooltip.vue';
 import GlobalDialog from '@/components/GlobalDialog.vue';
 import AppLayout from '@/layouts/app/AppSidebarManageEventLayout.vue';
 import { analytics, dashboard, settings, products, orders, attendees, doormen, vouchers, promoters } from '@/routes/manage/event';

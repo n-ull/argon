@@ -69,6 +69,7 @@ class Organizer extends Model
     public function settings(): HasOne
     {
         return $this->hasOne(OrganizerSettings::class)->withDefault([
+            'service_fee' => 10,
             'raise_money_method' => 'split',
             'is_modo_active' => false,
             'is_mercadopago_active' => false,

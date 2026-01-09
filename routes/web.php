@@ -75,6 +75,9 @@ Route::group([
 
         Route::get('{organizer}/settings', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'settings'])
             ->name('settings');
+
+        Route::put('{organizer}/settings', \Domain\OrganizerManagement\Actions\SaveSettings::class)
+            ->name('settings.update');
     });
 
     // manage event

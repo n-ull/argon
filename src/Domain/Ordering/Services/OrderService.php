@@ -18,81 +18,85 @@ class OrderService
     public function __construct(
         private OrderValidatorService $orderValidatorService,
         private PriceCalculationService $priceCalculationService,
-        private ReferenceIdService $referenceIdService
+        private ReferenceIdService $referenceIdService,
+        private \Illuminate\Database\DatabaseManager $databaseManager
     ) {
     }
 
     public function createPendingOrder(CreateOrderData $orderData): Order
     {
-        // Load event with relationships
-        $event = Event::with(['products.product_prices', 'taxesAndFees', 'organizer.settings'])
-            ->find($orderData->eventId);
+        return $this->databaseManager->transaction(function () use ($orderData) {
+            // Load event with relationships
+            $event = Event::with(['products.product_prices', 'taxesAndFees', 'organizer.settings'])
+                ->find($orderData->eventId);
 
-        if (!$event) {
-            throw new \DomainException("Event doesn't exist.");
-        }
-
-        // Check for existing pending order
-        if ($orderData->userId) {
-            $pendingOrder = Order::where('user_id', $orderData->userId)
-                ->where('status', OrderStatus::PENDING)
-                ->where('expires_at', '>', now())
-                ->first();
-
-            if ($pendingOrder) {
-                throw new \Domain\Ordering\Exceptions\OrderAlreadyPendingException($pendingOrder->id);
+            if (!$event) {
+                throw new \DomainException("Event doesn't exist.");
             }
-        }
 
-        // Validate order
-        $this->orderValidatorService->validateOrder($orderData);
+            // Check for existing pending order
+            if ($orderData->userId) {
+                $pendingOrder = Order::where('user_id', $orderData->userId)
+                    ->where('status', OrderStatus::PENDING)
+                    ->where('expires_at', '>', now())
+                    ->first();
 
-        // Prepare order items with pricing
-        $orderItems = $this->prepareOrderItems($orderData->items);
+                if ($pendingOrder) {
+                    throw new \Domain\Ordering\Exceptions\OrderAlreadyPendingException($pendingOrder->id);
+                }
+            }
 
-        // Calculate prices with snapshots
-        $priceBreakdown = $this->priceCalculationService->calculate(
-            $orderItems,
-            $event,
-            $orderData->gateway ?? null
-        );
+            // Validate order
+            $this->orderValidatorService->validateOrder($orderData);
 
-        // Create order with all calculated values
-        $order = $event->orders()->create([
-            'user_id' => $orderData->userId,
-            'subtotal' => $priceBreakdown->subtotal,
-            'taxes_total' => $priceBreakdown->taxesTotal,
-            'fees_total' => $priceBreakdown->feesTotal,
-            'total_before_additions' => $priceBreakdown->totalBeforeAdditions,
-            'total_gross' => $priceBreakdown->totalGross,
-            'items_snapshot' => $priceBreakdown->itemsSnapshot,
-            'taxes_snapshot' => $priceBreakdown->taxesSnapshot,
-            'fees_snapshot' => $priceBreakdown->feesSnapshot,
-            'reference_id' => $this->referenceIdService->create(),
-            'organizer_raise_method_snapshot' => $event->organizer->settings->raise_money_method ?? null,
-            'used_payment_gateway_snapshot' => $orderData->gateway ?? null,
-            'expires_at' => now()->addMinutes(15),
-            'status' => OrderStatus::PENDING,
-        ]);
+            // Prepare order items with pricing
+            $orderItems = $this->prepareOrderItems($orderData->items);
 
-        // Create order items
-        foreach ($priceBreakdown->itemsSnapshot as $itemSnapshot) {
-            $order->orderItems()->create([
-                'product_id' => $itemSnapshot['product_id'],
-                'product_price_id' => $itemSnapshot['product_price_id'],
-                'quantity' => $itemSnapshot['quantity'],
-                'unit_price' => $itemSnapshot['unit_price'],
+            // Calculate prices with snapshots
+            $priceBreakdown = $this->priceCalculationService->calculate(
+                $orderItems,
+                $event,
+                $orderData->gateway ?? null
+            );
+
+            // Create order with all calculated values
+            $order = $event->orders()->create([
+                'user_id' => $orderData->userId,
+                'subtotal' => $priceBreakdown->subtotal,
+                'taxes_total' => $priceBreakdown->taxesTotal,
+                'fees_total' => $priceBreakdown->feesTotal,
+                'total_before_additions' => $priceBreakdown->totalBeforeAdditions,
+                'total_gross' => $priceBreakdown->totalGross,
+                'items_snapshot' => $priceBreakdown->itemsSnapshot,
+                'taxes_snapshot' => $priceBreakdown->taxesSnapshot,
+                'fees_snapshot' => $priceBreakdown->feesSnapshot,
+                'reference_id' => $this->referenceIdService->create(),
+                'organizer_raise_method_snapshot' => $event->organizer->settings->raise_money_method ?? null,
+                'used_payment_gateway_snapshot' => $orderData->gateway ?? null,
+                'expires_at' => now()->addMinutes(15),
+                'status' => OrderStatus::PENDING,
             ]);
-        }
 
-        // reserve ticket
+            // Create order items and increment quantity_sold
+            foreach ($priceBreakdown->itemsSnapshot as $itemSnapshot) {
+                $order->orderItems()->create([
+                    'product_id' => $itemSnapshot['product_id'],
+                    'product_price_id' => $itemSnapshot['product_price_id'],
+                    'quantity' => $itemSnapshot['quantity'],
+                    'unit_price' => $itemSnapshot['unit_price'],
+                ]);
 
-        event(new OrderCreated($order));
+                ProductPrice::where('id', $itemSnapshot['product_price_id'])
+                    ->increment('quantity_sold', $itemSnapshot['quantity']);
+            }
 
-        \Domain\Ordering\Jobs\ExpireOrder::dispatch($order->id)
-            ->delay(now()->addMinutes(15));
+            event(new OrderCreated($order));
 
-        return $order;
+            \Domain\Ordering\Jobs\ExpireOrder::dispatch($order->id)
+                ->delay(now()->addMinutes(15));
+
+            return $order;
+        });
     }
 
     /**

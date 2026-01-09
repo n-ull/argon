@@ -18,10 +18,13 @@ beforeEach(function () {
     $this->priceCalculationService = new PriceCalculationService;
     $this->referenceIdService = Mockery::mock(ReferenceIdService::class);
 
+    $this->databaseManager = app(\Illuminate\Database\DatabaseManager::class);
+
     $this->service = new OrderService(
         $this->orderValidatorService,
         $this->priceCalculationService,
-        $this->referenceIdService
+        $this->referenceIdService,
+        $this->databaseManager
     );
 });
 
@@ -118,6 +121,33 @@ test('it creates an order and stores price snapshots even if prices change later
     // Assert: Order item still has original price
     $orderItem->refresh();
     expect((float) $orderItem->unit_price)->toBe(100.0);
+});
+
+test('it increments quantity_sold on ProductPrice when creating an order', function () {
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    $product = Product::factory()->create(['event_id' => $event->id]);
+    $productPrice = ProductPrice::create([
+        'product_id' => $product->id,
+        'price' => 100.00,
+        'label' => 'Standard',
+        'stock' => 10,
+        'quantity_sold' => 0,
+        'is_hidden' => false,
+        'sort_order' => 1,
+    ]);
+
+    $orderData = new CreateOrderData(
+        eventId: $event->id,
+        items: [['productId' => $product->id, 'productPriceId' => $productPrice->id, 'quantity' => 3]]
+    );
+
+    $this->orderValidatorService->shouldReceive('validateOrder')->once();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-1');
+
+    $this->service->createPendingOrder($orderData);
+
+    $productPrice->refresh();
+    expect($productPrice->quantity_sold)->toBe(3);
 });
 
 test('it creates order with multiple products and stores all snapshots', function () {

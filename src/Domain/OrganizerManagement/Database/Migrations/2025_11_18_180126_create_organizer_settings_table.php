@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,6 +13,7 @@ return new class extends Migration
         Schema::create('organizer_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organizer_id')->constrained('organizers')->cascadeOnDelete();
+            $table->unsignedInteger('service_fee')->default(10);
             $table->enum('raise_money_method', ['internal', 'split'])->default('split');
             $table->string('raise_money_account')->nullable();
             $table->boolean('is_modo_active')->default(false);

@@ -462,6 +462,37 @@ test('it throws exception when stock is insufficient', function () {
     $this->service->validateOrder($orderData);
 })->throws(DomainException::class, 'Product is not available');
 
+test('it throws exception when stock is insufficient considering quantity_sold', function () {
+    $event = Event::factory()->create([
+        'status' => EventStatus::PUBLISHED,
+    ]);
+
+    $product = Product::factory()->create([
+        'event_id' => $event->id,
+        'start_sale_date' => now()->subDay(),
+        'end_sale_date' => now()->addDays(30),
+    ]);
+
+    $productPrice = ProductPrice::create([
+        'product_id' => $product->id,
+        'price' => 100.00,
+        'label' => 'Regular',
+        'stock' => 10,
+        'quantity_sold' => 8,
+        'is_hidden' => false,
+        'sort_order' => 1,
+        'start_sale_date' => now()->subDay(),
+        'end_sale_date' => now()->addDays(30),
+    ]);
+
+    $orderData = new CreateOrderData(
+        eventId: $event->id,
+        items: [['productId' => $product->id, 'productPriceId' => $productPrice->id, 'quantity' => 3]]
+    );
+
+    $this->service->validateOrder($orderData);
+})->throws(DomainException::class, 'Product is not available');
+
 test('it validates multiple items in single order', function () {
     $event = Event::factory()->create([
         'status' => EventStatus::PUBLISHED,

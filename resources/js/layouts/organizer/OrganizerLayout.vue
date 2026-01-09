@@ -5,14 +5,15 @@ import type { BreadcrumbItemType, NavItem, Organizer } from '@/types';
 import { usePage } from '@inertiajs/vue3';
 import { Calendar, LayoutGrid, LucideMessageCircleQuestion, Settings, UsersRound } from 'lucide-vue-next';
 import { GlobalTheme, NConfigProvider, darkTheme } from 'naive-ui';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import GlobalDialog from '@/components/GlobalDialog.vue';
-import { Toaster } from 'vue-sonner';
+import { toast, Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css'
 
 interface Props {
     organizer: Organizer;
     breadcrumbs?: BreadcrumbItemType[];
+
 }
 
 const props = defineProps<Props>();
@@ -23,6 +24,32 @@ const user = computed(() => page.props.auth?.user);
 const userIsOwner = computed(() => {
     return props.organizer.owner_id === user.value?.id;
 });
+
+
+watch(() => page.props.flash?.message, (message) => {
+    if (message) {
+        switch (message.type) {
+            case 'success':
+                toast.success(message.summary, {
+                    description: message.detail,
+                    duration: 3000,
+                });
+                break;
+            case 'error':
+                toast.error(message.summary, {
+                    description: message.detail,
+                    duration: 3000,
+                });
+                break;
+            default:
+                toast(message.summary, {
+                    description: message.detail,
+                    duration: 3000,
+                });
+                break;
+        }
+    }
+}, { deep: true });
 
 const mainNavItems: NavItem[] = [
     {
