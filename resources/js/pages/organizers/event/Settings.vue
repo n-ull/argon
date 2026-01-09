@@ -8,6 +8,7 @@ import LocationForm from './forms/LocationForm.vue';
 import PaymentForm from './forms/PaymentForm.vue';
 import { NTabPane, NTabs, NButton } from 'naive-ui';
 import MiscellaneousForm from './forms/MiscellaneousForm.vue';
+import StatusForm from './forms/StatusForm.vue';
 import { useForm } from '@inertiajs/vue3';
 import { formatDateForPicker } from '@/lib/utils';
 
@@ -61,6 +62,9 @@ const form = useForm<SettingsForm>({
                     </n-tab-pane>
                     <n-tab-pane name="payment" tab="Payment">
                         <PaymentForm :event="form" />
+                    </n-tab-pane>
+                    <n-tab-pane name="status" tab="Status">
+                        <StatusForm :event="event" />
                     </n-tab-pane>
                     <n-tab-pane disabled name="misc" tab="Miscellaneous">
                         <MiscellaneousForm :event="form" />

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import InfoWidget from '@/components/dashboard/InfoWidget.vue';
 import EventStatusBadge from '@/components/EventStatusBadge.vue';
+import EventActions from '@/components/EventActions.vue';
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
 import { dashboard, products } from '@/routes/manage/event';
+import { update as updateStatusRoute } from '@/routes/manage/event/status';
 import { show as eventShow } from '@/routes/events';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { BookA, Copy, DollarSign, Download, Eye, EyeClosed, Gift, Plus, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
 import { NButton, NIcon, NInput } from 'naive-ui';
 import { toast } from 'vue-sonner';
@@ -48,7 +50,14 @@ const downloadQrCode = () => {
     link.click();
 }
 
-// TODO: handle publish event
+// handle publish event
+const publishEvent = () => {
+    router.patch(updateStatusRoute(event.id).url, {
+        status: 'published',
+    }, {
+        preserveScroll: true,
+    });
+};
 
 
 </script>
@@ -60,7 +69,10 @@ const downloadQrCode = () => {
     <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
         <div class="m-4">
             <div class="flex items-center justify-between">
-                <h1>{{ event.title }}</h1>
+                <div class="flex items-center gap-4">
+                    <h1>{{ event.title }}</h1>
+                    <EventActions :event="event" />
+                </div>
 
                 <p class="text-sm text-neutral-400">The event is now
                     <EventStatusBadge :status="event.status!" />
@@ -100,7 +112,7 @@ const downloadQrCode = () => {
                             </NButton>
                         </Link>
 
-                        <NButton v-if="event.status !== 'published'" tertiary size="large">
+                        <NButton v-if="event.status !== 'published'" tertiary size="large" @click="publishEvent">
                             <template #icon>
                                 <NIcon>
                                     <Eye />

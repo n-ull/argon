@@ -132,6 +132,9 @@ Route::group([
 
         Route::get('{event}/vouchers', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'vouchers'])
             ->name('vouchers');
+
+        Route::patch('{event}/status', \Domain\EventManagement\Actions\UpdateEventStatus::class)
+            ->name('status.update');
     });
 
 });
