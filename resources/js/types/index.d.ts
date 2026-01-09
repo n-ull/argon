@@ -158,6 +158,7 @@ export interface OrganizerSettings {
 }
 
 export interface Ticket {
+    id: number;
     token: string;
     type: string;
     status: string;

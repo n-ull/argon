@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
+use App\Modules\Ticketing\Controllers\TicketDetailsController;
 use App\Modules\Ticketing\Controllers\TicketIndexController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,6 +21,9 @@ Route::group([
 ], function () {
     Route::get('/', [TicketIndexController::class, 'index'])
         ->name('index');
+
+    Route::get('{ticket}', TicketDetailsController::class)
+        ->name('show');
 });
 
 Route::group([

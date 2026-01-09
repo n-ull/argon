@@ -20,6 +20,8 @@ interface Props {
         order_items: Array<{
             name: string;
             price_name: string;
+            quantity: number;
+            unit_price: number;
             subtotal: number;
         }>;
         event: {
@@ -83,8 +85,9 @@ const { order } = defineProps<Props>();
                             <div>
                                 <p class="text-white font-medium">{{ item.name }}</p>
                                 <p class="text-xs text-neutral-500">{{ item.price_name }}</p>
+                                <p class="text-xs text-neutral-500">{{ item.quantity }} x ${{ item.unit_price }}</p>
                             </div>
-                            <p class="text-white">${{ item.subtotal }}</p>
+                            <p class="text-white">${{ item.subtotal.toFixed(2) }}</p>
                         </div>
 
                         <div
