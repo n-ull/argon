@@ -128,6 +128,7 @@ export interface ProductPrice {
     updated_at?: string | null;
     deleted_at?: string | null;
     is_sold_out?: boolean;
+    limit_max_per_order?: number;
 }
 
 export interface Organizer {

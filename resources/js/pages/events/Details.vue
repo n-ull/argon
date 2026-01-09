@@ -41,7 +41,8 @@ const addToCart = (product: Product, price: ProductPrice) => {
     const existingItem = form.items.find(item => item.productPriceId === price.id);
 
     if (existingItem) {
-        if (product.max_per_order && existingItem.quantity >= product.max_per_order) {
+        const limit = price.limit_max_per_order ?? product.max_per_order;
+        if (limit && existingItem.quantity >= limit) {
             return;
         }
         existingItem.quantity++;
@@ -186,7 +187,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                             <div class="flex flex-col mb-2">
                                 <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
                                 <span v-if="product.description" class="text-sm text-neutral-400">{{ product.description
-                                }}</span>
+                                    }}</span>
                             </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id"
@@ -194,13 +195,14 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                     <div class="flex flex-col gap-2">
                                         <div class="flex flex-row items-center gap-2">
                                             <span class="text-xl">{{ price.label }}</span>
-                                            <span class="text-xs text-neutral-400" v-if="product.show_stock">Stock: {{
-                                                price.stock
+                                            <span class="text-xs text-neutral-400"
+                                                v-if="product.show_stock && price.stock !== null">Stock: {{
+                                                    price.stock
                                                 }}</span>
                                         </div>
                                         <span class="text-moovin-lime text-md font-bold" v-if="price.price > 0">${{
                                             price.price
-                                        }}</span>
+                                            }}</span>
                                         <span class="text-moovin-lime text-md font-bold" v-else>Free</span>
                                     </div>
                                     <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
@@ -222,8 +224,10 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                             </Button>
                                             <Button size="icon" variant="default">{{
                                                 getQuantity(price.id)
-                                            }}</Button>
-                                            <Button size="icon" variant="default" @click="addToCart(product, price)">
+                                                }}</Button>
+                                            <Button size="icon" variant="default"
+                                                :disabled="getQuantity(price.id) >= (price.limit_max_per_order ?? product.max_per_order ?? Infinity)"
+                                                @click="addToCart(product, price)">
                                                 <Plus />
                                             </Button>
                                         </div>

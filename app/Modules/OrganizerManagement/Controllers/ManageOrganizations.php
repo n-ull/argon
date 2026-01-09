@@ -31,7 +31,7 @@ class ManageOrganizations extends Controller
     public function settings(Organizer $organizer)
     {
         return Inertia::render('organizers/Settings', [
-            'organizer' => $organizer->with('settings')->first(),
+            'organizer' => $organizer->load('settings'),
         ]);
     }
 
