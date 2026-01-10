@@ -6,6 +6,7 @@ import { Calendar, MapPin, CheckCircle2, QrCode } from 'lucide-vue-next';
 import { formatDate } from '@/lib/utils';
 import { NButton, NTag } from 'naive-ui';
 import { show } from '@/routes/events';
+import { index } from '@/routes/tickets';
 
 interface Props {
     order: {
@@ -126,7 +127,9 @@ const { order } = defineProps<Props>();
                                 <NButton block secondary>Go back to Event</NButton>
                             </Link>
                             <!-- TODO: Link to tickets page when implemented -->
-                            <NButton block type="primary" color="#ccff00" text-color="#000">View Tickets</NButton>
+                            <Link :href="index()">
+                                <NButton block type="primary" color="#ccff00" text-color="#000">View Tickets</NButton>
+                            </Link>
                         </div>
                     </div>
                 </div>

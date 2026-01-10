@@ -98,8 +98,9 @@ export interface Product {
     id: number;
     name: string;
     description: string | null;
-    product_price_type: string;
-    product_type: string;
+    product_price_type: 'standard' | 'staggered' | 'free';
+    ticket_type: 'static' | 'dynamic';
+    product_type: 'general' | 'ticket';
     max_per_order: number | null;
     min_per_order: number;
     product_prices: ProductPrice[];

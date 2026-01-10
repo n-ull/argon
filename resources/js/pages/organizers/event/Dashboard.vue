@@ -33,14 +33,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 const copyEventUrl = () => {
     toast.success('Event URL copied to clipboard');
 
-    navigator.clipboard.writeText(eventShow({
-        slug: event.slug,
-    }).url);
+    navigator.clipboard.writeText(eventUrl);
 }
 
-const eventUrl = eventShow({
-    slug: event.slug,
-}).url;
+const eventUrl = 'http://127.0.0.1:8000/events/' + event.slug;
 
 const downloadQrCode = () => {
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${eventUrl}`;
@@ -125,6 +121,19 @@ const publishEvent = () => {
                 <div v-else>
                     <h2 class="text-lg font-semibold">Your event is ready</h2>
                     <p class="text-sm text-neutral-400">Your event is now published and ready to sell tickets.</p>
+
+                    <div class="mt-4">
+                        <Link :href="eventShow({ slug: event.slug }).url">
+                            <NButton tertiary icon-placement="left" size="large">
+                                <template #icon>
+                                    <NIcon>
+                                        <Eye />
+                                    </NIcon>
+                                </template>
+                                View Event Page
+                            </NButton>
+                        </Link>
+                    </div>
 
                     <!-- copy the link or share the qr -->
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">

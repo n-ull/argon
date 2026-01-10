@@ -5,16 +5,44 @@ import { Calendar, MapPin, ChevronRight, Ticket as TicketIcon } from 'lucide-vue
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { show } from '@/routes/tickets';
+import { computed } from 'vue';
 
 const { ticket } = defineProps<{ ticket: Ticket }>();
 
-const isUsed = ticket.status === 'used';
+const inactiveStatuses = ['used', 'expired', 'cancelled'];
+const isInactive = computed(() => inactiveStatuses.includes(ticket.status));
+
+const statusConfig = computed(() => {
+    switch (ticket.status) {
+        case 'expired':
+            return {
+                label: 'Expired',
+                badgeClass: 'bg-red-900/30 text-red-400',
+            };
+        case 'cancelled':
+            return {
+                label: 'Cancelled',
+                badgeClass: 'bg-red-900/30 text-red-400',
+            };
+        case 'used':
+            return {
+                label: 'Used',
+                badgeClass: 'bg-zinc-800 text-zinc-300',
+            };
+        default:
+            return {
+                label: 'Active',
+                badgeClass: 'bg-green-900/30 text-green-400',
+            };
+    }
+});
+
 const eventDate = ticket.event?.start_date ? format(new Date(ticket.event.start_date), "d 'de' MMMM, HH:mm'hs'", { locale: es }) : '';
 </script>
 
 <template>
-    <div class="group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-sm transition-all duration-300 hover:shadow-md"
-        :class="{ 'opacity-75 grayscale-[0.5]': isUsed }">
+    <div class="group relative flex flex-col overflow-hidden rounded-2xl border bg-zinc-900 shadow-sm transition-all duration-300 hover:shadow-md"
+        :class="{ 'opacity-75 grayscale-[0.5]': isInactive, 'border-moovin-lila': ticket.type === 'static', 'border-moovin-lime': ticket.type === 'dynamic' }">
         <!-- Card Header with Image/Icon -->
         <div class="relative h-32 w-full overflow-hidden bg-zinc-800">
             <template v-if="ticket.event?.horizontal_image_url">
@@ -28,8 +56,8 @@ const eventDate = ticket.event?.start_date ? format(new Date(ticket.event.start_
             <!-- Status Badge -->
             <div class="absolute right-3 top-3">
                 <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
-                    :class="isUsed ? 'bg-zinc-800 text-zinc-300' : 'bg-green-900/30 text-green-400'">
-                    {{ isUsed ? 'Used' : 'Active' }}
+                    :class="statusConfig.badgeClass">
+                    {{ statusConfig.label }}
                 </span>
             </div>
         </div>

@@ -7,7 +7,7 @@ import { Filter, Ticket as TicketIcon, Inbox } from 'lucide-vue-next';
 
 const { tickets } = defineProps<{ tickets: Ticket[] }>();
 
-const activeTab = ref<'active' | 'used'>('active');
+const activeTab = ref<'active' | 'inactive'>('active');
 const selectedEventId = ref<number | 'all'>('all');
 
 // Get unique events from tickets for the filter
@@ -23,11 +23,15 @@ const uniqueEvents = computed(() => {
 
 const filteredTickets = computed(() => {
     return tickets.filter(ticket => {
-        const matchesTab = activeTab.value === 'active' ? ticket.status !== 'used' : ticket.status === 'used';
+        const inactiveStatuses = ['used', 'expired', 'cancelled'];
+        const isInactive = inactiveStatuses.includes(ticket.status);
+        const matchesTab = activeTab.value === 'active' ? !isInactive : isInactive;
         const matchesEvent = selectedEventId.value === 'all' || ticket.event?.id === selectedEventId.value;
         return matchesTab && matchesEvent;
     });
 });
+
+console.log(tickets);
 </script>
 
 <template>
@@ -55,16 +59,16 @@ const filteredTickets = computed(() => {
                             <TicketIcon class="mr-2 h-4 w-4" />
                             Active
                             <span class="ml-2 rounded-full bg-zinc-800 px-2 py-0.5 text-xs">
-                                {{tickets.filter(t => t.status !== 'used').length}}
+                                {{tickets.filter(t => !['used', 'expired', 'cancelled'].includes(t.status)).length}}
                             </span>
                         </button>
-                        <button @click="activeTab = 'used'"
+                        <button @click="activeTab = 'inactive'"
                             class="flex items-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
-                            :class="activeTab === 'used' ? 'bg-zinc-900 text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'">
+                            :class="activeTab === 'inactive' ? 'bg-zinc-900 text-zinc-100 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'">
                             <Inbox class="mr-2 h-4 w-4" />
-                            Used
+                            Inactive
                             <span class="ml-2 rounded-full bg-zinc-800 px-2 py-0.5 text-xs">
-                                {{tickets.filter(t => t.status === 'used').length}}
+                                {{tickets.filter(t => ['used', 'expired', 'cancelled'].includes(t.status)).length}}
                             </span>
                         </button>
                     </div>
@@ -102,8 +106,8 @@ const filteredTickets = computed(() => {
                         <h3 class="mt-4 text-lg font-medium text-zinc-100">You don't have any tickets.
                         </h3>
                         <p class="mt-1 text-sm text-zinc-400">
-                            {{ activeTab === 'active' ? "You don't have active tickets" : "You don't have used tickets"
-                            }}
+                            {{ activeTab === 'active' ? "You don't have active tickets" :
+                                "You don't have inactive tickets" }}
                         </p>
                     </div>
                 </div>

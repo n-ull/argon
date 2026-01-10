@@ -2,7 +2,9 @@
 
 namespace Domain\ProductCatalog\Models;
 
+use Domain\ProductCatalog\Enums\ProductPriceType;
 use Domain\ProductCatalog\Enums\ProductType;
+use Domain\Ticketing\Enums\TicketType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -63,6 +65,7 @@ class Product extends Model
         'min_per_order',
         'product_type',
         'product_price_type',
+        'ticket_type',
         'hide_before_sale_start_date',
         'hide_after_sale_end_date',
         'hide_when_sold_out',
@@ -76,6 +79,8 @@ class Product extends Model
 
     protected $casts = [
         'product_type' => ProductType::class,
+        'product_price_type' => ProductPriceType::class,
+        'ticket_type' => TicketType::class,
         'start_sale_date' => 'datetime',
         'end_sale_date' => 'datetime',
         'hide_before_sale_start_date' => 'boolean',
