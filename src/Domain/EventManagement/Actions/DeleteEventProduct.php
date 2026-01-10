@@ -19,6 +19,7 @@ class DeleteEventProduct
             }
 
             $product->delete();
+
             return true;
         } catch (\Exception $e) {
             return false;
@@ -29,7 +30,7 @@ class DeleteEventProduct
     {
         $result = $this->handle($eventId, $productId);
 
-        if (!$result) {
+        if (! $result) {
             return back()->with('message', flash_error('Product cannot be deleted', 'Product cannot be deleted because it has tickets'));
         }
 

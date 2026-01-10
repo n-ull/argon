@@ -57,7 +57,7 @@ Route::group([
 });
 
 // organizer routes
-// TODO: change o to organizer and separate the routes from event to manage 
+// TODO: change o to organizer and separate the routes from event to manage
 Route::group([
     'prefix' => 'manage',
     'as' => 'manage.',
@@ -156,6 +156,6 @@ Route::group([
     'prefix' => 'user',
     'as' => 'user.',
     'middleware' => ['auth', 'verified'],
-], function () { });
+], function () {});
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

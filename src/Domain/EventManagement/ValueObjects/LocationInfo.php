@@ -13,8 +13,7 @@ class LocationInfo implements Arrayable, JsonSerializable
         public string $country,
         public ?string $mapLink = null,
         public ?string $site = null,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

@@ -4,12 +4,11 @@ namespace App\Console\Commands;
 
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Data\CreateOrderData;
-use Domain\Ordering\Enums\OrderStatus;
 use Domain\Ordering\Services\OrderService;
 use Domain\ProductCatalog\Models\Product;
 use Illuminate\Console\Command;
+
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\search;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 
@@ -38,8 +37,9 @@ class TestOrderCommand extends Command
 
         // Validate event exists
         $event = Event::find($eventId);
-        if (!$event) {
+        if (! $event) {
             $this->error("❌ Event with ID {$eventId} not found.");
+
             return 1;
         }
 
@@ -53,6 +53,7 @@ class TestOrderCommand extends Command
 
         if ($products->isEmpty()) {
             $this->warn('⚠️  No products found for this event.');
+
             return 1;
         }
 
@@ -87,7 +88,7 @@ class TestOrderCommand extends Command
                         $label .= " [Stock: {$available}]";
 
                         if ($available <= 0) {
-                            $label .= " SOLD OUT";
+                            $label .= ' SOLD OUT';
                         }
                     }
 
@@ -110,7 +111,7 @@ class TestOrderCommand extends Command
                 options: $options,
             );
 
-            if (!$selection) {
+            if (! $selection) {
                 $this->warn('No product selected.');
                 break;
             }
@@ -128,7 +129,8 @@ class TestOrderCommand extends Command
                 $maxQuantity = min($maxQuantity, $availableStock);
 
                 if ($availableStock <= 0) {
-                    $this->warn("⚠️  This price option is sold out.");
+                    $this->warn('⚠️  This price option is sold out.');
+
                     continue;
                 }
             }
@@ -138,7 +140,7 @@ class TestOrderCommand extends Command
                 label: 'Enter quantity',
                 default: (string) $minQuantity,
                 validate: function ($value) use ($minQuantity, $maxQuantity) {
-                    if (!is_numeric($value) || $value < 1) {
+                    if (! is_numeric($value) || $value < 1) {
                         return 'Quantity must be a positive number.';
                     }
                     if ($value < $minQuantity) {
@@ -147,6 +149,7 @@ class TestOrderCommand extends Command
                     if ($value > $maxQuantity) {
                         return "Maximum quantity is {$maxQuantity}.";
                     }
+
                     return null;
                 }
             );
@@ -176,6 +179,7 @@ class TestOrderCommand extends Command
 
         if (empty($selectedItems)) {
             $this->warn('⚠️  No items selected. Order creation cancelled.');
+
             return 1;
         }
 
@@ -183,12 +187,12 @@ class TestOrderCommand extends Command
         $this->info('📋 Order Summary:');
         $this->table(
             ['Product', 'Price Option', 'Quantity', 'Unit Price', 'Subtotal'],
-            collect($selectedItems)->map(fn($item) => [
+            collect($selectedItems)->map(fn ($item) => [
                 $item['productName'],
                 $item['priceLabel'],
                 $item['quantity'],
-                '$' . number_format($item['unitPrice'], 2),
-                '$' . number_format($item['unitPrice'] * $item['quantity'], 2),
+                '$'.number_format($item['unitPrice'], 2),
+                '$'.number_format($item['unitPrice'] * $item['quantity'], 2),
             ])->toArray()
         );
         $this->newLine();
@@ -197,7 +201,7 @@ class TestOrderCommand extends Command
         try {
             $orderData = new CreateOrderData(
                 eventId: $eventId,
-                items: collect($selectedItems)->map(fn($item) => [
+                items: collect($selectedItems)->map(fn ($item) => [
                     'productId' => $item['productId'],
                     'productPriceId' => $item['productPriceId'],
                     'quantity' => $item['quantity'],
@@ -216,22 +220,23 @@ class TestOrderCommand extends Command
             $this->info('✨ Test order created successfully!');
             $this->info("📦 Order ID: {$order->id}");
             $this->info("🔖 Reference ID: {$order->reference_id}");
-            $this->info("💰 Subtotal: \$" . number_format($order->subtotal, 2));
+            $this->info('💰 Subtotal: $'.number_format($order->subtotal, 2));
 
             if ($order->taxes_total > 0) {
-                $this->info("💵 Taxes: \$" . number_format($order->taxes_total, 2));
+                $this->info('💵 Taxes: $'.number_format($order->taxes_total, 2));
             }
 
             if ($order->fees_total > 0) {
-                $this->info("💳 Fees: \$" . number_format($order->fees_total, 2));
+                $this->info('💳 Fees: $'.number_format($order->fees_total, 2));
             }
 
-            $this->info("💎 Total: \$" . number_format($order->total, 2));
-            $this->info("✅ Status: COMPLETED");
+            $this->info('💎 Total: $'.number_format($order->total, 2));
+            $this->info('✅ Status: COMPLETED');
 
             return 0;
         } catch (\Exception $e) {
-            $this->error('❌ Error creating order: ' . $e->getMessage());
+            $this->error('❌ Error creating order: '.$e->getMessage());
+
             return 1;
         }
     }

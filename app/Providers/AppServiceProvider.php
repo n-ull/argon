@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\App;
 use Domain\Ordering\Events\OrderCompleted;
 use Domain\Ticketing\Listeners\GenerateTicketsForOrder;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Inertia::share([
-            'locale' => fn() => App::getLocale()
+            'locale' => fn () => App::getLocale(),
         ]);
     }
 }

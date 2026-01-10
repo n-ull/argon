@@ -4,9 +4,8 @@ use Domain\EventManagement\Models\Event;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
-use Domain\ProductCatalog\Scopes\AvailableProductsScope;
 use Domain\ProductCatalog\Scopes\AvailableProductPricesScope;
-use Illuminate\Support\Carbon;
+use Domain\ProductCatalog\Scopes\AvailableProductsScope;
 
 beforeEach(function () {
     $this->organizer = Organizer::factory()->create();
@@ -34,7 +33,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(1);
@@ -57,7 +56,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(1);
@@ -80,7 +79,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(0);
@@ -102,7 +101,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(1);
@@ -132,7 +131,7 @@ describe('AvailableProductsScope', function () {
         ProductPrice::factory()->create(['product_id' => $product2->id, 'price' => 100]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(2);
@@ -161,7 +160,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         // Should be hidden because event end_date is in the past
@@ -185,7 +184,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(1);
@@ -209,7 +208,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(1);
@@ -233,7 +232,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(0);
@@ -256,7 +255,7 @@ describe('AvailableProductsScope', function () {
         ]);
 
         $availableProducts = Product::query()
-            ->withGlobalScope('available', new AvailableProductsScope())
+            ->withGlobalScope('available', new AvailableProductsScope)
             ->get();
 
         expect($availableProducts)->toHaveCount(1);
@@ -283,7 +282,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(1);
@@ -308,7 +307,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(1);
@@ -333,7 +332,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(0);
@@ -357,7 +356,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(1);
@@ -390,7 +389,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(2);
@@ -433,7 +432,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(2);
@@ -458,7 +457,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(1);
@@ -483,7 +482,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(1);
@@ -508,7 +507,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(0);
@@ -532,7 +531,7 @@ describe('AvailableProductPricesScope', function () {
         ]);
 
         $availablePrices = ProductPrice::query()
-            ->withGlobalScope('available', new AvailableProductPricesScope())
+            ->withGlobalScope('available', new AvailableProductPricesScope)
             ->get();
 
         expect($availablePrices)->toHaveCount(1);

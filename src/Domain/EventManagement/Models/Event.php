@@ -11,7 +11,6 @@ use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
 use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Models\Ticket;
-use Domain\Ticketing\Scopes\ScannedTickets;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -77,7 +76,7 @@ class Event extends Model
         'end_date',
         'event_category_id',
         'organizer_id',
-        'slug'
+        'slug',
     ];
 
     protected $casts = [

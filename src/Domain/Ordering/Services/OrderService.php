@@ -20,8 +20,7 @@ class OrderService
         private PriceCalculationService $priceCalculationService,
         private ReferenceIdService $referenceIdService,
         private \Illuminate\Database\DatabaseManager $databaseManager
-    ) {
-    }
+    ) {}
 
     public function createPendingOrder(CreateOrderData $orderData): Order
     {
@@ -30,7 +29,7 @@ class OrderService
             $event = Event::with(['products.product_prices', 'taxesAndFees', 'organizer.settings'])
                 ->find($orderData->eventId);
 
-            if (!$event) {
+            if (! $event) {
                 throw new \DomainException("Event doesn't exist.");
             }
 
@@ -129,22 +128,20 @@ class OrderService
 
     /**
      * Summary of completePendingOrder
-     * @param ?int $orderId
-     * @param ?string $referenceId
+     *
      * @throws OrderNotFoundException
      * @throws OrderAlreadyCompletedException
      * @throws \DomainException
-     * @return Order
      */
     public function completePendingOrder(?int $orderId = null, ?string $referenceId = null): Order
     {
-        if (!$orderId && !$referenceId) {
+        if (! $orderId && ! $referenceId) {
             throw new \DomainException('Order ID or Reference ID is required.');
         }
 
         $order = Order::find($orderId) ?? Order::where('reference_id', $referenceId)->first();
 
-        if (!$order) {
+        if (! $order) {
             throw new OrderNotFoundException;
         }
 

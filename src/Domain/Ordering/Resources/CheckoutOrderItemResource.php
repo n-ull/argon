@@ -19,7 +19,7 @@ class CheckoutOrderItemResource extends JsonResource
             'price_name' => $this->productPrice->label,
             'quantity' => $this->quantity,
             'unit_price' => $this->unit_price,
-            'subtotal' => $this->unit_price * $this->quantity
+            'subtotal' => $this->unit_price * $this->quantity,
         ];
     }
 }

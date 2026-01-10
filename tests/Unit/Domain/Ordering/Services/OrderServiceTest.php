@@ -180,14 +180,14 @@ test('it stores taxes and fees snapshots when applicable', function () {
         'type' => \Domain\EventManagement\Enums\TaxFeeType::TAX,
         'value' => 10,
         'is_active' => true,
-        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::PERCENTAGE
+        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::PERCENTAGE,
     ])->create();
 
     $fee = \Domain\EventManagement\Models\TaxAndFee::factory()->state([
         'type' => \Domain\EventManagement\Enums\TaxFeeType::FEE,
         'value' => 5,
         'is_active' => true,
-        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::FIXED
+        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::FIXED,
     ])->create();
 
     $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
@@ -278,7 +278,7 @@ test('it handles gateway-specific fees correctly', function () {
         'value' => 5,
         'is_active' => true,
         'calculation_type' => \Domain\EventManagement\Enums\CalculationType::FIXED,
-        'applicable_gateways' => ['mercadopago']
+        'applicable_gateways' => ['mercadopago'],
     ]);
     $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
     $event->taxesAndFees()->attach($taxFee);

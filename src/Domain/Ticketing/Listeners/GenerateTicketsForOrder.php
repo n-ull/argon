@@ -12,6 +12,7 @@ class GenerateTicketsForOrder implements ShouldQueue
     use InteractsWithQueue;
 
     public int $tries = 3;
+
     public int $timeout = 30;
 
     public function handle(OrderCompleted $event): void

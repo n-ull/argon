@@ -16,15 +16,14 @@ class ExpireOrder implements ShouldQueue
 
     public function __construct(
         public int $orderId
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
         \Illuminate\Support\Facades\DB::transaction(function () {
             $order = Order::with('orderItems')->find($this->orderId);
 
-            if (!$order) {
+            if (! $order) {
                 return;
             }
 

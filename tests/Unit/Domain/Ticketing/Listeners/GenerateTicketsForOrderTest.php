@@ -2,11 +2,11 @@
 
 use Domain\Ordering\Events\OrderCompleted;
 use Domain\Ordering\Models\Order;
-use Domain\Ticketing\Listeners\GenerateTicketsForOrder;
 use Domain\Ticketing\Jobs\GenerateTickets;
+use Domain\Ticketing\Listeners\GenerateTicketsForOrder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
@@ -16,7 +16,7 @@ test('it dispatches GenerateTickets job when order is completed', function () {
 
     $order = Order::factory()->create(['id' => 123]);
     $event = new OrderCompleted($order);
-    $listener = new GenerateTicketsForOrder();
+    $listener = new GenerateTicketsForOrder;
 
     $listener->handle($event);
 

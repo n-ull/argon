@@ -4,9 +4,8 @@ namespace App\Console\Commands;
 
 use Domain\ProductCatalog\Models\Product;
 use Illuminate\Console\Command;
+
 use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\info;
-use function Laravel\Prompts\table;
 
 class MigrateToStaggeredPricing extends Command
 {
@@ -40,6 +39,7 @@ class MigrateToStaggeredPricing extends Command
 
         if ($productsWithMultiplePrices->isEmpty()) {
             $this->info('✅ No products found with multiple prices.');
+
             return 0;
         }
 
@@ -51,6 +51,7 @@ class MigrateToStaggeredPricing extends Command
         if ($productsToUpdate->isEmpty()) {
             $this->info('✅ All products with multiple prices are already set to staggered pricing.');
             $this->info("ℹ️  Found {$productsWithMultiplePrices->count()} product(s) with multiple prices (all already staggered).");
+
             return 0;
         }
 
@@ -81,7 +82,7 @@ class MigrateToStaggeredPricing extends Command
             $priceData = $product->product_prices->map(function ($price) {
                 return [
                     'Label' => $price->label ?? '(no label)',
-                    'Price' => '$' . number_format($price->price, 2),
+                    'Price' => '$'.number_format($price->price, 2),
                     'Stock' => $price->stock ?? 'unlimited',
                 ];
             })->toArray();
@@ -94,6 +95,7 @@ class MigrateToStaggeredPricing extends Command
         if ($this->option('dry-run')) {
             $this->warn('🔍 DRY RUN MODE: No changes will be made.');
             $this->info("Would update {$productsToUpdate->count()} product(s) to staggered pricing.");
+
             return 0;
         }
 
@@ -103,8 +105,9 @@ class MigrateToStaggeredPricing extends Command
             default: false
         );
 
-        if (!$confirmed) {
+        if (! $confirmed) {
             $this->warn('❌ Operation cancelled.');
+
             return 1;
         }
 

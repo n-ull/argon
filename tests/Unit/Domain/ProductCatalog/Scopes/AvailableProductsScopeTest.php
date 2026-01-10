@@ -8,7 +8,6 @@ use Domain\ProductCatalog\Models\ProductPrice;
 use Domain\ProductCatalog\Scopes\AvailableProductsScope;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class AvailableProductsScopeTest extends TestCase
 {
@@ -17,7 +16,7 @@ class AvailableProductsScopeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // We need to make sure the scope is not applied globally if it was, 
+        // We need to make sure the scope is not applied globally if it was,
         // but since it's a local scope we will apply it manually or check if it's added to the model boot.
         // The user request implies creating the scope class, not necessarily applying it globally yet.
         // However, to test it, we can add it to a query.

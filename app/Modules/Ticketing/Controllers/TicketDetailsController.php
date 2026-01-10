@@ -16,6 +16,7 @@ class TicketDetailsController extends Controller
     public function __invoke(Ticket $ticket, Request $request)
     {
         $ticket->load(['product', 'event', 'order']);
+
         return Inertia::render('tickets/Details', [
             'ticket' => TicketResource::make($ticket)->resolve(),
         ]);

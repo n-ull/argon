@@ -13,8 +13,5 @@ class CreateCourtesyTicket
         //
     }
 
-    public function asController()
-    {
-
-    }
+    public function asController() {}
 }

@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class OrganizerSettings extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'organizer_id',
         'raise_money_method',

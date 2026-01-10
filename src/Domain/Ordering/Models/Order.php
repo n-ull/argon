@@ -5,7 +5,6 @@ namespace Domain\Ordering\Models;
 use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Enums\OrderStatus;
-use Domain\Ordering\Events\OrderCompleted;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

@@ -1,11 +1,11 @@
 <?php
 
+use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Enums\ProductPriceType;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
-use App\Models\User;
 
 test('updating product to standard removes extra prices', function () {
     $user = User::factory()->create();
@@ -40,7 +40,7 @@ test('updating product to standard removes extra prices', function () {
                 'stock' => 10,
                 'has_limited_stock' => true,
                 'label' => 'Standard Price',
-            ]
+            ],
         ],
     ]);
 
@@ -72,8 +72,8 @@ test('can create a standard product', function () {
                 'stock' => 50,
                 'has_limited_stock' => true,
                 'label' => 'Standard Price',
-            ]
-        ]
+            ],
+        ],
     ]);
 
     $response->assertRedirect();
@@ -114,8 +114,8 @@ test('can create a staggered product', function () {
                 'stock' => null,
                 'has_limited_stock' => false,
                 'label' => 'Regular',
-            ]
-        ]
+            ],
+        ],
     ]);
 
     $response->assertRedirect();

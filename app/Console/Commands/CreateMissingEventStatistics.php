@@ -43,6 +43,7 @@ class CreateMissingEventStatistics extends Command
 
         if ($count === 0) {
             $this->info('✅ There are no missing event statistics to create.');
+
             return 0;
         }
 
@@ -70,7 +71,7 @@ class CreateMissingEventStatistics extends Command
 
         $progressBar->finish();
         $this->newLine();
-        $this->info('🎉 Process finished. Created ' . $count . ' missing event statistics.');
+        $this->info('🎉 Process finished. Created '.$count.' missing event statistics.');
 
         return 0; // Código de salida exitoso
     }

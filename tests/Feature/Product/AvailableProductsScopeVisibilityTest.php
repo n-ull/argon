@@ -4,8 +4,8 @@ use Domain\EventManagement\Models\Event;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
-use Domain\ProductCatalog\Scopes\AvailableProductsScope;
 use Domain\ProductCatalog\Scopes\AvailableProductPricesScope;
+use Domain\ProductCatalog\Scopes\AvailableProductsScope;
 
 beforeEach(function () {
     $this->organizer = Organizer::factory()->create();
@@ -30,7 +30,7 @@ test('it shows sold out product when hide_when_sold_out is false', function () {
     ]);
 
     $availableProducts = Product::query()
-        ->withGlobalScope('available', new AvailableProductsScope())
+        ->withGlobalScope('available', new AvailableProductsScope)
         ->get();
 
     expect($availableProducts)->toHaveCount(1);
@@ -51,7 +51,7 @@ test('it hides sold out product when hide_when_sold_out is true', function () {
     ]);
 
     $availableProducts = Product::query()
-        ->withGlobalScope('available', new AvailableProductsScope())
+        ->withGlobalScope('available', new AvailableProductsScope)
         ->get();
 
     expect($availableProducts)->toHaveCount(0);
@@ -71,7 +71,7 @@ test('it shows sold out price when hide_when_sold_out is false', function () {
     ]);
 
     $availablePrices = ProductPrice::query()
-        ->withGlobalScope('available', new AvailableProductPricesScope())
+        ->withGlobalScope('available', new AvailableProductPricesScope)
         ->get();
 
     expect($availablePrices)->toHaveCount(1);
@@ -92,7 +92,7 @@ test('it hides sold out price when hide_when_sold_out is true', function () {
     ]);
 
     $availablePrices = ProductPrice::query()
-        ->withGlobalScope('available', new AvailableProductPricesScope())
+        ->withGlobalScope('available', new AvailableProductPricesScope)
         ->get();
 
     expect($availablePrices)->toHaveCount(0);

@@ -33,7 +33,7 @@ class CreateEventProduct
             'sort_order' => $event->products()->max('sort_order') + 1,
         ]);
 
-        if (!empty($data['prices']) && $data['product_price_type'] !== ProductPriceType::FREE) {
+        if (! empty($data['prices']) && $data['product_price_type'] !== ProductPriceType::FREE) {
             foreach ($data['prices'] as $priceData) {
                 $product->product_prices()->create([
                     'price' => $priceData['price'],

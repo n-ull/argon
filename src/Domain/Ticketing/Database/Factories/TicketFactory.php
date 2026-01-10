@@ -32,7 +32,7 @@ class TicketFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'type' => TicketType::STATIC ,
+                'type' => TicketType::STATIC,
                 'token' => fake()->unique()->numerify('T-#####'),
             ];
         });

@@ -1,6 +1,5 @@
 <?php
 
-use Domain\Ordering\Enums\OrderStatus;
 use Domain\Ticketing\Actions\CreateOrderTicket;
 use Domain\Ticketing\Models\Ticket;
 
@@ -22,4 +21,3 @@ describe('CreateOrderTicket', function () {
         ]);
     });
 });
-

@@ -1,7 +1,6 @@
 <?php
 
 use Domain\Ordering\Enums\OrderStatus;
-use Domain\Ordering\Events\OrderCompleted;
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
 use Domain\Ordering\Services\OrderService;
@@ -9,7 +8,6 @@ use Domain\Ticketing\Jobs\GenerateTickets;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Event;
 use PragmaRX\Google2FA\Google2FA;
 
 uses(RefreshDatabase::class);
@@ -52,7 +50,7 @@ test('GenerateTickets job creates tickets for each order item', function () {
 
     // Execute job
     $job = new GenerateTickets($order->id);
-    $job->handle(new Google2FA());
+    $job->handle(new Google2FA);
 
     // Assert
     expect(Ticket::count())->toBe(3);

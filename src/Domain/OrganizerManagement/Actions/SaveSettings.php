@@ -4,8 +4,8 @@ namespace Domain\OrganizerManagement\Actions;
 
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\OrganizerManagement\Models\OrganizerSettings;
-use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Http\Request;
+use Lorisleiva\Actions\Concerns\AsAction;
 
 class SaveSettings
 {
@@ -19,16 +19,16 @@ class SaveSettings
         $organizerFields = ['name', 'email', 'phone', 'logo'];
         $organizerData = array_intersect_key($data, array_flip($organizerFields));
 
-        if (!empty($organizerData)) {
+        if (! empty($organizerData)) {
             $organizer->update($organizerData);
         }
 
         $settingsFields = ['raise_money_method', 'raise_money_account', 'is_modo_active', 'is_mercadopago_active'];
         $settingsData = array_intersect_key($data, array_flip($settingsFields));
 
-        if (!empty($settingsData)) {
+        if (! empty($settingsData)) {
             $organizerSettings = OrganizerSettings::firstOrCreate([
-                'organizer_id' => $organizerId
+                'organizer_id' => $organizerId,
             ]);
             $organizerSettings->update($settingsData);
         }

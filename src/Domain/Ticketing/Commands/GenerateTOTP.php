@@ -27,7 +27,7 @@ class GenerateTOTP extends Command
     public function handle()
     {
         $ticket = Ticket::findOrFail($this->argument('ticketId'));
-        $google2fa = new \PragmaRX\Google2FA\Google2FA();
+        $google2fa = new \PragmaRX\Google2FA\Google2FA;
 
         return $this->info($google2fa->getCurrentOtp($ticket->token));
     }

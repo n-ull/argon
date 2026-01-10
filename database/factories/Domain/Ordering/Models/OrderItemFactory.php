@@ -4,7 +4,6 @@ namespace Database\Factories\Domain\Ordering\Models;
 
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
-use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

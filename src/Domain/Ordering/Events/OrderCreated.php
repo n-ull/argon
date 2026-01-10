@@ -4,7 +4,6 @@ namespace Domain\Ordering\Events;
 
 use Domain\Ordering\Models\Order;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 

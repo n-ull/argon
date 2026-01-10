@@ -7,8 +7,8 @@ use Domain\Ordering\Models\OrderItem;
 use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Enums\TicketType;
 use Domain\Ticketing\Models\Ticket;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -37,13 +37,15 @@ class GenerateTickets implements ShouldQueue
     {
         $order = Order::find($this->orderId);
 
-        if (!$order) {
+        if (! $order) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} not found");
+
             return;
         }
 
-        if (!$order->isPaid) {
+        if (! $order->isPaid) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} is not paid");
+
             return;
         }
 

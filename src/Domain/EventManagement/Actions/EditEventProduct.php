@@ -3,7 +3,6 @@
 namespace Domain\EventManagement\Actions;
 
 use Domain\EventManagement\Models\Event;
-use Domain\ProductCatalog\Enums\ProductPriceType;
 use Domain\ProductCatalog\Models\Product;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -30,7 +29,7 @@ class EditEventProduct
             'show_stock' => $data['show_stock'] ?? false,
         ]);
 
-        if (!empty($data['prices'])) {
+        if (! empty($data['prices'])) {
             // 1. Get IDs of prices present in the request
             $requestPriceIds = collect($data['prices'])
                 ->pluck('id')
@@ -44,7 +43,7 @@ class EditEventProduct
 
             // 3. Update or Create prices
             foreach ($data['prices'] as $priceData) {
-                if (!empty($priceData['id'])) {
+                if (! empty($priceData['id'])) {
                     // Update existing
                     $product->product_prices()->where('id', $priceData['id'])->update([
                         'price' => $priceData['price'],

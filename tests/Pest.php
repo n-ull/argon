@@ -89,11 +89,11 @@ function setupOrder(array $orderOverrides = [])
         'order_id' => $order->id,
         'product_id' => $product->id,
         'quantity' => 1,
-        'unit_price' => 10
+        'unit_price' => 10,
     ]);
 
     return [
         'order' => $order,
-        'product' => $product
+        'product' => $product,
     ];
 }

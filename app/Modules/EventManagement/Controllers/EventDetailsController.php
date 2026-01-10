@@ -31,9 +31,9 @@ class EventDetailsController extends Controller
 
         // Update unique visitors statistics plus one
         $ipAddress = request()->ip();
-        $cacheKey = 'event_visitor_' . $event->id . '_' . md5($ipAddress);
+        $cacheKey = 'event_visitor_'.$event->id.'_'.md5($ipAddress);
 
-        if (!cache()->has($cacheKey)) {
+        if (! cache()->has($cacheKey)) {
             $event->statistics()->update([
                 'unique_visitors' => $event->statistics->unique_visitors + 1,
             ]);

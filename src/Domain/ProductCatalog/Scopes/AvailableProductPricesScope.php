@@ -32,9 +32,9 @@ class AvailableProductPricesScope implements Scope
                 // Stock Visibility Logic
                 $query->where('products.hide_when_sold_out', false)
                     ->orWhere(function ($q) {
-                    $q->whereNull('product_prices.stock')
-                        ->orWhereRaw('product_prices.stock > product_prices.quantity_sold');
-                });
+                        $q->whereNull('product_prices.stock')
+                            ->orWhereRaw('product_prices.stock > product_prices.quantity_sold');
+                    });
             })
             ->select('product_prices.*');
     }
