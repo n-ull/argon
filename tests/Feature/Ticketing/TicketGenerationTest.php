@@ -50,7 +50,7 @@ test('GenerateTickets job creates tickets for each order item', function () {
 
     // Execute job
     $job = new GenerateTickets($order->id);
-    $job->handle(new Google2FA);
+    $job->handle();
 
     // Assert
     expect(Ticket::count())->toBe(3);

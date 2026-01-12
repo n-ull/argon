@@ -28,7 +28,7 @@ test('updating product to standard removes extra prices', function () {
     $response = $this->actingAs($user)->put(route('manage.event.products.update', ['event' => $event, 'product' => $product]), [
         'name' => 'Updated Product',
         'product_type' => 'general',
-        'product_price_type' => 'standard',
+        'product_price_type' => ProductPriceType::STANDARD->value,
         'min_per_order' => 1,
         'max_per_order' => 10,
         'is_hidden' => false,
@@ -47,7 +47,7 @@ test('updating product to standard removes extra prices', function () {
     $response->assertRedirect();
 
     $product->refresh();
-    expect($product->product_price_type)->toBe('standard');
+    expect($product->product_price_type)->toBe(ProductPriceType::STANDARD);
     expect($product->product_prices)->toHaveCount(1);
     expect($product->product_prices->first()->price)->toEqual(50);
 });
@@ -61,7 +61,7 @@ test('can create a standard product', function () {
     $response = $this->actingAs($user)->post(route('manage.event.products.store', $event), [
         'name' => 'New Product',
         'product_type' => 'general',
-        'product_price_type' => 'standard',
+        'product_price_type' => ProductPriceType::STANDARD->value,
         'min_per_order' => 1,
         'max_per_order' => 10,
         'is_hidden' => false,
@@ -79,7 +79,7 @@ test('can create a standard product', function () {
     $response->assertRedirect();
     $this->assertDatabaseHas('products', [
         'name' => 'New Product',
-        'product_price_type' => 'standard',
+        'product_price_type' => ProductPriceType::STANDARD->value,
         'event_id' => $event->id,
     ]);
 
@@ -97,7 +97,7 @@ test('can create a staggered product', function () {
     $response = $this->actingAs($user)->post(route('manage.event.products.store', $event), [
         'name' => 'Staggered Product',
         'product_type' => 'general',
-        'product_price_type' => 'staggered',
+        'product_price_type' => ProductPriceType::STAGGERED->value,
         'min_per_order' => 1,
         'max_per_order' => 10,
         'is_hidden' => false,
@@ -121,7 +121,7 @@ test('can create a staggered product', function () {
     $response->assertRedirect();
 
     $product = Product::where('name', 'Staggered Product')->first();
-    expect($product->product_price_type)->toBe('staggered');
+    expect($product->product_price_type)->toBe(ProductPriceType::STAGGERED);
     expect($product->product_prices)->toHaveCount(2);
     expect($product->product_prices->pluck('label')->toArray())->toContain('Early Bird', 'Regular');
 });
