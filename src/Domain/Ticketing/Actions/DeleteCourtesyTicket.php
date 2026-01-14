@@ -12,7 +12,7 @@ class DeleteCourtesyTicket
 
     public function handle(Ticket $ticket)
     {
-        $ticket->delete();
+        \Domain\Ticketing\Jobs\DeleteCourtesyTicket::dispatch($ticket);
     }
 
     public function asController(int $eventId, Ticket $courtesy)

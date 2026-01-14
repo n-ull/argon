@@ -58,6 +58,6 @@ class CreateCourtesyTicket
         $this->handle($event, $product, $validated['quantity'], $userIds, auth()->id());
 
         $totalTickets = count($userIds) * $validated['quantity'];
-        return back()->with('message', flash_success('You succesfully created ' . $totalTickets . ' tickets', 'You have created ' . $totalTickets . ' tickets for ' . count($userIds) . ' users'));
+        return back();
     }
 }

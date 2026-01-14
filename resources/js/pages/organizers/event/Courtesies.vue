@@ -18,7 +18,8 @@ interface Props {
     products: Product[];
 }
 
-const { event, courtesies, products } = defineProps<Props>();
+const props = defineProps<Props>();
+const { event, courtesies, products } = props;
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -43,11 +44,20 @@ const form = useForm({
 
 const selectedRowKeys = ref<number[]>([]);
 
+const courtesiesList = ref<(Ticket & { given_by: User })[]>(courtesies as any);
+
+watch(() => props.courtesies, (newVal) => {
+    courtesiesList.value = newVal as any;
+});
+
 const handleRowAction = (key: string | number, row: Ticket) => {
     if (key === 'delete') {
         if (!confirm('Are you sure you want to delete this ticket?')) return;
         router.delete((deleteMethod({ event: event.id, courtesy: row.id })).url, {
             preserveScroll: true,
+            onSuccess: () => {
+                courtesiesList.value = courtesiesList.value.filter(t => t.id !== row.id);
+            }
         });
     }
 };
@@ -55,7 +65,6 @@ const handleRowAction = (key: string | number, row: Ticket) => {
 const handleBulkDelete = () => {
     if (!confirm(`Are you sure you want to delete ${selectedRowKeys.value.length} tickets?`)) return;
 
-    // Construct bulk delete URL manually
     const url = (bulkDelete(event.id)).url;
 
     router.delete(`${url}`, {
@@ -64,6 +73,7 @@ const handleBulkDelete = () => {
         },
         preserveScroll: true,
         onSuccess: () => {
+            courtesiesList.value = courtesiesList.value.filter(t => !selectedRowKeys.value.includes(t.id));
             selectedRowKeys.value = [];
         }
     });
@@ -196,6 +206,21 @@ const submit = () => {
     form.post((courtesiesRoute(event.id)).url, {
         onSuccess: () => {
             form.reset('emails');
+            toast.success('Ticket creation processing. The list will update shortly.');
+
+            // Poll for updates a few times
+            let checks = 0;
+            const interval = setInterval(() => {
+                router.reload({
+                    only: ['courtesies'],
+                    onFinish: () => {
+                        checks++;
+                        // If we have more courtesies than before? 
+                        // Hard to track simply. Just stop after 5 checks (10 seconds).
+                        if (checks >= 5) clearInterval(interval);
+                    }
+                });
+            }, 2000);
         }
     });
 };
@@ -286,7 +311,7 @@ const manageErrors = watch(() => form.errors, () => {
                 <!-- Tickets List -->
                 <div class="md:col-span-2">
                     <NCard title="History" size="medium">
-                        <NDataTable :columns="columns" :data="courtesies" :pagination="{ pageSize: 10 }"
+                        <NDataTable :columns="columns" :data="courtesiesList" :pagination="{ pageSize: 10 }"
                             :row-key="(row: any) => row.id" v-model:checked-row-keys="selectedRowKeys" />
                     </NCard>
                 </div>

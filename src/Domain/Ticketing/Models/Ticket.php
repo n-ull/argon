@@ -27,6 +27,7 @@ class Ticket extends Model
         'status',
         'transfers_left',
         'is_courtesy',
+        'given_by',
         'used_at',
         'expired_at',
     ];
