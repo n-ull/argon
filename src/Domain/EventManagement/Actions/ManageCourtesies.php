@@ -20,7 +20,8 @@ class ManageCourtesies
         $event = Event::findOrFail($eventId)->load('organizer');
         return Inertia::render('organizers/event/Courtesies', [
             'event' => $event,
-            'courtesies' => $event->courtesies()->get()
+            'courtesies' => $event->courtesies()->with(['user', 'product', 'givenBy'])->get(),
+            'products' => $event->products()->where('product_type', \Domain\ProductCatalog\Enums\ProductType::TICKET)->get()
         ]);
     }
 }

@@ -155,6 +155,9 @@ Route::group([
         Route::post('{event}/courtesies', \Domain\Ticketing\Actions\CreateCourtesyTicket::class)
             ->name('courtesies.store');
 
+        Route::delete('{event}/courtesies/bulk', \Domain\Ticketing\Actions\BulkDeleteCourtesyTickets::class)
+            ->name('courtesies.bulk-delete');
+
         Route::delete('{event}/courtesies/{courtesy}', \Domain\Ticketing\Actions\DeleteCourtesyTicket::class)
             ->name('courtesies.delete');
     });
