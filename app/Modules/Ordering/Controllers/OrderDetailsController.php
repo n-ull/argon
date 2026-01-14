@@ -11,9 +11,11 @@ class OrderDetailsController extends Controller
 {
     public function show(Order $order)
     {
+        $order->load(['orderItems', 'event'])->withCount('tickets');
+
         // Ensure user owns the order or is an organizer of the event
         // For now, let's just check if it's the authenticated user's order
-        if ($order->user_id !== auth()->id()) {
+        if ($order->user_id !== auth()->user()->id()) {
             abort(403);
         }
 
