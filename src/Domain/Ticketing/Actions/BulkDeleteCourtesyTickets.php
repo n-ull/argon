@@ -13,7 +13,7 @@ class BulkDeleteCourtesyTickets
 
     public function handle(array $ticketIds)
     {
-        Ticket::whereIn('id', $ticketIds)->delete();
+        \Domain\Ticketing\Jobs\DeleteCourtesyTickets::dispatch($ticketIds);
     }
 
     public function asController(int $eventId, Request $request)
@@ -24,7 +24,7 @@ class BulkDeleteCourtesyTickets
         ]);
 
         // Security check: ensure all tickets belong to this event and are courtesies
-        $count = Ticket::whereIn('id', $validated['ids'])
+        $count = Ticket::whereIn('id', $validated['ids'], 'and', false)
             ->where('event_id', $eventId)
             ->where('is_courtesy', true)
             ->count();

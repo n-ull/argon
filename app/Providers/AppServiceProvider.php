@@ -16,7 +16,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(\Domain\Ticketing\Support\TokenGenerator::class, function ($app) {
+            return new \Domain\Ticketing\Support\TokenGenerator();
+        });
     }
 
     /**
@@ -30,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Inertia::share([
-            'locale' => fn () => App::getLocale(),
+            'locale' => fn() => App::getLocale(),
         ]);
     }
 }

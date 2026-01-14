@@ -5,7 +5,7 @@ namespace Domain\Ticketing\Actions;
 use Domain\EventManagement\Models\Event;
 use Domain\ProductCatalog\Enums\ProductType;
 use Domain\ProductCatalog\Models\Product;
-use Domain\Ticketing\Models\Ticket;
+
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -17,27 +17,14 @@ class CreateCourtesyTicket
 
     public function handle(Event $event, Product $product, int $quantity, array $userIds, int $givenBy)
     {
-        $allTickets = collect();
-
-        $tokenGenerator = app(\Domain\Ticketing\Support\TokenGenerator::class);
-
-        foreach ($userIds as $userId) {
-            for ($i = 0; $i < $quantity; $i++) {
-                $ticket = Ticket::factory()->create([
-                    'event_id' => $event->id,
-                    'product_id' => $product->id,
-                    'user_id' => $userId,
-                    'is_courtesy' => true,
-                    'given_by' => $givenBy,
-                    'type' => $product->ticket_type,
-                    'token' => $tokenGenerator->generate($product->ticket_type),
-                ]);
-
-                $allTickets->push($ticket);
-            }
-        }
-
-        return $allTickets;
+        \Domain\Ticketing\Jobs\GenerateCourtesyTickets::dispatch(
+            $event->id,
+            $product->id,
+            $quantity,
+            $userIds,
+            $givenBy,
+            $product->ticket_type->value
+        );
     }
 
     public function asController(int $eventId, Request $request)
@@ -68,7 +55,7 @@ class CreateCourtesyTicket
             $userIds[] = $user->id;
         }
 
-        $tickets = $this->handle($event, $product, $validated['quantity'], $userIds, auth()->id());
+        $this->handle($event, $product, $validated['quantity'], $userIds, auth()->id());
 
         $totalTickets = count($userIds) * $validated['quantity'];
         return back()->with('message', flash_success('You succesfully created ' . $totalTickets . ' tickets', 'You have created ' . $totalTickets . ' tickets for ' . count($userIds) . ' users'));

@@ -5,7 +5,6 @@ namespace Domain\Ticketing\Jobs;
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
 use Domain\Ticketing\Enums\TicketStatus;
-use Domain\Ticketing\Enums\TicketType;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -13,21 +12,15 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
-use PragmaRX\Google2FA\Google2FA;
+
 
 class GenerateTickets implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $google2fa;
-
-    /**
-     * Create a new job instance.
-     */
     public function __construct(
         public int $orderId,
     ) {
-        $this->google2fa = app(Google2FA::class);
     }
 
     /**
@@ -35,15 +28,15 @@ class GenerateTickets implements ShouldQueue
      */
     public function handle(): void
     {
-        $order = Order::find($this->orderId);
+        $order = Order::findOrFail($this->orderId);
 
-        if (! $order) {
+        if (!$order) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} not found");
 
             return;
         }
 
-        if (! $order->isPaid) {
+        if (!$order->isPaid) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} is not paid");
 
             return;
@@ -56,20 +49,11 @@ class GenerateTickets implements ShouldQueue
         });
     }
 
-    public function generateToken(TicketType $type)
-    {
-        if ($type === TicketType::STATIC) {
-            return fake()->unique()->numerify('T-######');
-        }
-
-        return $this->google2fa->generateSecretKey(16);
-    }
-
     public function generateTicket(OrderItem $orderItem)
     {
         for ($i = 0; $i < $orderItem->quantity; $i++) {
             Ticket::create([
-                'token' => $this->generateToken($orderItem->product->ticket_type),
+                'token' => \Domain\Ticketing\Facades\TokenGenerator::generate($orderItem->product->ticket_type),
                 'event_id' => $orderItem->order->event_id,
                 'product_id' => $orderItem->product_id,
                 'order_id' => $orderItem->order_id,
