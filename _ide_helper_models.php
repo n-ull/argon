@@ -11,7 +11,7 @@
  */
 
 
-namespace App\Models{
+namespace App\Models {
 /**
  * @property int $id
  * @property string $name
@@ -45,10 +45,12 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\OrganizerManagement\Models\Organizer> $organizers
  * @property-read int|null $organizers_count
  */
-	class User extends \Eloquent {}
+	class User extends \Eloquent
+{
+}
 }
 
-namespace Domain\EventManagement\Models{
+namespace Domain\EventManagement\Models {
 /**
  * Event Model
  * 
@@ -103,10 +105,12 @@ namespace Domain\EventManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event withoutTrashed()
  */
-	class Event extends \Eloquent {}
+	class Event extends \Eloquent
+{
+}
 }
 
-namespace Domain\EventManagement\Models{
+namespace Domain\EventManagement\Models {
 /**
  * @property int $id
  * @property string $name
@@ -127,10 +131,12 @@ namespace Domain\EventManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EventCategory whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EventCategory whereUpdatedAt($value)
  */
-	class EventCategory extends \Eloquent {}
+	class EventCategory extends \Eloquent
+{
+}
 }
 
-namespace Domain\EventManagement\Models{
+namespace Domain\EventManagement\Models {
 /**
  * @property int $id
  * @property int $event_id
@@ -147,10 +153,12 @@ namespace Domain\EventManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EventStatistics whereUniqueVisitors($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EventStatistics whereUpdatedAt($value)
  */
-	class EventStatistics extends \Eloquent {}
+	class EventStatistics extends \Eloquent
+{
+}
 }
 
-namespace Domain\EventManagement\Models{
+namespace Domain\EventManagement\Models {
 /**
  * TaxAndFee Model
  *
@@ -184,10 +192,12 @@ namespace Domain\EventManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereValue($value)
  */
-	class TaxAndFee extends \Eloquent {}
+	class TaxAndFee extends \Eloquent
+{
+}
 }
 
-namespace Domain\Ordering\Models{
+namespace Domain\Ordering\Models {
 /**
  * @property int $id
  * @property int $event_id
@@ -224,8 +234,8 @@ namespace Domain\Ordering\Models{
  * @property int|null $user_id
  * @property-read \App\Models\User|null $client
  * @property-read \Domain\EventManagement\Models\Event $event
- * @property-read mixed $is_paid
- * @property-read mixed $total
+ * @property-read boolean $is_paid
+ * @property-read numeric $total
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ordering\Models\OrderItem> $orderItems
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ticketing\Models\Ticket> $tickets
  * @property-read int|null $tickets_count
@@ -245,10 +255,12 @@ namespace Domain\Ordering\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order withoutTrashed()
  */
-	class Order extends \Eloquent {}
+	class Order extends \Eloquent
+{
+}
 }
 
-namespace Domain\Ordering\Models{
+namespace Domain\Ordering\Models {
 /**
  * @property int $id
  * @property int $order_id
@@ -280,10 +292,12 @@ namespace Domain\Ordering\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem withoutTrashed()
  */
-	class OrderItem extends \Eloquent {}
+	class OrderItem extends \Eloquent
+{
+}
 }
 
-namespace Domain\OrganizerManagement\Models{
+namespace Domain\OrganizerManagement\Models {
 /**
  * @property int $id
  * @property string $name
@@ -318,10 +332,12 @@ namespace Domain\OrganizerManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer withoutTrashed()
  */
-	class Organizer extends \Eloquent {}
+	class Organizer extends \Eloquent
+{
+}
 }
 
-namespace Domain\OrganizerManagement\Models{
+namespace Domain\OrganizerManagement\Models {
 /**
  * @property int $id
  * @property int $organizer_id
@@ -351,10 +367,12 @@ namespace Domain\OrganizerManagement\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings withoutTrashed()
  */
-	class OrganizerSettings extends \Eloquent {}
+	class OrganizerSettings extends \Eloquent
+{
+}
 }
 
-namespace Domain\ProductCatalog\Models{
+namespace Domain\ProductCatalog\Models {
 /**
  * Product model representing items available for purchase
  *
@@ -408,10 +426,12 @@ namespace Domain\ProductCatalog\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
  */
-	class Product extends \Eloquent {}
+	class Product extends \Eloquent
+{
+}
 }
 
-namespace Domain\ProductCatalog\Models{
+namespace Domain\ProductCatalog\Models {
 /**
  * ProductPrice model represents pricing information for products.
  * 
@@ -454,10 +474,12 @@ namespace Domain\ProductCatalog\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice withoutTrashed()
  */
-	class ProductPrice extends \Eloquent {}
+	class ProductPrice extends \Eloquent
+{
+}
 }
 
-namespace Domain\Ticketing\Models{
+namespace Domain\Ticketing\Models {
 /**
  * @property int $id
  * @property string $token
@@ -501,6 +523,8 @@ namespace Domain\Ticketing\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket withoutTrashed()
  */
-	class Ticket extends \Eloquent {}
+	class Ticket extends \Eloquent
+{
+}
 }
 

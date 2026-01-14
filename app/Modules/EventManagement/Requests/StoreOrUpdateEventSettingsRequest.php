@@ -24,8 +24,8 @@ class StoreOrUpdateEventSettingsRequest extends FormRequest
         return [
             'title' => 'required|string|max:50',
             'description' => 'nullable|string|max:8000',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
             'location_info' => 'array',
             'location_info.site' => 'nullable|string|max:255',
             'location_info.address' => 'required|string|max:255',

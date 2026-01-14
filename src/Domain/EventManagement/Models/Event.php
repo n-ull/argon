@@ -143,6 +143,11 @@ class Event extends Model
         return $this->hasMany(Ticket::class);
     }
 
+    public function courtesies()
+    {
+        return $this->tickets()->where('is_courtesy', true);
+    }
+
     public function taxesAndFees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(TaxAndFee::class, 'event_tax_and_fee')

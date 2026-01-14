@@ -148,6 +148,15 @@ Route::group([
 
         Route::patch('{event}/status', \Domain\EventManagement\Actions\UpdateEventStatus::class)
             ->name('status.update');
+
+        Route::get('{event}/courtesies', \Domain\EventManagement\Actions\ManageCourtesies::class)
+            ->name('courtesies');
+
+        Route::post('{event}/courtesies', \Domain\Ticketing\Actions\CreateCourtesyTicket::class)
+            ->name('courtesies.store');
+
+        Route::delete('{event}/courtesies/{courtesy}', \Domain\Ticketing\Actions\DeleteCourtesyTicket::class)
+            ->name('courtesies.delete');
     });
 
 });
@@ -156,6 +165,6 @@ Route::group([
     'prefix' => 'user',
     'as' => 'user.',
     'middleware' => ['auth', 'verified'],
-], function () {});
+], function () { });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';
