@@ -16,9 +16,7 @@ class OrderItemFactory extends Factory
         return [
             'order_id' => Order::factory(),
             'product_price_id' => ProductPrice::factory(),
-            'product_id' => function (array $attributes) {
-                return ProductPrice::find($attributes['product_price_id'])->product_id;
-            },
+            'product_id' => ProductPrice::factory(),
             'quantity' => $this->faker->numberBetween(1, 10),
             'unit_price' => $this->faker->randomFloat(2, 10, 100),
         ];
