@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
@@ -68,6 +69,7 @@ function setupAvailableProduct(array $productOverrides = [], array $priceOverrid
 function setupOrder(array $orderOverrides = [])
 {
     $event = Event::factory()->create();
+    $user = User::factory()->create();
 
     $product = Product::factory()->create([
         'event_id' => $event->id,
@@ -82,7 +84,7 @@ function setupOrder(array $orderOverrides = [])
 
     $order = Order::factory()->create(array_merge([
         'event_id' => $event->id,
-        'user_id' => 1,
+        'user_id' => $user->id,
     ], $orderOverrides));
 
     OrderItem::create([
@@ -95,5 +97,6 @@ function setupOrder(array $orderOverrides = [])
     return [
         'order' => $order,
         'product' => $product,
+        'user' => $user
     ];
 }
