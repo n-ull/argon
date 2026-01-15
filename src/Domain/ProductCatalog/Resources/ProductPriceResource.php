@@ -23,9 +23,16 @@ class ProductPriceResource extends JsonResource
             'sales_end_date' => $this->whenNotNull($this->end_sale_date),
             'sort_order' => $this->sort_order,
             'is_sold_out' => $this->stock !== null && $this->quantity_sold >= $this->stock,
-            'limit_max_per_order' => $this->stock !== null
-                ? min($this->product->max_per_order, max(0, $this->stock - $this->quantity_sold))
-                : $this->product->max_per_order,
+            'limit_max_per_order' => $this->whenLoaded('product', function () {
+                $availableStock = $this->stock !== null ? max(0, $this->stock - $this->quantity_sold) : null;
+                $maxPerOrder = $this->product->max_per_order;
+                
+                if ($availableStock === null) {
+                    return $maxPerOrder;
+                }
+                
+                return min($maxPerOrder, $availableStock);
+            }),
         ];
     }
 }
