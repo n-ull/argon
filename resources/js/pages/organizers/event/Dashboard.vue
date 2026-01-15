@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import InfoWidget from '@/components/dashboard/InfoWidget.vue';
 import EventStatusBadge from '@/components/EventStatusBadge.vue';
+import EventActions from '@/components/EventActions.vue';
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
 import { dashboard, products } from '@/routes/manage/event';
+import { update as updateStatusRoute } from '@/routes/manage/event/status';
 import { show as eventShow } from '@/routes/events';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { BookA, Copy, DollarSign, Download, Eye, EyeClosed, Gift, Plus, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
 import { NButton, NIcon, NInput } from 'naive-ui';
 import { toast } from 'vue-sonner';
@@ -31,14 +33,10 @@ const breadcrumbs: BreadcrumbItem[] = [
 const copyEventUrl = () => {
     toast.success('Event URL copied to clipboard');
 
-    navigator.clipboard.writeText(eventShow({
-        slug: event.slug,
-    }).url);
+    navigator.clipboard.writeText(eventUrl);
 }
 
-const eventUrl = eventShow({
-    slug: event.slug,
-}).url;
+const eventUrl = 'http://127.0.0.1:8000/events/' + event.slug;
 
 const downloadQrCode = () => {
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${eventUrl}`;
@@ -48,7 +46,14 @@ const downloadQrCode = () => {
     link.click();
 }
 
-// TODO: handle publish event
+// handle publish event
+const publishEvent = () => {
+    router.patch(updateStatusRoute(event.id).url, {
+        status: 'published',
+    }, {
+        preserveScroll: true,
+    });
+};
 
 
 </script>
@@ -60,7 +65,10 @@ const downloadQrCode = () => {
     <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
         <div class="m-4">
             <div class="flex items-center justify-between">
-                <h1>{{ event.title }}</h1>
+                <div class="flex items-center gap-4">
+                    <h1>{{ event.title }}</h1>
+                    <EventActions :event="event" />
+                </div>
 
                 <p class="text-sm text-neutral-400">The event is now
                     <EventStatusBadge :status="event.status!" />
@@ -76,8 +84,10 @@ const downloadQrCode = () => {
                     :info="event.widget_stats!.unique_visitors.toString()" />
                 <InfoWidget title="Total Revenue" :icon="DollarSign"
                     :info="'$ ' + event.widget_stats!.total_revenue.toString()" />
-                <InfoWidget title="Courtesy Tickets" :icon="Gift" info="1,234" />
-                <InfoWidget title="Scanned Tickets" :icon="ScanQrCode" info="1,234" />
+                <InfoWidget title="Courtesy Tickets" :icon="Gift"
+                    :info="event.widget_stats!.courtesy_tickets_count?.toString() ?? '0'" />
+                <InfoWidget title="Scanned Tickets" :icon="ScanQrCode"
+                    :info="event.widget_stats!.scanned_tickets_count?.toString() ?? '0'" />
             </div>
 
             <!-- Information -->
@@ -98,7 +108,7 @@ const downloadQrCode = () => {
                             </NButton>
                         </Link>
 
-                        <NButton v-if="event.status !== 'published'" tertiary size="large">
+                        <NButton v-if="event.status !== 'published'" tertiary size="large" @click="publishEvent">
                             <template #icon>
                                 <NIcon>
                                     <Eye />
@@ -111,6 +121,19 @@ const downloadQrCode = () => {
                 <div v-else>
                     <h2 class="text-lg font-semibold">Your event is ready</h2>
                     <p class="text-sm text-neutral-400">Your event is now published and ready to sell tickets.</p>
+
+                    <div class="mt-4">
+                        <Link :href="eventShow({ slug: event.slug }).url">
+                            <NButton tertiary icon-placement="left" size="large">
+                                <template #icon>
+                                    <NIcon>
+                                        <Eye />
+                                    </NIcon>
+                                </template>
+                                View Event Page
+                            </NButton>
+                        </Link>
+                    </div>
 
                     <!-- copy the link or share the qr -->
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">

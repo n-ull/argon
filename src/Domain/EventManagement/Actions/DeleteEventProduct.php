@@ -13,17 +13,26 @@ class DeleteEventProduct
     {
         try {
             $product = Product::findOrFail($productId);
+
+            if ($product->tickets()->exists()) {
+                return false;
+            }
+
             $product->delete();
+
             return true;
         } catch (\Exception $e) {
             return false;
         }
     }
 
-    // TODO: if tickets exists, cant delete product
     public function asController($eventId, $productId)
     {
-        $this->handle($eventId, $productId);
+        $result = $this->handle($eventId, $productId);
+
+        if (! $result) {
+            return back()->with('message', flash_error('Product cannot be deleted', 'Product cannot be deleted because it has tickets'));
+        }
 
         return back()->with('message', flash_success('Product deleted successfully', 'Product deleted successfully'));
     }

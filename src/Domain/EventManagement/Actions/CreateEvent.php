@@ -15,8 +15,7 @@ class CreateEvent
 
     public function __construct(
         private EventManagerService $eventManager
-    ) {
-    }
+    ) {}
 
     public function handle(Organizer $organizer, array $validatedData): Event
     {
@@ -36,7 +35,6 @@ class CreateEvent
             'start_date' => 'required|date',
             'end_date' => 'nullable|date',
         ]);
-
 
         $event = $this->handle($organizer, $data);
 

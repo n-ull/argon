@@ -5,6 +5,7 @@ namespace Domain\ProductCatalog\Database\Factories;
 use Domain\EventManagement\Models\Event;
 use Domain\ProductCatalog\Enums\ProductType;
 use Domain\ProductCatalog\Models\Product;
+use Domain\Ticketing\Enums\TicketType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProductFactory extends Factory
@@ -19,6 +20,7 @@ class ProductFactory extends Factory
             'max_per_order' => $this->faker->numberBetween(1, 10),
             'min_per_order' => 1,
             'product_type' => $this->faker->randomElement([ProductType::GENERAL, ProductType::TICKET]),
+            'ticket_type' => $this->faker->randomElement([TicketType::STATIC , TicketType::DYNAMIC]),
             'hide_before_sale_start_date' => false,
             'hide_after_sale_end_date' => false,
             'hide_when_sold_out' => $this->faker->boolean(30),

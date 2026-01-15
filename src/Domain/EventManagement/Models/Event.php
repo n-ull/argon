@@ -9,6 +9,8 @@ use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
+use Domain\Ticketing\Enums\TicketStatus;
+use Domain\Ticketing\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,6 +39,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Order> $orders
  * @property-read int|null $orders_count
  * @property-read Organizer $organizer
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Ticket> $tickets
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Product> $products
  * @property-read int|null $products_count
  *
@@ -73,7 +76,7 @@ class Event extends Model
         'end_date',
         'event_category_id',
         'organizer_id',
-        'slug'
+        'slug',
     ];
 
     protected $casts = [
@@ -103,8 +106,8 @@ class Event extends Model
                 $query->where('event_id', $this->id)
                     ->where('status', OrderStatus::COMPLETED);
             })->sum('quantity'),
-            // 'tickets_count' => $this->tickets()->count(),
-            // 'courtesy_tickets_count' => $this->tickets()->where('is_courtesy', true)->count(),
+            'scanned_tickets_count' => $this->tickets()->where('status', TicketStatus::USED)->count(),
+            'courtesy_tickets_count' => $this->tickets()->where('is_courtesy', true)->count(),
         ];
     }
 
@@ -133,6 +136,16 @@ class Event extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(EventCategory::class);
+    }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function courtesies()
+    {
+        return $this->tickets()->where('is_courtesy', true);
     }
 
     public function taxesAndFees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

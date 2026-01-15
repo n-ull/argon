@@ -43,23 +43,34 @@ class OrderValidatorService
             }
 
             // check sales date
-
             $productStartSaleDate = $eventProduct->start_sale_date ?? $event->start_date;
             $productEndSaleDate = $eventProduct->end_sale_date ?? $event->end_date;
 
-            if ($productStartSaleDate->gt(now()) || ($productEndSaleDate && $productEndSaleDate->lt(now()))) {
+            // Product start sale date check
+            if ($eventProduct->hide_before_sale_start_date && $productStartSaleDate && $productStartSaleDate->gt(now())) {
                 throw new \DomainException('Product sales are not available.');
             }
 
-            $priceStartSaleDate = $selectedPrice->start_sale_date ?? $event->start_date;
-            $priceEndSaleDate = $selectedPrice->end_sale_date ?? $event->end_date;
+            // Product end sale date check
+            if ($eventProduct->hide_after_sale_end_date && $productEndSaleDate && $productEndSaleDate->lt(now())) {
+                throw new \DomainException('Product sales are not available.');
+            }
 
-            if ($priceStartSaleDate->gt(now()) || ($priceEndSaleDate && $priceEndSaleDate->lt(now()))) {
+            $priceStartSaleDate = $selectedPrice->start_sale_date ?? $productStartSaleDate;
+            $priceEndSaleDate = $selectedPrice->end_sale_date ?? $productEndSaleDate;
+
+            // Price start sale date check (Price doesn't have its own hide flag, it uses product's)
+            if ($eventProduct->hide_before_sale_start_date && $priceStartSaleDate && $priceStartSaleDate->gt(now())) {
+                throw new \DomainException('Product with this price sales are not available');
+            }
+
+            // Price end sale date check
+            if ($eventProduct->hide_after_sale_end_date && $priceEndSaleDate && $priceEndSaleDate->lt(now())) {
                 throw new \DomainException('Product with this price sales are not available');
             }
 
             // check stock
-            if ($selectedPrice->stock !== null && $selectedPrice->stock < $quantity) {
+            if ($selectedPrice->stock !== null && ($selectedPrice->stock - $selectedPrice->quantity_sold) < $quantity) {
                 throw new \DomainException('Product is not available');
             }
         }

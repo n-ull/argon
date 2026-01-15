@@ -5,7 +5,6 @@ namespace Domain\ProductCatalog\Scopes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Support\Facades\DB;
 
 class AvailableProductsScope implements Scope
 {
@@ -31,17 +30,14 @@ class AvailableProductsScope implements Scope
                 });
             })
             ->where(function (Builder $query) {
-                // Stock Logic
-                $query->where('products.show_stock', false)
-                    ->orWhere(function (Builder $q) {
-                    $q->where('products.show_stock', true)
-                        ->whereHas('product_prices', function (Builder $subQuery) {
-                            $subQuery->where(function ($sq) {
-                                $sq->whereNull('stock')
-                                    ->orWhereRaw('stock >= quantity_sold');
-                            });
+                // Stock Visibility Logic
+                $query->where('products.hide_when_sold_out', false)
+                    ->orWhereHas('product_prices', function (Builder $subQuery) {
+                        $subQuery->where(function ($sq) {
+                            $sq->whereNull('stock')
+                                ->orWhereRaw('stock > quantity_sold');
                         });
-                });
+                    });
             })
             ->where('products.is_hidden', false)
             ->select('products.*'); // Ensure we select products columns to avoid ambiguity or missing fields

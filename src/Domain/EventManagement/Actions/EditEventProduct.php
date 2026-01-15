@@ -3,7 +3,6 @@
 namespace Domain\EventManagement\Actions;
 
 use Domain\EventManagement\Models\Event;
-use Domain\ProductCatalog\Enums\ProductPriceType;
 use Domain\ProductCatalog\Models\Product;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -14,6 +13,10 @@ class EditEventProduct
 
     public function handle(Event $event, Product $product, array $data): Product
     {
+        if ($product->event_id !== $event->id) {
+            throw new \InvalidArgumentException('Product does not belong to this event');
+        }
+
         $product->update([
             'name' => $data['name'],
             'description' => $data['description'] ?? null,
@@ -72,7 +75,7 @@ class EditEventProduct
     public function asController($eventId, $productId, Request $request)
     {
         $event = Event::where('slug', $eventId)->first() ?? Event::findOrFail($eventId);
-        $product = Product::findOrFail($productId);
+        $product = $event->products()->findOrFail($productId);
 
         $data = $request->validate([
             'name' => 'required|string|max:255',

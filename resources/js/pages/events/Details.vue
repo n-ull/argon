@@ -41,7 +41,8 @@ const addToCart = (product: Product, price: ProductPrice) => {
     const existingItem = form.items.find(item => item.productPriceId === price.id);
 
     if (existingItem) {
-        if (product.max_per_order && existingItem.quantity >= product.max_per_order) {
+        const limit = price.limit_max_per_order ?? product.max_per_order;
+        if (limit && existingItem.quantity >= limit) {
             return;
         }
         existingItem.quantity++;
@@ -83,39 +84,36 @@ const isLoading = ref(false);
 const { open: openDialog } = useDialog();
 
 const handleCheckout = () => {
-    isLoading.value = true;
-    try {
-        form.post(store().url, {
-            preserveScroll: true,
-            preserveState: true,
-            onError: (error) => {
-                if (error.orderId) {
-                    openDialog({
-                        component: ConfirmDialog,
-                        props: {
-                            title: 'Pending Order',
-                            description: 'You have a pending order. Would you like to view it?',
-                            confirmText: 'View Order',
-                            cancelText: 'Cancel Order',
-                            onConfirm: () => {
-                                window.location.href = checkout(parseInt(error.orderId)).url;
-                            },
-                            onCancel: () => {
-                                router.post(cancel(parseInt(error.orderId)).url, {
-                                    preserveScroll: true,
-                                    preserveState: true,
-                                });
-                            }
+    form.post(store().url, {
+        preserveScroll: true,
+        preserveState: true,
+        onError: (error) => {
+            const orderId = Array.isArray(error.orderId) ? error.orderId[0] : error.orderId;
+            if (orderId) {
+                openDialog({
+                    component: ConfirmDialog,
+                    props: {
+                        title: 'Pending Order',
+                        description: 'You have a pending order. Would you like to view it?',
+                        confirmText: 'View Order',
+                        cancelText: 'Cancel Order',
+                        onConfirm: () => {
+                            window.location.href = checkout(parseInt(orderId)).url;
+                        },
+                        onCancel: () => {
+                            router.post(cancel(parseInt(orderId)).url, {
+                                preserveScroll: true,
+                                preserveState: true,
+                            });
                         }
-                    });
-                }
-            },
-        });
-    } catch (error) {
-        console.log(error);
-    } finally {
-        isLoading.value = false;
-    }
+                    }
+                });
+            }
+        },
+        onFinish: () => {
+            isLoading.value = false;
+        }
+    });
 }
 
 const dialogTest = () => {
@@ -188,43 +186,51 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                     }}</span>
                             </div>
                             <ul class="space-y-2">
-                                <li v-for="price in product.product_prices" :key="price.id"
-                                    class="flex flex-row justify-between items-center py-2 px-4 bg-neutral-800 rounded">
-                                    <div class="flex flex-col gap-2">
-                                        <div class="flex flex-row items-center gap-2">
-                                            <span class="text-xl">{{ price.label }}</span>
-                                            <span class="text-xs text-neutral-400" v-if="product.show_stock">Stock: {{
-                                                price.stock
+                                <li v-for="price in product.product_prices" :key="price.id">
+                                    <div v-if="product.show_stock && price.stock !== null && price.stock > 0"
+                                        class="w-full bg-moovin-green text-xs font-black py-1 px-2 rounded-t">
+                                        Stock: {{ price.stock }}
+                                    </div>
+                                    <div
+                                        class="flex flex-row justify-between items-center py-4 px-4 bg-neutral-800 rounded-b">
+                                        <div class="flex flex-row gap-2">
+                                            <div v-if="product.product_prices.length > 1"
+                                                class="flex items-center gap-2">
+                                                <span
+                                                    class="text-lg font-semibold bg-moovin-lila px-2 text-neutral-800">{{
+                                                        price.label }}</span>
+                                            </div>
+                                            <span class="text-moovin-lime text-lg font-black" v-if="price.price > 0">${{
+                                                price.price
                                             }}</span>
+                                            <span class="text-moovin-lime text-lg font-bold" v-else>Free</span>
                                         </div>
-                                        <span class="text-moovin-lime text-md font-bold" v-if="price.price > 0">${{
-                                            price.price
-                                            }}</span>
-                                        <span class="text-moovin-lime text-md font-bold" v-else>Free</span>
-                                    </div>
-                                    <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
-                                        class="text-sm text-neutral-400">
-                                        Sales start in {{ price.sales_start_date_diff }}
-                                    </div>
-                                    <div v-else-if="product.end_sale_date && new Date(product.end_sale_date) < new Date()"
-                                        class="text-sm text-neutral-400">
-                                        Sales ended
-                                    </div>
-                                    <div v-else class="flex flex-row gap-2">
-                                        <div v-if="price.is_sold_out" class="text-lg text-moovin-lila font-bold">
-                                            Sold out
+                                        <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
+                                            class="text-sm text-neutral-400">
+                                            Sales start in {{ price.sales_start_date_diff }}
                                         </div>
-                                        <div class="flex flex-row gap-2" v-else>
-                                            <Button size="icon" variant="default"
-                                                @click="removeFromCart(product, price)">
-                                                <Minus />
-                                            </Button>
-                                            <Button size="icon" variant="default">{{
-                                                getQuantity(price.id)
+                                        <div v-else-if="price.sales_end_date && new Date(price.sales_end_date) < new Date()"
+                                            class="text-sm text-neutral-400">
+                                            Sales ended
+                                        </div>
+                                        <div v-else class="flex flex-row gap-2">
+                                            <div v-if="price.is_sold_out" class="text-lg text-moovin-lila font-bold">
+                                                Sold out
+                                            </div>
+                                            <div class="flex flex-row gap-2" v-else>
+                                                <Button size="icon" variant="default"
+                                                    @click="removeFromCart(product, price)">
+                                                    <Minus />
+                                                </Button>
+                                                <Button size="icon" variant="default">{{
+                                                    getQuantity(price.id)
                                                 }}</Button>
-                                            <Button size="icon" variant="default" @click="addToCart(product, price)">
-                                                <Plus />
-                                            </Button>
+                                                <Button size="icon" variant="default"
+                                                    :disabled="getQuantity(price.id) >= (price.limit_max_per_order ?? product.max_per_order ?? Infinity)"
+                                                    @click="addToCart(product, price)">
+                                                    <Plus />
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 </li>

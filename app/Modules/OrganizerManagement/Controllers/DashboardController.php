@@ -24,7 +24,7 @@ class DashboardController extends Controller
 
         // Apply search filter
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where('title', 'like', '%'.$request->search.'%');
         }
 
         // Apply organization filter
@@ -44,7 +44,7 @@ class DashboardController extends Controller
         $perPage = $request->input('per_page', 10);
 
         // Validate per_page is one of the allowed values
-        if (!in_array($perPage, [10, 20, 30, 50])) {
+        if (! in_array($perPage, [10, 20, 30, 50])) {
             $perPage = 10;
         }
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import OrganizerLayout from '@/layouts/organizer/OrganizerLayout.vue';
+import EventActions from '@/components/EventActions.vue';
 import { Organizer, BreadcrumbItem, PaginatedResponse, Event } from '@/types';
 import { events as eventsRoute } from '@/routes/manage/organizer';
 import { dashboard } from '@/routes/manage/event';
@@ -89,9 +90,12 @@ const columns: DataTableColumns<Event> = [
         key: 'actions',
         align: 'right',
         render(row) {
-            return h(Link, { href: dashboard(row.id) }, {
-                default: () => h(NButton, { size: 'tiny', secondary: true, type: 'primary' }, { default: () => 'Manage' })
-            });
+            return h('div', { class: 'flex items-center justify-end gap-2' }, [
+                h(Link, { href: dashboard(row.id).url }, {
+                    default: () => h(NButton, { size: 'tiny', secondary: true, type: 'primary' }, { default: () => 'Manage' })
+                }),
+                h(EventActions, { event: row })
+            ]);
         }
     }
 ];

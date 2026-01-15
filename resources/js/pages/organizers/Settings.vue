@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import OrganizerLayout from '@/layouts/organizer/OrganizerLayout.vue';
-import { settings, show } from '@/routes/manage/organizer';
+import { settings } from '@/routes/manage/organizer';
 import { BreadcrumbItem, Organizer } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import {
@@ -31,6 +31,7 @@ import {
 interface Props {
     organizer: Organizer & {
         settings: {
+            service_fee: number;
             raise_money_method: string;
             raise_money_account: string | null;
             is_modo_active: boolean;
@@ -52,21 +53,23 @@ const breadcrumbItems: BreadcrumbItem[] = [
     }
 ];
 
-// General Form
-const generalForm = useForm({
+// Consolidated Form
+const form = useForm({
     name: props.organizer.name,
     email: props.organizer.email,
     phone: props.organizer.phone,
     logo: null as File | null,
-});
-
-// Payment Form
-const paymentForm = useForm({
     is_mercadopago_active: Boolean(props.organizer.settings?.is_mercadopago_active),
     is_modo_active: Boolean(props.organizer.settings?.is_modo_active),
     raise_money_method: props.organizer.settings?.raise_money_method ?? 'split', // 'internal' | 'split'
     raise_money_account: props.organizer.settings?.raise_money_account ?? '',
 });
+
+const submit = () => {
+    form.put(settings(props.organizer.id).url, {
+        preserveScroll: true,
+    });
+};
 
 // Mock state for MercadoPago linkage
 const isMercadoPagoVinculated = ref(false);
@@ -75,18 +78,6 @@ const raiseMoneyOptions = [
     { label: 'Internal (Recaudación Interna)', value: 'internal' },
     { label: 'Split (MercadoPago Split)', value: 'split' },
 ];
-
-const submitGeneral = () => {
-    generalForm.put(show(props.organizer.id).url, {
-        preserveScroll: true,
-    });
-};
-
-const submitPayment = () => {
-    paymentForm.put(settings(props.organizer.id).url, {
-        preserveScroll: true,
-    });
-};
 
 // Placeholder for Service Fee Visual
 const serviceFee = 10; // 10%
@@ -118,27 +109,37 @@ const updateTabUrl = (value: string) => {
                 <n-tabs type="line" animated :value="activeTab" @update:value="updateTabUrl">
                     <!-- Basic Info Tab -->
                     <n-tab-pane name="general" tab="General Info">
-                        <n-form ref="generalFormRef" :model="generalForm" label-placement="top" class="mt-4">
+                        <n-form ref="generalFormRef" :model="form" label-placement="top" class="mt-4">
                             <n-grid :x-gap="24" :y-gap="24" cols="1 s:1 m:2">
                                 <n-grid-item>
                                     <n-form-item label="Name" path="name">
-                                        <n-input v-model:value="generalForm.name" placeholder="Organizer Name" />
+                                        <n-input v-model:value="form.name" placeholder="Organizer Name" />
                                     </n-form-item>
                                 </n-grid-item>
                                 <n-grid-item>
                                     <n-form-item label="Email" path="email">
-                                        <n-input v-model:value="generalForm.email" placeholder="contact@example.com" />
+                                        <n-input v-model:value="form.email" placeholder="contact@example.com" />
                                     </n-form-item>
                                 </n-grid-item>
                                 <n-grid-item>
                                     <n-form-item label="Phone" path="phone">
-                                        <n-input v-model:value="generalForm.phone" placeholder="+54 9 11 ..." />
+                                        <n-input v-model:value="form.phone" placeholder="+54 9 11 ..." />
                                     </n-form-item>
                                 </n-grid-item>
                                 <n-grid-item>
                                     <n-form-item label="Logo">
-                                        <!-- Placeholder Upload Logic -->
-                                        <n-upload list-type="image-card" :max="1">
+                                        <n-upload list-type="image-card" :max="1" :default-file-list="props.organizer.logo ? [{
+                                            id: 'logo',
+                                            name: 'Logo',
+                                            status: 'finished',
+                                            url: props.organizer.logo
+                                        }] : []" @change="(options) => {
+                                            if (options.fileList.length > 0) {
+                                                form.logo = options.fileList[0].file;
+                                            } else {
+                                                form.logo = null;
+                                            }
+                                        }">
                                             <div class="flex flex-col items-center justify-center gap-2">
                                                 <n-icon size="24" :component="ImageIcon" />
                                                 <span class="text-xs">Upload Logo</span>
@@ -149,7 +150,7 @@ const updateTabUrl = (value: string) => {
                             </n-grid>
 
                             <div class="flex justify-end mt-6">
-                                <n-button type="primary" :loading="generalForm.processing" @click="submitGeneral">
+                                <n-button type="primary" :loading="form.processing" @click="submit">
                                     Save General Info
                                 </n-button>
                             </div>
@@ -181,7 +182,7 @@ const updateTabUrl = (value: string) => {
                                 </div>
                             </div>
 
-                            <n-form :model="paymentForm" label-placement="top">
+                            <n-form :model="form" label-placement="top">
                                 <!-- Payment Methods Switches -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <n-card title="Payment Providers" size="small" embedded :bordered="false">
@@ -191,14 +192,14 @@ const updateTabUrl = (value: string) => {
                                                     <span class="text-base font-medium">MercadoPago</span>
                                                     <p class="text-xs text-gray-500">Enable payments via MP</p>
                                                 </div>
-                                                <n-switch v-model:value="paymentForm.is_mercadopago_active" />
+                                                <n-switch v-model:value="form.is_mercadopago_active" />
                                             </div>
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <span class="text-base font-medium">MODO</span>
                                                     <p class="text-xs text-gray-500">Enable payments via MODO</p>
                                                 </div>
-                                                <n-switch v-model:value="paymentForm.is_modo_active" />
+                                                <n-switch v-model:value="form.is_modo_active" />
                                             </div>
                                         </div>
                                     </n-card>
@@ -206,22 +207,22 @@ const updateTabUrl = (value: string) => {
                                     <!-- Raise Money Configuration -->
                                     <n-card title="Collection Method" size="small" embedded :bordered="false">
                                         <n-form-item label="How do you want to collect funds?">
-                                            <n-select v-model:value="paymentForm.raise_money_method"
+                                            <n-select v-model:value="form.raise_money_method"
                                                 :options="raiseMoneyOptions" />
                                         </n-form-item>
 
                                         <!-- Conditional Content -->
                                         <div class="mt-4">
                                             <!-- Internal -> CBU -->
-                                            <div v-if="paymentForm.raise_money_method === 'internal'">
+                                            <div v-if="form.raise_money_method === 'internal'">
                                                 <n-form-item label="CBU / CVU for Auto-Transfer">
-                                                    <n-input v-model:value="paymentForm.raise_money_account"
+                                                    <n-input v-model:value="form.raise_money_account"
                                                         placeholder="0000000000000000000000" />
                                                 </n-form-item>
                                             </div>
 
                                             <!-- Split -> Linked Account -->
-                                            <div v-else-if="paymentForm.raise_money_method === 'split'">
+                                            <div v-else-if="form.raise_money_method === 'split'">
                                                 <div class="flex flex-col gap-4">
                                                     <div
                                                         class="flex items-center justify-between p-3 rounded-md bg-gray-50 dark:bg-gray-800 border dark:border-gray-700">
@@ -257,7 +258,7 @@ const updateTabUrl = (value: string) => {
                                 </div>
 
                                 <div class="flex justify-end mt-8">
-                                    <n-button type="primary" :loading="paymentForm.processing" @click="submitPayment">
+                                    <n-button type="primary" :loading="form.processing" @click="submit">
                                         Save Payment Settings
                                     </n-button>
                                 </div>

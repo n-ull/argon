@@ -1,5 +1,12 @@
 <?php
 
+use App\Models\User;
+use Domain\EventManagement\Models\Event;
+use Domain\Ordering\Models\Order;
+use Domain\Ordering\Models\OrderItem;
+use Domain\ProductCatalog\Models\Product;
+use Domain\ProductCatalog\Models\ProductPrice;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -41,7 +48,55 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function setupAvailableProduct(array $productOverrides = [], array $priceOverrides = [])
 {
-    // ..
+    $event = Event::factory()->create();
+
+    $product = Product::factory()->create(array_merge([
+        'event_id' => $event->id,
+        'is_hidden' => false,
+    ], $productOverrides));
+
+    ProductPrice::factory()->create(array_merge([
+        'product_id' => $product->id,
+        'price' => 10,
+        'stock' => 10,
+    ], $priceOverrides));
+
+    return $product;
+}
+
+function setupOrder(array $orderOverrides = [])
+{
+    $event = Event::factory()->create();
+    $user = User::factory()->create();
+
+    $product = Product::factory()->create([
+        'event_id' => $event->id,
+        'is_hidden' => false,
+    ]);
+
+    ProductPrice::factory()->create([
+        'product_id' => $product->id,
+        'price' => 10,
+        'stock' => 10,
+    ]);
+
+    $order = Order::factory()->create(array_merge([
+        'event_id' => $event->id,
+        'user_id' => $user->id,
+    ], $orderOverrides));
+
+    OrderItem::create([
+        'order_id' => $order->id,
+        'product_id' => $product->id,
+        'quantity' => 1,
+        'unit_price' => 10,
+    ]);
+
+    return [
+        'order' => $order,
+        'product' => $product,
+        'user' => $user
+    ];
 }

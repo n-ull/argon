@@ -19,10 +19,15 @@ class OrderController extends Controller
 
             $order = $createOrder->handle($orderDTO);
 
+            if ($order->status === \Domain\Ordering\Enums\OrderStatus::COMPLETED) {
+                return redirect(route('orders.show', $order->id));
+            }
+
             return redirect(route('orders.checkout', $order->id));
         } catch (\Domain\Ordering\Exceptions\OrderAlreadyPendingException $e) {
-            return redirect(route('orders.checkout', $e->orderId))
-                ->with('error', 'You already have a pending order.');
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'orderId' => $e->orderId,
+            ]);
         }
     }
 }

@@ -20,14 +20,21 @@ class ExpireOrder implements ShouldQueue
 
     public function handle(): void
     {
-        $order = Order::find($this->orderId);
+        \Illuminate\Support\Facades\DB::transaction(function () {
+            $order = Order::with('orderItems')->find($this->orderId);
 
-        if (! $order) {
-            return;
-        }
+            if (! $order) {
+                return;
+            }
 
-        if ($order->status === OrderStatus::PENDING && $order->expires_at <= now()) {
-            $order->update(['status' => OrderStatus::EXPIRED]);
-        }
+            if ($order->status === OrderStatus::PENDING && $order->expires_at <= now()) {
+                $order->update(['status' => OrderStatus::EXPIRED]);
+
+                foreach ($order->orderItems as $item) {
+                    \Domain\ProductCatalog\Models\ProductPrice::where('id', $item->product_price_id)
+                        ->decrement('quantity_sold', $item->quantity);
+                }
+            }
+        });
     }
 }

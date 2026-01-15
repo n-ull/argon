@@ -20,6 +20,7 @@ class CreateEventProduct
             'description' => $data['description'] ?? null,
             'product_type' => $data['product_type'],
             'product_price_type' => $data['product_price_type'],
+            'ticket_type' => $data['ticket_type'] ?? 'dynamic',
             'min_per_order' => $data['min_per_order'] ?? 1,
             'max_per_order' => $data['max_per_order'] ?? 10,
             'start_sale_date' => $data['start_sale_date'] ?? null,
@@ -32,7 +33,7 @@ class CreateEventProduct
             'sort_order' => $event->products()->max('sort_order') + 1,
         ]);
 
-        if (!empty($data['prices']) && $data['product_price_type'] !== ProductPriceType::FREE) {
+        if (! empty($data['prices']) && $data['product_price_type'] !== ProductPriceType::FREE) {
             foreach ($data['prices'] as $priceData) {
                 $product->product_prices()->create([
                     'price' => $priceData['price'],
@@ -54,8 +55,9 @@ class CreateEventProduct
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'product_type' => 'required|string',
-            'product_price_type' => 'required|string',
+            'product_type' => 'required|string|in:ticket,general',
+            'product_price_type' => 'required|string|in:free,staggered,standard',
+            'ticket_type' => 'required_if:product_type,ticket|string|in:dynamic,static',
             'min_per_order' => 'nullable|integer|min:1',
             'max_per_order' => 'nullable|integer|min:1',
             'start_sale_date' => 'nullable|date',

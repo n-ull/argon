@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property int $order_id
  * @property int $product_id
+ * @property int|null $product_price_id
  * @property int|null $quantity
+ * @property float|int|null $unit_price
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -35,7 +37,13 @@ class OrderItem extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'quantity',
+        'unit_price',
+        'product_price_id',
+    ];
 
     public function order(): BelongsTo
     {
@@ -50,5 +58,10 @@ class OrderItem extends Model
     public function productPrice(): BelongsTo
     {
         return $this->belongsTo(\Domain\ProductCatalog\Models\ProductPrice::class);
+    }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\Ordering\Models\OrderItemFactory::new();
     }
 }

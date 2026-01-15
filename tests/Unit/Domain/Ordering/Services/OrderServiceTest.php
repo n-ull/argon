@@ -18,10 +18,13 @@ beforeEach(function () {
     $this->priceCalculationService = new PriceCalculationService;
     $this->referenceIdService = Mockery::mock(ReferenceIdService::class);
 
+    $this->databaseManager = app(\Illuminate\Database\DatabaseManager::class);
+
     $this->service = new OrderService(
         $this->orderValidatorService,
         $this->priceCalculationService,
-        $this->referenceIdService
+        $this->referenceIdService,
+        $this->databaseManager
     );
 });
 
@@ -120,6 +123,33 @@ test('it creates an order and stores price snapshots even if prices change later
     expect((float) $orderItem->unit_price)->toBe(100.0);
 });
 
+test('it increments quantity_sold on ProductPrice when creating an order', function () {
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    $product = Product::factory()->create(['event_id' => $event->id]);
+    $productPrice = ProductPrice::create([
+        'product_id' => $product->id,
+        'price' => 100.00,
+        'label' => 'Standard',
+        'stock' => 10,
+        'quantity_sold' => 0,
+        'is_hidden' => false,
+        'sort_order' => 1,
+    ]);
+
+    $orderData = new CreateOrderData(
+        eventId: $event->id,
+        items: [['productId' => $product->id, 'productPriceId' => $productPrice->id, 'quantity' => 3]]
+    );
+
+    $this->orderValidatorService->shouldReceive('validateOrder')->once();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-1');
+
+    $this->service->createPendingOrder($orderData);
+
+    $productPrice->refresh();
+    expect($productPrice->quantity_sold)->toBe(3);
+});
+
 test('it creates order with multiple products and stores all snapshots', function () {
     $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
     $product1 = Product::factory()->create(['event_id' => $event->id]);
@@ -150,14 +180,14 @@ test('it stores taxes and fees snapshots when applicable', function () {
         'type' => \Domain\EventManagement\Enums\TaxFeeType::TAX,
         'value' => 10,
         'is_active' => true,
-        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::PERCENTAGE
+        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::PERCENTAGE,
     ])->create();
 
     $fee = \Domain\EventManagement\Models\TaxAndFee::factory()->state([
         'type' => \Domain\EventManagement\Enums\TaxFeeType::FEE,
         'value' => 5,
         'is_active' => true,
-        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::FIXED
+        'calculation_type' => \Domain\EventManagement\Enums\CalculationType::FIXED,
     ])->create();
 
     $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
@@ -248,7 +278,7 @@ test('it handles gateway-specific fees correctly', function () {
         'value' => 5,
         'is_active' => true,
         'calculation_type' => \Domain\EventManagement\Enums\CalculationType::FIXED,
-        'applicable_gateways' => ['mercadopago']
+        'applicable_gateways' => ['mercadopago'],
     ]);
     $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
     $event->taxesAndFees()->attach($taxFee);

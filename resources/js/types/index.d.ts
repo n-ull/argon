@@ -98,8 +98,9 @@ export interface Product {
     id: number;
     name: string;
     description: string | null;
-    product_price_type: string;
-    product_type: string;
+    product_price_type: 'standard' | 'staggered' | 'free';
+    ticket_type: 'static' | 'dynamic';
+    product_type: 'general' | 'ticket';
     max_per_order: number | null;
     min_per_order: number;
     product_prices: ProductPrice[];
@@ -128,6 +129,7 @@ export interface ProductPrice {
     updated_at?: string | null;
     deleted_at?: string | null;
     is_sold_out?: boolean;
+    limit_max_per_order?: number;
 }
 
 export interface Organizer {
@@ -154,6 +156,24 @@ export interface OrganizerSettings {
     created_at?: string | null;
     updated_at?: string | null;
     deleted_at?: string | null;
+}
+
+export interface Ticket {
+    id: number;
+    token: string;
+    type: string;
+    status: string;
+    is_courtesy: boolean;
+    used_at: string | null;
+    expired_at: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+    deleted_at: string | null;
+    transfers_left: number;
+    event: Event;
+    order: Order;
+    product: Product;
+    user: User;
 }
 
 export interface Order {

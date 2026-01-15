@@ -10,7 +10,7 @@ import {
 import { NInput, NSelect, NButton, NInputNumber, NSwitch, NCollapse, NCollapseItem, NDatePicker, NCard, NIcon } from 'naive-ui';
 import { computed, h, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import { CalendarDaysIcon, Gift, Shirt, Tag, Ticket, TrashIcon, PlusIcon } from 'lucide-vue-next';
+import { CalendarDaysIcon, Gift, Shirt, Tag, Ticket, TrashIcon, PlusIcon, QrCode, Barcode } from 'lucide-vue-next';
 import { store, update } from '@/routes/manage/event/products';
 import { formatDateForPicker } from '@/lib/utils';
 
@@ -39,8 +39,6 @@ const props = withDefaults(defineProps<Props>(), {
     title: 'Create Product',
     description: 'Create a new product or ticket',
 });
-
-console.log(props.product);
 
 const emit = defineEmits(['close']);
 
@@ -102,8 +100,9 @@ const form = useForm({
     // Basic Info
     name: props.product?.name ?? '',
     description: props.product?.description ?? '',
-    product_type: props.product?.product_type ?? 'ticket ',
+    product_type: props.product?.product_type ?? 'ticket',
     product_price_type: props.product?.product_price_type ?? 'standard',
+    ticket_type: props.product?.ticket_type ?? 'dynamic',
 
     // Prices
     prices: (props.product?.product_prices?.map(p => ({
@@ -112,9 +111,7 @@ const form = useForm({
         label: p.label,
         stock: p.stock ?? null,
         has_limited_stock: p.stock !== null,
-        // @ts-ignore: sales_start_date comes from API resource but missing in incomplete ProductPrice type
         start_sale_date: formatDateForPicker(p.sales_start_date),
-        // @ts-ignore: sales_end_date comes from API resource but missing in incomplete ProductPrice type
         end_sale_date: formatDateForPicker(p.sales_end_date),
     })) ?? [{
         id: null,
@@ -216,6 +213,34 @@ const renderPriceTypeLabel = (option: any) => {
         option.label,
     ]);
 };
+
+const renderTicketTypeLabel = (option: any) => {
+    return h('div', { class: 'flex items-center gap-2' }, [
+        h(option.icon, { class: 'w-5 h-5' }),
+        option.label,
+    ]);
+};
+
+const ticketTypeOptions = [
+    {
+        label: 'Dynamic',
+        value: 'dynamic',
+        icon: QrCode,
+    },
+    {
+        label: 'Static',
+        value: 'static',
+        icon: Barcode,
+    },
+];
+
+const ticketTypeDescription = computed(() => {
+    if (form.ticket_type === 'dynamic') {
+        return 'Dynamic tickets are tickets that changes every 30 seconds as a security measure.';
+    }
+    return 'Static tickets are tickets that do not change and can be printed.';
+});
+
 </script>
 
 <template>
@@ -235,6 +260,13 @@ const renderPriceTypeLabel = (option: any) => {
                     <NSelect size="large" :options="productTypeOptions" v-model:value="form.product_type"
                         :render-label="renderProductTypeLabel" />
                     <p class="text-sm text-gray-500 mt-1">{{ productTypeDescription }}</p>
+                </div>
+
+                <div v-if="form.product_type === 'ticket'">
+                    <label for="ticketType" class="required block mb-1">Ticket Type</label>
+                    <NSelect size="large" :options="ticketTypeOptions" v-model:value="form.ticket_type"
+                        :render-label="renderTicketTypeLabel" />
+                    <p class="text-sm text-gray-500 mt-1">{{ ticketTypeDescription }}</p>
                 </div>
 
                 <div>

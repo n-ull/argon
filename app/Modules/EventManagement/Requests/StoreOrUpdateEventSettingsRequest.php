@@ -22,18 +22,18 @@ class StoreOrUpdateEventSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "required|string|max:50",
-            "description" => "nullable|string|max:8000",
-            "start_date" => "required|date",
-            "end_date" => "nullable|date",
-            "location_info" => "array",
-            "location_info.site" => "nullable|string|max:255",
-            "location_info.address" => "required|string|max:255",
-            "location_info.city" => "required|string|max:255",
-            "location_info.country" => "required|string|max:255",
-            "location_info.mapLink" => "nullable|string|max:255",
-            "taxes_and_fees" => "nullable|array",
-            "taxes_and_fees.*" => "required|exists:taxes_and_fees,id",
+            'title' => 'required|string|max:50',
+            'description' => 'nullable|string|max:8000',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'location_info' => 'array',
+            'location_info.site' => 'nullable|string|max:255',
+            'location_info.address' => 'required|string|max:255',
+            'location_info.city' => 'required|string|max:255',
+            'location_info.country' => 'required|string|max:255',
+            'location_info.mapLink' => 'nullable|string|max:255',
+            'taxes_and_fees' => 'nullable|array',
+            'taxes_and_fees.*' => 'required|exists:taxes_and_fees,id',
         ];
     }
 }

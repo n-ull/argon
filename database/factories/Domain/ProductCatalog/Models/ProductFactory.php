@@ -6,6 +6,7 @@ use Domain\EventManagement\Models\Event;
 use Domain\ProductCatalog\Enums\ProductPriceType;
 use Domain\ProductCatalog\Enums\ProductType;
 use Domain\ProductCatalog\Models\Product;
+use Domain\Ticketing\Enums\TicketType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ProductFactory extends Factory
@@ -21,6 +22,7 @@ class ProductFactory extends Factory
             'min_per_order' => 1,
             'product_type' => ProductType::TICKET,
             'product_price_type' => ProductPriceType::STANDARD,
+            'ticket_type' => TicketType::STATIC ,
             'hide_before_sale_start_date' => true,
             'hide_after_sale_end_date' => true,
             'hide_when_sold_out' => false,

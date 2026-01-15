@@ -1,6 +1,8 @@
 <?php
 
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
+use App\Modules\Ticketing\Controllers\TicketDetailsController;
+use App\Modules\Ticketing\Controllers\TicketIndexController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -12,6 +14,17 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+Route::group([
+    'prefix' => 'tickets',
+    'as' => 'tickets.',
+], function () {
+    Route::get('/', [TicketIndexController::class, 'index'])
+        ->name('index');
+
+    Route::get('{ticket}', TicketDetailsController::class)
+        ->name('show');
+});
 
 Route::group([
     'prefix' => 'events',
@@ -30,18 +43,21 @@ Route::group([
     'middleware' => ['auth', 'verified'],
 ], function () {
     Route::post('store', [\App\Modules\Ordering\Controllers\OrderController::class, 'store'])
-        // ->middleware('throttle:5,1')
+        ->middleware('throttle:5,1')
         ->name('store');
 
     Route::get('checkout/{order}', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'checkout'])
         ->name('checkout');
+
+    Route::get('{order}', [\App\Modules\Ordering\Controllers\OrderDetailsController::class, 'show'])
+        ->name('show');
 
     Route::post('checkout/{order}/cancel', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'cancel'])
         ->name('cancel');
 });
 
 // organizer routes
-// TODO: change o to organizer and separate the routes from event to manage 
+// TODO: change o to organizer and separate the routes from event to manage
 Route::group([
     'prefix' => 'manage',
     'as' => 'manage.',
@@ -75,6 +91,9 @@ Route::group([
 
         Route::get('{organizer}/settings', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'settings'])
             ->name('settings');
+
+        Route::put('{organizer}/settings', \Domain\OrganizerManagement\Actions\SaveSettings::class)
+            ->name('settings.update');
     });
 
     // manage event
@@ -126,6 +145,21 @@ Route::group([
 
         Route::get('{event}/vouchers', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'vouchers'])
             ->name('vouchers');
+
+        Route::patch('{event}/status', \Domain\EventManagement\Actions\UpdateEventStatus::class)
+            ->name('status.update');
+
+        Route::get('{event}/courtesies', \Domain\EventManagement\Actions\ManageCourtesies::class)
+            ->name('courtesies');
+
+        Route::post('{event}/courtesies', \Domain\Ticketing\Actions\CreateCourtesyTicket::class)
+            ->name('courtesies.store');
+
+        Route::delete('{event}/courtesies/bulk', \Domain\Ticketing\Actions\BulkDeleteCourtesyTickets::class)
+            ->name('courtesies.bulk-delete');
+
+        Route::delete('{event}/courtesies/{courtesy}', \Domain\Ticketing\Actions\DeleteCourtesyTicket::class)
+            ->name('courtesies.delete');
     });
 
 });

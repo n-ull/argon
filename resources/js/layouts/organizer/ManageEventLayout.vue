@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import AppLogo from '@/components/AppLogo.vue';
-import OrderCountInfoTooltip from '@/components/dashboard/OrderCountInfoTooltip.vue';
 import GlobalDialog from '@/components/GlobalDialog.vue';
 import AppLayout from '@/layouts/app/AppSidebarManageEventLayout.vue';
-import { analytics, dashboard, settings, products, orders, attendees, doormen, vouchers, promoters } from '@/routes/manage/event';
+import { analytics, dashboard, settings, products, orders, attendees, doormen, vouchers, promoters, courtesies } from '@/routes/manage/event';
 import type { BreadcrumbItemType, Event, NavItem } from '@/types';
 import { BookA, ChartLine, DiamondPercent, Gift, LayoutGrid, LucideMessageCircleQuestion, MessageSquareHeart, Settings, ShieldAlert, Tickets, User, Users } from 'lucide-vue-next';
 import { darkTheme, NConfigProvider } from 'naive-ui';
@@ -107,7 +105,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Courtesies',
-        href: '#',
+        href: courtesies(props.event.id).url,
         icon: Gift,
         group: 'Manage',
     },

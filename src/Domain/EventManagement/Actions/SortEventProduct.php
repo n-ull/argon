@@ -19,7 +19,7 @@ class SortEventProduct
             ->orderBy('id')
             ->get();
 
-        $currentIndex = $products->search(fn($p) => $p->id == $product->id);
+        $currentIndex = $products->search(fn ($p) => $p->id == $product->id);
         $targetIndex = $direction === 'up' ? $currentIndex - 1 : $currentIndex + 1;
 
         if (isset($products[$targetIndex])) {

@@ -16,7 +16,7 @@ class EventIndexController extends Controller
 
         // Search title
         if (request()->has('search')) {
-            $query->where('title', 'like', '%' . request('search') . '%');
+            $query->where('title', 'like', '%'.request('search').'%');
         }
 
         $events = $query->orderBy('start_date', 'desc')
