@@ -13,6 +13,10 @@ class EditEventProduct
 
     public function handle(Event $event, Product $product, array $data): Product
     {
+        if ($product->event_id !== $event->id) {
+            throw new \InvalidArgumentException('Product does not belong to this event');
+        }
+
         $product->update([
             'name' => $data['name'],
             'description' => $data['description'] ?? null,
@@ -29,7 +33,7 @@ class EditEventProduct
             'show_stock' => $data['show_stock'] ?? false,
         ]);
 
-        if (! empty($data['prices'])) {
+        if (!empty($data['prices'])) {
             // 1. Get IDs of prices present in the request
             $requestPriceIds = collect($data['prices'])
                 ->pluck('id')
@@ -43,7 +47,7 @@ class EditEventProduct
 
             // 3. Update or Create prices
             foreach ($data['prices'] as $priceData) {
-                if (! empty($priceData['id'])) {
+                if (!empty($priceData['id'])) {
                     // Update existing
                     $product->product_prices()->where('id', $priceData['id'])->update([
                         'price' => $priceData['price'],
@@ -71,7 +75,7 @@ class EditEventProduct
     public function asController($eventId, $productId, Request $request)
     {
         $event = Event::where('slug', $eventId)->first() ?? Event::findOrFail($eventId);
-        $product = Product::findOrFail($productId);
+        $product = $event->products()->findOrFail($productId);
 
         $data = $request->validate([
             'name' => 'required|string|max:255',

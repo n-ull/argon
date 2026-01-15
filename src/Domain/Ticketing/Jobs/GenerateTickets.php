@@ -28,7 +28,7 @@ class GenerateTickets implements ShouldQueue
      */
     public function handle(): void
     {
-        $order = Order::findOrFail($this->orderId);
+        $order = Order::with(['orderItems', 'orderItems.product'])->findOrFail($this->orderId);
 
         if (!$order) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} not found");

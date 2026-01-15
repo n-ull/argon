@@ -40,8 +40,6 @@ const props = withDefaults(defineProps<Props>(), {
     description: 'Create a new product or ticket',
 });
 
-console.log(props.product);
-
 const emit = defineEmits(['close']);
 
 const productTypeOptions = [
