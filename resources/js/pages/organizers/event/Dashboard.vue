@@ -85,9 +85,9 @@ const publishEvent = () => {
                 <InfoWidget title="Total Revenue" :icon="DollarSign"
                     :info="'$ ' + event.widget_stats!.total_revenue.toString()" />
                 <InfoWidget title="Courtesy Tickets" :icon="Gift"
-                    :info="event.widget_stats!.courtesy_tickets_count.toString()" />
+                    :info="event.widget_stats!.courtesy_tickets_count?.toString() ?? '0'" />
                 <InfoWidget title="Scanned Tickets" :icon="ScanQrCode"
-                    :info="event.widget_stats!.scanned_tickets_count.toString()" />
+                    :info="event.widget_stats!.scanned_tickets_count?.toString() ?? '0'" />
             </div>
 
             <!-- Information -->
