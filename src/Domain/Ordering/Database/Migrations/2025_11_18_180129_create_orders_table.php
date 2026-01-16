@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('event_id')->constrained()->restrictOnDelete();
             $table->enum('status', ['pending', 'expired', 'cancelled', 'refunded', 'paid'])->default('pending');
             $table->string('reference_id')->unique()->comment('Reference used to find the order through the payment gateway.');
             $table->enum('organizer_raise_method_snapshot', ['internal', 'split'])->nullable()->comment('The preferred raise money method used by the organization at the moment the order was paid.');
