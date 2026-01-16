@@ -2,7 +2,7 @@
 import type { InertiaForm } from '@inertiajs/vue3';
 import type { EventForm } from '@/types';
 import { NInput, NDatePicker } from 'naive-ui';
-import { ref, computed } from 'vue';
+import { computed, watch } from 'vue';
 
 interface Props {
     event: InertiaForm<EventForm>;
@@ -40,7 +40,9 @@ const visualSlug = computed(() => {
         .replace(/^-+|-+$/g, '') || '';
 });
 
-
+watch(visualSlug, (newSlug) => {
+    event.slug = newSlug;
+}, { immediate: true });
 
 </script>
 

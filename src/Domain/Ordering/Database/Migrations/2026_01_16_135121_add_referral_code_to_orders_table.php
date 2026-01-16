@@ -23,7 +23,7 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn('referral_code');
-            $table->dropIndex('referral_code');
+            $table->dropIndex(['referral_code']);
         });
     }
 };
