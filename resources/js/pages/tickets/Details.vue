@@ -6,7 +6,7 @@ import { formatDateTime } from '@/lib/utils';
 import { show } from '@/routes/orders';
 import { Ticket } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Calendar, Printer } from 'lucide-vue-next';
+import { Calendar, Gift, Printer } from 'lucide-vue-next';
 import { NQrCode } from 'naive-ui';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
@@ -95,11 +95,18 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                     </div>
 
                     <div class="flex justify-between items-center py-4 border-y border-dashed border-zinc-800">
-                        <div>
+                        <div v-if="ticket.order">
                             <label class="text-xs font-bold text-zinc-500 uppercase tracking-wider">Order ID</label>
                             <Link :href="show(ticket.order.id)">
                                 <p class="text-zinc-300 font-mono underline">#{{ ticket.order.reference_id }}</p>
                             </Link>
+                        </div>
+
+                        <div class="flex gap-2 items-center mx-auto" v-if="ticket.is_courtesy">
+                            <Gift />
+                            <span>
+                                This is a Courtesy Ticket.
+                            </span>
                         </div>
                     </div>
 
