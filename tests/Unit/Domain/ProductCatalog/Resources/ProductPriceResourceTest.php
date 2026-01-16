@@ -21,6 +21,8 @@ class ProductPriceResourceTest extends TestCase
             'quantity_sold' => 0,
         ]);
 
+        $price->load('product');
+
         $resource = (new ProductPriceResource($price))->toArray(request());
 
         $this->assertEquals(5, $resource['limit_max_per_order']);
@@ -34,6 +36,8 @@ class ProductPriceResourceTest extends TestCase
             'stock' => 3,
             'quantity_sold' => 0,
         ]);
+
+        $price->load('product');
 
         $resource = (new ProductPriceResource($price))->toArray(request());
 
@@ -49,6 +53,8 @@ class ProductPriceResourceTest extends TestCase
             'quantity_sold' => 8, // 2 left
         ]);
 
+        $price->load('product');
+
         $resource = (new ProductPriceResource($price))->toArray(request());
 
         $this->assertEquals(2, $resource['limit_max_per_order']);
@@ -62,6 +68,8 @@ class ProductPriceResourceTest extends TestCase
             'stock' => 5,
             'quantity_sold' => 0,
         ]);
+
+        $price->load('product');
 
         $resource = (new ProductPriceResource($price))->toArray(request());
 
@@ -77,6 +85,8 @@ class ProductPriceResourceTest extends TestCase
             'quantity_sold' => 5,
         ]);
 
+        $price->load('product');
+
         $resource = (new ProductPriceResource($price))->toArray(request());
 
         $this->assertEquals(0, $resource['limit_max_per_order']);
@@ -90,6 +100,8 @@ class ProductPriceResourceTest extends TestCase
             'stock' => null,
             'quantity_sold' => 100,
         ]);
+
+        $price->load('product');
 
         $resource = (new ProductPriceResource($price))->toArray(request());
 
