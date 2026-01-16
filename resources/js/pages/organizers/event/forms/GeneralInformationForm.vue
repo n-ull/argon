@@ -40,9 +40,14 @@ const visualSlug = computed(() => {
         .replace(/^-+|-+$/g, '') || '';
 });
 
+const initialTitle = event.title;
+
 watch(visualSlug, (newSlug) => {
-    event.slug = newSlug;
-}, { immediate: true });
+    // Only auto-generate slug if title changed from initial or slug is empty
+    if (!event.slug || event.title !== initialTitle) {
+        event.slug = newSlug;
+    }
+});
 
 </script>
 

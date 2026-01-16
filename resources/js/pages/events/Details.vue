@@ -159,9 +159,20 @@ const filterProductWithPrices = products.filter(product => product.product_price
                         <span v-if="event.description" v-html="event.description.replace(/\n/g, '<br>')"></span>
                         <span class="flex mt-4 items-center gap-2 text-sm text-neutral-400">
                             <MapPin />
-                            {{ event.location_info.address }}, {{ event.location_info.city }}, {{
-                                event.location_info.country
-                            }}
+                            <a :href="event.location_info.mapLink ?? 'https://www.google.com/maps/dir//' + event.location_info.address + ', ' + event.location_info.city"
+                                target="_blank">
+                                <div class="flex flex-col">
+                                    <span v-if="event.location_info.site">
+                                        {{ event.location_info.site }}
+                                    </span>
+                                    <span>
+                                        {{ event.location_info.address }}, {{ event.location_info.city }}, {{
+                                            event.location_info.country
+                                        }}
+                                    </span>
+                                </div>
+                            </a>
+
                         </span>
                     </div>
                 </div>
