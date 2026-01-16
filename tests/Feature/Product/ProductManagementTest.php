@@ -7,6 +7,9 @@ use Domain\ProductCatalog\Enums\ProductPriceType;
 use Domain\ProductCatalog\Models\Product;
 use Domain\ProductCatalog\Models\ProductPrice;
 
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertDatabaseHas;
+
 test('updating product to standard removes extra prices', function () {
     $user = User::factory()->create();
     $organizer = Organizer::factory()->create(['owner_id' => $user->id]);
@@ -25,7 +28,7 @@ test('updating product to standard removes extra prices', function () {
 
     expect($product->refresh()->product_prices)->toHaveCount(3);
 
-    $response = $this->actingAs($user)->put(route('manage.event.products.update', ['event' => $event, 'product' => $product]), [
+    $response = actingAs($user)->put(route('manage.event.products.update', ['event' => $event, 'product' => $product]), [
         'name' => 'Updated Product',
         'product_type' => 'general',
         'product_price_type' => ProductPriceType::STANDARD->value,
@@ -58,7 +61,7 @@ test('can create a standard product', function () {
     $organizer->users()->attach($user);
     $event = Event::factory()->create(['organizer_id' => $organizer->id]);
 
-    $response = $this->actingAs($user)->post(route('manage.event.products.store', $event), [
+    $response = actingAs($user)->post(route('manage.event.products.store', $event), [
         'name' => 'New Product',
         'product_type' => 'general',
         'product_price_type' => ProductPriceType::STANDARD->value,
@@ -77,7 +80,7 @@ test('can create a standard product', function () {
     ]);
 
     $response->assertRedirect();
-    $this->assertDatabaseHas('products', [
+    assertDatabaseHas('products', [
         'name' => 'New Product',
         'product_price_type' => ProductPriceType::STANDARD->value,
         'event_id' => $event->id,
@@ -94,7 +97,7 @@ test('can create a staggered product', function () {
     $organizer->users()->attach($user);
     $event = Event::factory()->create(['organizer_id' => $organizer->id]);
 
-    $response = $this->actingAs($user)->post(route('manage.event.products.store', $event), [
+    $response = actingAs($user)->post(route('manage.event.products.store', $event), [
         'name' => 'Staggered Product',
         'product_type' => 'general',
         'product_price_type' => ProductPriceType::STAGGERED->value,
