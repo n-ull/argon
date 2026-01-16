@@ -250,6 +250,27 @@ test('it dispatches OrderCreated event after order creation', function () {
     });
 });
 
+test('it passes referral code to OrderCreated event', function () {
+    Illuminate\Support\Facades\Event::fake();
+    $event = Event::factory()->create(['status' => EventStatus::PUBLISHED]);
+    $product = Product::factory()->create(['event_id' => $event->id]);
+    $price = ProductPrice::factory()->create(['product_id' => $product->id, 'price' => 100.0]);
+
+    $orderData = new CreateOrderData(
+        eventId: $event->id, 
+        items: [['productId' => $product->id, 'productPriceId' => $price->id, 'quantity' => 1]],
+        referral_code: 'REF123'
+    );
+    $this->orderValidatorService->shouldReceive('validateOrder')->once();
+    $this->referenceIdService->shouldReceive('create')->andReturn('REF-RC');
+
+    $order = $this->service->createPendingOrder($orderData);
+
+    Illuminate\Support\Facades\Event::assertDispatched(\Domain\Ordering\Events\OrderCreated::class, function ($event) use ($order) {
+        return $event->order->id === $order->id && $event->referralCode === 'REF123';
+    });
+});
+
 test('it stores snapshots after order completion', function () {
     $organizer = \Domain\OrganizerManagement\Models\Organizer::factory()
         ->has(\Domain\OrganizerManagement\Models\OrganizerSettings::factory()->state(['raise_money_method' => 'internal']), 'settings')

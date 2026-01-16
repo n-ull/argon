@@ -11,6 +11,7 @@ class CreateOrderData extends Data
         public array $items,
         public ?int $userId = null,
         public ?string $gateway = null,
+        public ?string $referral_code = null,
     ) {}
 
 }

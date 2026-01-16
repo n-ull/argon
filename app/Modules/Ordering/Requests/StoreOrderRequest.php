@@ -27,7 +27,7 @@ class StoreOrderRequest extends FormRequest
             'items.*.productId' => ['required', 'exists:products,id'],
             'items.*.productPriceId' => ['required', 'exists:product_prices,id'],
             'items.*.quantity' => ['required', 'min:1', 'integer'],
-            'referral' => ['nullable', 'string'],
+            'referral_code' => ['nullable', 'string', 'exists:promoters,referral_code'],
         ];
     }
 }

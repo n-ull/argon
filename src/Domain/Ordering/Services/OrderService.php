@@ -91,7 +91,7 @@ class OrderService
                     ->increment('quantity_sold', $itemSnapshot['quantity']);
             }
 
-            event(new OrderCreated($order));
+            event(new OrderCreated($order, $orderData->referral_code));
 
             if ($status === OrderStatus::COMPLETED) {
                 event(new OrderCompleted($order));
