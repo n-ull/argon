@@ -2,6 +2,7 @@
 import type { InertiaForm } from '@inertiajs/vue3';
 import type { EventForm } from '@/types';
 import { NInput, NDatePicker } from 'naive-ui';
+import { ref, computed } from 'vue';
 
 interface Props {
     event: InertiaForm<EventForm>;
@@ -30,6 +31,17 @@ const isEndTimeDisabled = (ts: number) => {
     };
 };
 
+const visualSlug = computed(() => {
+    return event.title
+        ?.toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '') || '';
+});
+
+
+
 </script>
 
 <template>
@@ -46,7 +58,7 @@ const isEndTimeDisabled = (ts: number) => {
 
         <div>
             <label for="slug">Slug</label>
-            <n-input placeholder="my-awesome-event" :value="event.slug" id="slug" disabled></n-input>
+            <n-input placeholder="my-awesome-event" :value="visualSlug" id="slug" disabled></n-input>
             <p v-if="event.errors.slug" class="text-xs text-red-500">{{ event.errors.slug }}</p>
         </div>
 
