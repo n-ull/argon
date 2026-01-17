@@ -5,7 +5,7 @@ import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, Product, ProductPrice } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { Calendar, LucideShoppingCart, MapPin, Minus, Pencil, Plus, Ticket } from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { cancel, checkout, store } from '@/routes/orders';
 import { NButton, NEmpty } from 'naive-ui';
 import { useDialog } from '@/composables/useDialog';
@@ -116,6 +116,14 @@ const handleCheckout = () => {
     });
 }
 
+const mapUrl = computed(() => {
+    if (event.location_info.mapLink) {
+        return event.location_info.mapLink;
+    }
+    const address = encodeURIComponent(`${event.location_info.address}, ${event.location_info.city}`);
+    return `https://www.google.com/maps/dir//${address}`;
+});
+
 const filterProductWithPrices = products.filter(product => product.product_prices.length > 0);
 
 </script>
@@ -150,8 +158,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                         <span v-if="event.description" v-html="event.description.replace(/\n/g, '<br>')"></span>
                         <span class="flex mt-4 items-center gap-2 text-sm text-neutral-400">
                             <MapPin />
-                            <a :href="event.location_info.mapLink ?? 'https://www.google.com/maps/dir//' + event.location_info.address + ', ' + event.location_info.city"
-                                target="_blank">
+                            <a :href="mapUrl" target="_blank">
                                 <div class="flex flex-col">
                                     <span v-if="event.location_info.site">
                                         {{ event.location_info.site }}
@@ -209,7 +216,8 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                         </div>
                                         <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
                                             class="text-sm text-neutral-400">
-                                            Sales start in {{ formatDateDiff(price.sales_start_date) }} days
+                                            Sales start in {{ formatDateDiff(price.sales_start_date) }} {{
+                                                formatDateDiff(price.sales_start_date) === 1 ? 'day' : 'days' }}
                                         </div>
                                         <div v-else-if="price.sales_end_date && new Date(price.sales_end_date) < new Date()"
                                             class="text-sm text-neutral-400">
