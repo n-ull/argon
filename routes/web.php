@@ -57,7 +57,6 @@ Route::group([
 });
 
 // organizer routes
-// TODO: change o to organizer and separate the routes from event to manage
 Route::group([
     'prefix' => 'manage',
     'as' => 'manage.',
@@ -68,15 +67,6 @@ Route::group([
         'prefix' => 'organizer',
         'as' => 'organizer.',
     ], function () {
-        // Route::get('/', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'index'])
-        //     ->name('index');
-
-        // Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
-        //     ->name('create');
-
-        // Route::post('store', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
-        //     ->name('store');
-
         Route::get('{organizer}', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'show'])
             ->name('show');
 
@@ -170,4 +160,4 @@ Route::group([
     'middleware' => ['auth', 'verified'],
 ], function () { });
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

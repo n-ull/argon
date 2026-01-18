@@ -2,9 +2,9 @@
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
 import { courtesies as courtesiesRoute, dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
-import type { BreadcrumbItem, Event, Product, Ticket, User } from '@/types';
+import type { BreadcrumbItem, Event, PaginatedResponse, Product, Ticket, User } from '@/types';
 import { useForm, router } from '@inertiajs/vue3';
-import { NButton, NCard, NDataTable, NDynamicTags, NForm, NFormItem, NInputNumber, NSelect, NSpace, NTag, NIcon } from 'naive-ui';
+import { NButton, NCard, NDataTable, NDynamicTags, NForm, NFormItem, NInputNumber, NSelect, NSpace, NTag, NIcon, PaginationProps } from 'naive-ui';
 import { TableColumn } from 'naive-ui/es/data-table/src/interface';
 import { computed, h, watch, ref } from 'vue';
 import { toast } from 'vue-sonner';
@@ -14,7 +14,7 @@ import { bulkDelete, deleteMethod } from '@/routes/manage/event/courtesies';
 
 interface Props {
     event: Event;
-    courtesies: Ticket[] & { given_by: User }[];
+    courtesies: PaginatedResponse<Ticket & { given_by: User }>;
     products: Product[];
 }
 
@@ -44,11 +44,38 @@ const form = useForm({
 
 const selectedRowKeys = ref<number[]>([]);
 
-const courtesiesList = ref<(Ticket & { given_by: User })[]>(courtesies as any);
+const courtesiesList = ref<(Ticket & { given_by: User })[]>(courtesies.data);
 
 watch(() => props.courtesies, (newVal) => {
-    courtesiesList.value = newVal as any;
+    courtesiesList.value = newVal.data;
 });
+
+const loading = ref(false);
+
+const handlePageChange = (page: number) => {
+    loading.value = true;
+    router.visit(courtesiesRoute(props.event.id).url, {
+        data: {
+            page: page,
+        },
+        preserveState: true,
+        preserveScroll: true,
+        only: ['courtesies'],
+        onSuccess: () => {
+            loading.value = false;
+        },
+        onError: () => {
+            loading.value = false;
+        },
+    });
+};
+
+const pagination = computed<PaginationProps>(() => ({
+    page: props.courtesies.current_page,
+    pageSize: props.courtesies.per_page,
+    itemCount: props.courtesies.total,
+    onChange: handlePageChange,
+}));
 
 const handleRowAction = (key: string | number, row: Ticket) => {
     if (key === 'delete') {
@@ -189,7 +216,7 @@ const createColumns = (): TableColumn<Ticket>[] => {
                         {
                             label: 'Delete Ticket',
                             key: 'delete',
-                            icon: () => h(NIcon, null, { default: () => h(Trash2) }),
+                            icon: () => h(NIcon, null, { default: () => h(Trash2, { class: 'text-red-500' }) }),
                             props: { style: { color: 'rgb(239 68 68)' } } // red-500
                         }
                     ],
@@ -311,8 +338,9 @@ const manageErrors = watch(() => form.errors, () => {
                 <!-- Tickets List -->
                 <div class="md:col-span-2">
                     <NCard title="History" size="medium">
-                        <NDataTable :columns="columns" :data="courtesiesList" :pagination="{ pageSize: 10 }"
-                            :row-key="(row: any) => row.id" v-model:checked-row-keys="selectedRowKeys" />
+                        <NDataTable :loading="loading" remote :columns="columns" :data="courtesiesList"
+                            :pagination="pagination" :row-key="(row: any) => row.id"
+                            v-model:checked-row-keys="selectedRowKeys" />
                     </NCard>
                 </div>
             </div>
