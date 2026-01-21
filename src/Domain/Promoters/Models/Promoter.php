@@ -4,7 +4,9 @@ namespace Domain\Promoters\Models;
 
 use App\Models\User;
 use Domain\EventManagement\Models\Event;
+use Domain\Promoters\Exceptions\ActiveInvitationAlreadyExists;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Promoter extends Model
 {
@@ -28,4 +30,24 @@ class Promoter extends Model
     {
         return $this->belongsToMany(Event::class, 'promoter_events', 'promoter_id', 'event_id');
     }
+
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(PromoterInvitation::class);
+    }
+
+    public function invite(string $email): void
+    {
+        if ($this->invitations()->hasActiveInvitation()) {
+            throw new ActiveInvitationAlreadyExists();
+        }
+
+        $this->invitations[] = PromoterInvitation::create([
+            'promoter_id' => $this->id,
+            'email' => $email,
+            'status' => 'pending',
+            'token' => \Str::random(60),
+        ]);
+    }
+
 }
