@@ -11,7 +11,7 @@ class ManageEventController extends Controller
 {
     public function dashboard(int $eventId)
     {
-        $event = Event::find($eventId)->load('organizer');
+        $event = Event::findOrFail($eventId)->load('organizer');
         $event->loadCount('products');
         $event->append('widget_stats');
 
