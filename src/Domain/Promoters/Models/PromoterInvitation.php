@@ -33,18 +33,4 @@ class PromoterInvitation extends Model
     {
         return $this->belongsTo(Promoter::class);
     }
-
-    public function accept()
-    {
-        $this->update([
-            'status' => 'accepted',
-        ]);
-    }
-
-    public function decline()
-    {
-        $this->update([
-            'status' => 'declined',
-        ]);
-    }
 }

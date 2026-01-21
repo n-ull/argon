@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('promoter_invitations', function (Blueprint $table) {
             $table->id();
             $table->string('email');
-            $table->string('token');
+            $table->string('token')->unique();
             $table->enum('status', ['pending', 'accepted', 'expired', 'declined']);
             $table->foreignId('promoter_id')->constrained('promoters')->cascadeOnDelete();
             $table->timestamps();

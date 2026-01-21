@@ -93,7 +93,7 @@ class ManageEventController extends Controller
 
         return Inertia::render('organizers/event/Promoters', [
             'event' => $event,
-            'promoters' => \Domain\Promoters\Resources\PromoterResource::collection($event->promoters()->get())->resolve(),
+            'promoters' => \Domain\Promoters\Resources\PromoterResource::collection($event->promoters)->resolve(),
         ]);
     }
 

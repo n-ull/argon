@@ -42,8 +42,7 @@ class Promoter extends Model
             throw new ActiveInvitationAlreadyExists();
         }
 
-        $this->invitations[] = PromoterInvitation::create([
-            'promoter_id' => $this->id,
+        $this->invitations()->create([
             'email' => $email,
             'status' => 'pending',
             'token' => \Str::random(60),
