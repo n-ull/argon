@@ -95,6 +95,11 @@ class Product extends Model
         return $this->hasMany(ProductPrice::class)->orderBy('sort_order');
     }
 
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(\Domain\Ticketing\Models\Ticket::class);
+    }
+
     public function event()
     {
         return $this->belongsTo(\Domain\EventManagement\Models\Event::class);

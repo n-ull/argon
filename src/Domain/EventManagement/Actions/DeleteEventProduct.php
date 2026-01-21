@@ -22,6 +22,8 @@ class DeleteEventProduct
 
             return true;
         } catch (\Exception $e) {
+            logger()->error("Failed to delete product: {$e->getMessage()}");
+
             return false;
         }
     }
