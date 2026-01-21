@@ -21,6 +21,17 @@ export interface NavItem {
     extra?: VNode | null;
 }
 
+export interface Promoter {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    enabled: boolean;
+    tickets_sold: number;
+    commission_value: number;
+    commission_type: 'percentage' | 'fixed';
+}
+
 export type AppPageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

@@ -9,12 +9,15 @@ use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
+use Domain\Promoters\Models\Promoter;
+use Domain\Promoters\Models\PromoterEvent;
 use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -146,6 +149,11 @@ class Event extends Model
     public function courtesies()
     {
         return $this->tickets()->where('is_courtesy', true);
+    }
+
+    public function promoters(): HasMany
+    {
+        return $this->hasMany(PromoterEvent::class);
     }
 
     public function taxesAndFees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Registrations;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -48,7 +49,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, Registrations;
 
     /**
      * The attributes that are mass assignable.

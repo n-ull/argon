@@ -204,6 +204,8 @@ return [
         'location_info.zip' => 'Código postal',
         'location_info.country' => 'País',
         'location_info.phone' => 'Teléfono',
+        'commission_type' => 'Tipo de comisión',
+        'commission_value' => 'Valor de la comisión',
     ],
 
 ];

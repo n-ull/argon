@@ -121,6 +121,9 @@ Route::group([
         Route::get('{event}/promoters', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'promoters'])
             ->name('promoters');
 
+        Route::post('{event}/promoters', \Domain\Promoters\Actions\AddPromoter::class)
+            ->name('promoters.store');
+
         Route::get('{event}/settings', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'settings'])
             ->name('settings');
 
