@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, h } from 'vue';
+import { router } from '@inertiajs/vue3';
 import {
     NButton,
     NSpace,
     NDataTable,
     type DataTableColumns,
     NIcon,
+    useMessage,
 } from 'naive-ui';
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
 import { promoters as promotersRoute, dashboard } from '@/routes/manage/event';
@@ -15,16 +17,29 @@ import DataTableRowActions from '@/components/DataTableRowActions.vue';
 import { Copy, Trash2 } from 'lucide-vue-next';
 import CreatePromoterDialog from './dialogs/CreatePromoterDialog.vue';
 import { useDialog } from '@/composables/useDialog';
+import { deleteMethod } from '@/routes/manage/event/promoters';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
+
+interface Invitation {
+    id: number;
+    email: string;
+    status: string;
+    commission_type: string;
+    commission_value: number;
+    token: string;
+    created_at: string;
+}
 
 interface Props {
     event: Event;
     promoters: Promoter[];
+    invitations: Invitation[];
 }
 
 
-const { event, promoters } = defineProps<Props>();
+const { event, promoters, invitations } = defineProps<Props>();
 
-console.log(promoters);
+const message = useMessage();
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
@@ -107,7 +122,70 @@ const columns: DataTableColumns<Promoter> = [
                         props: { style: { color: 'rgb(239 68 68)' } } // red-500
                     }
                 ],
-                onSelect: () => console.log('pipipi')
+                onSelect: (key) => {
+                    if (key === 'copy') {
+                        // copy logic handled via row click or specific action if needed, 
+                        // but currently copy is in invitation column or manual copy.
+                        // If we want copy URL for promoter (if they have one), we can add it.
+                        // For now let's just handle delete.
+                    } else if (key === 'delete') {
+                        deletePromoter(row);
+                    }
+                }
+            });
+        }
+    }
+];
+
+const invitationColumns: DataTableColumns<Invitation> = [
+    {
+        title: 'Email',
+        key: 'email',
+    },
+    {
+        title: 'Status',
+        key: 'status',
+        render(row: Invitation) {
+            let color = 'text-gray-500';
+            if (row.status === 'accepted') color = 'text-green-500';
+            else if (row.status === 'declined') color = 'text-red-500';
+            else if (row.status === 'pending') color = 'text-yellow-500';
+
+            return h('span', { class: color + ' capitalize' }, { default: () => row.status });
+        }
+    },
+    {
+        title: 'Commission',
+        key: 'commission_value',
+        render(row: Invitation) {
+            return h('span', {
+                class: 'text-green-500',
+            }, { default: () => row.commission_type === 'percentage' ? `${row.commission_value}%` : `$${row.commission_value}` });
+        }
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        render(row: Invitation) {
+            if (row.status !== 'pending') return '-';
+            return h(NSpace, { align: 'center' }, {
+                default: () => [
+                    h(NButton, {
+                        size: 'small',
+                        secondary: true,
+                        onClick: () => {
+                            const url = window.location.origin + '/promoters/invitations/' + row.token;
+                            navigator.clipboard.writeText(url);
+                            message.success('Link copied to clipboard');
+                        }
+                    }, { default: () => 'Copy Link' }),
+                    h(NButton, {
+                        size: 'small',
+                        quaternary: true,
+                        type: 'error',
+                        onClick: () => deleteInvitation(row)
+                    }, { default: () => h(NIcon, null, { default: () => h(Trash2) }) })
+                ]
             });
         }
     }
@@ -137,6 +215,45 @@ const openCreatePromoterDialog = () => {
     })
 };
 
+
+
+const deletePromoter = (promoter: Promoter) => {
+    openDialog({
+        component: ConfirmDialog,
+        props: {
+            title: 'Remove Promoter',
+            description: 'Are you sure you want to remove this promoter from the event? The promoter profile will not be deleted.',
+            confirmText: 'Remove',
+            cancelText: 'Cancel',
+            onConfirm: () => {
+                router.delete(deleteMethod({
+                    event: event.id,
+                    promoter: promoter.id
+                }), {
+                    onSuccess: () => message.success('Promoter removed successfully')
+                });
+            }
+        }
+    });
+};
+
+const deleteInvitation = (invitation: Invitation) => {
+    openDialog({
+        component: ConfirmDialog,
+        props: {
+            title: 'Delete Invitation',
+            description: 'Are you sure you want to delete this invitation?',
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            onConfirm: () => {
+                router.delete('/manage/event/promoters/invitations/' + invitation.id, {
+                    onSuccess: () => message.success('Invitation deleted successfully')
+                });
+            }
+        }
+    });
+};
+
 </script>
 
 <template>
@@ -144,7 +261,7 @@ const openCreatePromoterDialog = () => {
         <div class="p-6">
             <!-- Header -->
             <div class="mb-6">
-                <h1 class="text-2xl font-bold mb-2">Promoters</h1>
+                <h1 class="text-2xl font-bold mb-2">Manage Promoters</h1>
                 <p class="text-gray-400">Manage your event promoters</p>
             </div>
 
@@ -158,9 +275,25 @@ const openCreatePromoterDialog = () => {
                 </div>
 
                 <!-- Promoters Table -->
+                <div class="mt-8 mb-4">
+                    <h2 class="text-xl font-bold mb-2">Promoters</h2>
+                    <p class="text-gray-400">Current promoters</p>
+                </div>
                 <NDataTable :columns="columns" :data="promoters" :pagination="{ pageSize: 10 }" bordered
                     :scroll-x="1000" :row-props="rowProps" v-model:checked-row-keys="selectedRowKeys"
                     :row-key="(row: any) => row.id" />
+
+                <!-- Invitations Header -->
+                <div class="mt-8 mb-4">
+                    <h2 class="text-xl font-bold mb-2">Invitations</h2>
+                    <p class="text-gray-400">Pending and past invitations</p>
+                </div>
+
+                <!-- Invitations Table -->
+                <div class="bg-neutral-900 border rounded p-4">
+                    <NDataTable :columns="invitationColumns" :data="invitations" :pagination="{ pageSize: 10 }" bordered
+                        :scroll-x="1000" :row-key="(row: any) => row.id" />
+                </div>
             </div>
         </div>
     </ManageEventLayout>

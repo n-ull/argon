@@ -19,18 +19,26 @@ class PromoterInvitation extends Model
 {
     protected $fillable = [
         'promoter_id',
+        'event_id',
         'email',
         'status',
         'token',
+        'commission_type',
+        'commission_value',
     ];
 
     public function getHasActiveInvitationAttribute()
     {
-        return $this->where('status', 'pending')->exists();
+        return $this->where('email', $this->email)->where('status', 'pending')->exists();
     }
 
-    public function promoter()
+    public function promoter(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Promoter::class);
+    }
+
+    public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\Domain\EventManagement\Models\Event::class);
     }
 }

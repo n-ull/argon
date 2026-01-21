@@ -16,7 +16,11 @@ class EventFactory extends Factory
         return [
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
-            'location_info' => [], // Assuming array or cast handles it
+            'location_info' => [
+                'address' => $this->faker->address,
+                'city' => $this->faker->city,
+                'country' => $this->faker->country,
+            ],
             'status' => EventStatus::PUBLISHED,
             'start_date' => now()->addDays(10),
             'end_date' => now()->addDays(11),

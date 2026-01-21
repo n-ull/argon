@@ -121,7 +121,7 @@ Route::group([
         Route::get('{event}/promoters', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'promoters'])
             ->name('promoters');
 
-        Route::post('{event}/promoters', \Domain\Promoters\Actions\AddPromoter::class)
+        Route::post('{event}/promoters', \Domain\Promoters\Actions\InvitePromoter::class)
             ->name('promoters.store');
 
         Route::get('{event}/settings', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'settings'])
@@ -138,6 +138,12 @@ Route::group([
 
         Route::get('{event}/vouchers', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'vouchers'])
             ->name('vouchers');
+
+        Route::delete('{event}/promoters/{promoter}', \Domain\Promoters\Actions\RemovePromoterFromEvent::class)
+            ->name('promoters.delete');
+
+        Route::delete('{event}/promoters/invitations/{invitation}', \Domain\Promoters\Actions\DeletePromoterInvitation::class)
+            ->name('promoters.invitations.delete');
 
         Route::patch('{event}/status', \Domain\EventManagement\Actions\UpdateEventStatus::class)
             ->name('status.update');
@@ -158,9 +164,25 @@ Route::group([
 });
 
 Route::group([
+    'prefix' => 'promoters',
+    'as' => 'promoters.',
+], function () {
+    Route::get('invitations/{token}', [\App\Modules\Promoters\Controllers\PromoterInvitationController::class, 'show'])->name('invitations.show');
+});
+
+Route::group([
     'prefix' => 'user',
     'as' => 'user.',
     'middleware' => ['auth', 'verified'],
 ], function () { });
+
+Route::group([
+    'prefix' => 'promoters',
+    'as' => 'promoters.',
+    'middleware' => ['auth', 'verified'],
+], function () {
+    Route::post('invitations/{token}/accept', \Domain\Promoters\Actions\AcceptPromoterInvitation::class)->name('invitations.accept');
+    Route::post('invitations/{token}/decline', \Domain\Promoters\Actions\DeclinePromoterInvitation::class)->name('invitations.decline');
+});
 
 require __DIR__.'/settings.php';

@@ -16,13 +16,13 @@ class PromoterResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'referral_code' => $this->promoter->referral_code,
-            'name' => $this->promoter->user->name ?? 'N/A',
-            'email' => $this->promoter->user->email ?? 'N/A',
-            'phone' => $this->promoter->user->phone ?? 'N/A',
-            'commission_type' => $this->commission_type,
-            'commission_value' => $this->commission_value,
-            'enabled' => $this->enabled,
+            'referral_code' => $this->referral_code,
+            'name' => $this->user->name ?? 'N/A',
+            'email' => $this->user->email ?? 'N/A',
+            'phone' => $this->user->phone ?? 'N/A',
+            'commission_type' => $this->pivot->commission_type,
+            'commission_value' => $this->pivot->commission_value,
+            'enabled' => $this->pivot->enabled,
         ];
     }
 }

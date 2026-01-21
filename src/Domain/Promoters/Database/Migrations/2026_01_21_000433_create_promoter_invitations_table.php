@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('email');
             $table->string('token')->unique();
-            $table->enum('status', ['pending', 'accepted', 'expired', 'declined']);
+            $table->enum('status', ['pending', 'accepted', 'expired', 'declined'])->default('pending');
+            $table->enum('commission_type', ['fixed', 'percentage']);
+            $table->decimal('commission_value', 10, 2);
+            $table->foreignId('event_id')->constrained('events')->cascadeOnDelete();
             $table->foreignId('promoter_id')->constrained('promoters')->cascadeOnDelete();
             $table->timestamps();
         });

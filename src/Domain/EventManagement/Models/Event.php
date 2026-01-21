@@ -152,7 +152,8 @@ class Event extends Model
 
     public function promoters(): BelongsToMany
     {
-        return $this->belongsToMany(Promoter::class, 'promoter_events', 'event_id', 'promoter_id');
+        return $this->belongsToMany(Promoter::class, 'promoter_events', 'event_id', 'promoter_id')
+            ->withPivot(['commission_type', 'commission_value', 'enabled']);
     }
 
     public function taxesAndFees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -161,6 +162,11 @@ class Event extends Model
             ->withPivot('sort_order')
             ->withTimestamps()
             ->orderByPivot('sort_order');
+    }
+
+    public function promoterInvitations(): HasMany
+    {
+        return $this->hasMany(\Domain\Promoters\Models\PromoterInvitation::class);
     }
 
     public function getRouteKeyName(): string
