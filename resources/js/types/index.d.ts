@@ -208,6 +208,7 @@ export interface Order {
     used_payment_gateway_snapshot: string;
     total_gross: number;
     total: number;
+    referral_code?: string | null;
 }
 
 export interface Client {

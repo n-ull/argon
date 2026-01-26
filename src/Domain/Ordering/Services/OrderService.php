@@ -20,7 +20,8 @@ class OrderService
         private PriceCalculationService $priceCalculationService,
         private ReferenceIdService $referenceIdService,
         private \Illuminate\Database\DatabaseManager $databaseManager
-    ) {}
+    ) {
+    }
 
     public function createPendingOrder(CreateOrderData $orderData): Order
     {
@@ -76,6 +77,7 @@ class OrderService
                 'used_payment_gateway_snapshot' => $orderData->gateway ?? null,
                 'expires_at' => now()->addMinutes(15),
                 'status' => $status,
+                'referral_code' => $orderData->referral_code ?? null,
             ]);
 
             // Create order items and increment quantity_sold

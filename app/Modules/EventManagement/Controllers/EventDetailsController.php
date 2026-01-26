@@ -40,10 +40,23 @@ class EventDetailsController extends Controller
             cache()->put($cacheKey, true, now()->addMinutes(1));
         }
 
+        if (request()->has('referr')) {
+            $code = request()->input('referr');
+            $promoter = \Domain\Promoters\Models\Promoter::where('referral_code', $code)->first();
+
+            if ($promoter && $promoter->events()
+                ->where('event_id', $event->id)
+                ->where('promoter_events.enabled', true)
+                ->exists()) {
+                session(['referral_code' => $code]);
+            }
+        }
+
         return Inertia::render('events/Details', [
             'event' => EventResource::make($event)->resolve(),
             'products' => ProductResource::collection($products)->resolve(),
             'userIsOrganizer' => auth()->check() && $event->organizer->users->contains(auth()->user()->id),
+            'referralCode' => session('referral_code'),
         ]);
     }
 }

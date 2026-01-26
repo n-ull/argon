@@ -64,6 +64,10 @@ const cancelOrder = () => {
                 </p>
             </div>
 
+            <div v-if="order.referral_code" class="p-4 border border-moovin-lime rounded-lg">
+                <p class="font-bold">Referral Code: {{ order.referral_code }}</p>
+            </div>
+
             <div class="p-4 border border-moovin-lime rounded-lg">
                 <table class="min-w-full divide-y divide-moovin-lime">
                     <thead>

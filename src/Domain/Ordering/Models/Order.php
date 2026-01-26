@@ -58,6 +58,7 @@ class Order extends Model
         'used_payment_gateway_snapshot',
         'user_id',
         'expires_at',
+        'referral_code',
     ];
 
     protected $casts = [

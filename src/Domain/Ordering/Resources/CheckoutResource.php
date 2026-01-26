@@ -25,6 +25,7 @@ class CheckoutResource extends JsonResource
             'event' => [
                 'slug' => $this->event->slug,
             ],
+            'referral_code' => $this->whenNotNull($this->referral_code),
         ];
     }
 }
