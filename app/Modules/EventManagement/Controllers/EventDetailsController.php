@@ -48,7 +48,7 @@ class EventDetailsController extends Controller
                 ->where('event_id', $event->id)
                 ->where('promoter_events.enabled', true)
                 ->exists()) {
-                session(['referral_code' => $code]);
+                session(['referral_code_'.$event->id => $code]);
             }
         }
 
@@ -56,7 +56,7 @@ class EventDetailsController extends Controller
             'event' => EventResource::make($event)->resolve(),
             'products' => ProductResource::collection($products)->resolve(),
             'userIsOrganizer' => auth()->check() && $event->organizer->users->contains(auth()->user()->id),
-            'referralCode' => session('referral_code'),
+            'referralCode' => session('referral_code_'.$event->id),
         ]);
     }
 }

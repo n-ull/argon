@@ -35,6 +35,9 @@ Route::group([
 
     Route::get('{event}', \App\Modules\EventManagement\Controllers\EventDetailsController::class)
         ->name('show');
+
+    Route::delete('{event}/referral', \App\Modules\EventManagement\Controllers\RemoveReferralController::class)
+        ->name('referral.remove');
 });
 
 Route::group([

@@ -1,133 +1,134 @@
-    <script setup lang="ts">
-    import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
-    import Button from '@/components/ui/button/Button.vue';
-    import SimpleLayout from '@/layouts/SimpleLayout.vue';
-    import { Event, Product, ProductPrice } from '@/types';
-    import { Head, Link, router, useForm } from '@inertiajs/vue3';
-    import { Calendar, LucideShoppingCart, MapPin, Minus, Pencil, Plus, Ticket } from 'lucide-vue-next';
-    import { computed, onMounted, ref } from 'vue';
-    import { cancel, checkout, store } from '@/routes/orders';
-    import { NButton, NEmpty } from 'naive-ui';
-    import { useDialog } from '@/composables/useDialog';
-    import ConfirmDialog from '@/components/ConfirmDialog.vue';
-    import { formatDate, formatDateDiff } from '@/lib/utils';
-    import { dashboard } from '@/routes/manage/event';
+<script setup lang="ts">
+import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
+import Button from '@/components/ui/button/Button.vue';
+import SimpleLayout from '@/layouts/SimpleLayout.vue';
+import { Event, Product, ProductPrice } from '@/types';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { Calendar, LucideShoppingCart, MapPin, Minus, Pencil, Plus, X } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
+import { cancel, checkout, store } from '@/routes/orders';
+import { NButton, NEmpty } from 'naive-ui';
+import { useDialog } from '@/composables/useDialog';
+import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import { formatDate, formatDateDiff } from '@/lib/utils';
+import { dashboard } from '@/routes/manage/event';
+import referral from '@/routes/events/referral';
 
-    interface Props {
-        event: Event,
-        products: Product[],
-        userIsOrganizer: boolean,
-        referralCode?: string
-    }
+interface Props {
+    event: Event,
+    products: Product[],
+    userIsOrganizer: boolean,
+    referralCode?: string
+}
 
-    const { event, products, userIsOrganizer, referralCode } = defineProps<Props>();
+const { event, products, userIsOrganizer, referralCode } = defineProps<Props>();
 
-    interface CartItem {
-        productId: number;
-        productPriceId: number;
-        quantity: number;
-    }
+interface CartItem {
+    productId: number;
+    productPriceId: number;
+    quantity: number;
+}
 
-    interface Cart {
-        eventId: number;
-        items: CartItem[];
-        referral_code?: string | null;
-    }
+interface Cart {
+    eventId: number;
+    items: CartItem[];
+    referral_code?: string | null;
+}
 
-    const form = useForm<Cart>({
-        eventId: event.id,
-        items: [],
-        referral_code: referralCode ?? null
-    });
+const form = useForm<Cart>({
+    eventId: event.id,
+    items: [],
+    referral_code: referralCode ?? null
+});
 
-    const addToCart = (product: Product, price: ProductPrice) => {
-        const existingItem = form.items.find(item => item.productPriceId === price.id);
+const addToCart = (product: Product, price: ProductPrice) => {
+    const existingItem = form.items.find(item => item.productPriceId === price.id);
 
-        if (existingItem) {
-            const limit = price.limit_max_per_order ?? product.max_per_order;
-            if (limit && existingItem.quantity >= limit) {
-                return;
-            }
-            existingItem.quantity++;
-        } else {
-            form.items.push({
-                productId: product.id,
-                productPriceId: price.id,
-                quantity: 1,
-            });
+    if (existingItem) {
+        const limit = price.limit_max_per_order ?? product.max_per_order;
+        if (limit && existingItem.quantity >= limit) {
+            return;
         }
-    }
-
-    const removeFromCart = (product: Product, price: ProductPrice) => {
-        const existingItemIndex = form.items.findIndex(item => item.productPriceId === price.id);
-
-        if (existingItemIndex !== -1) {
-            const item = form.items[existingItemIndex];
-            item.quantity--;
-
-            if (item.quantity === 0) {
-                form.items.splice(existingItemIndex, 1);
-            }
-        }
-    }
-
-    const getQuantity = (priceId: number) => {
-        const item = form.items.find(item => item.productPriceId === priceId);
-        return item ? item.quantity : 0;
-    }
-
-    const isPhone = ref(false);
-
-    onMounted(() => {
-        isPhone.value = window.innerWidth < 768;
-    });
-
-    const isLoading = ref(false);
-
-    const { open: openDialog } = useDialog();
-
-    const handleCheckout = () => {
-        form.post(store().url, {
-            preserveScroll: true,
-            preserveState: true,
-            onError: (error) => {
-                const orderId = Array.isArray(error.orderId) ? error.orderId[0] : error.orderId;
-                if (orderId) {
-                    openDialog({
-                        component: ConfirmDialog,
-                        props: {
-                            title: 'Pending Order',
-                            description: 'You have a pending order. Would you like to view it?',
-                            confirmText: 'View Order',
-                            cancelText: 'Cancel Order',
-                            onConfirm: () => {
-                                window.location.href = checkout(parseInt(orderId)).url;
-                            },
-                            onCancel: () => {
-                                router.post(cancel(parseInt(orderId)).url, {
-                                    preserveScroll: true,
-                                    preserveState: true,
-                                });
-                            }
-                        }
-                    });
-                }
-            },
-            onFinish: () => {
-                isLoading.value = false;
-            }
+        existingItem.quantity++;
+    } else {
+        form.items.push({
+            productId: product.id,
+            productPriceId: price.id,
+            quantity: 1,
         });
     }
+}
 
-    const mapUrl = computed(() => {
-        if (event.location_info.mapLink) {
-            return event.location_info.mapLink;
+const removeFromCart = (product: Product, price: ProductPrice) => {
+    const existingItemIndex = form.items.findIndex(item => item.productPriceId === price.id);
+
+    if (existingItemIndex !== -1) {
+        const item = form.items[existingItemIndex];
+        item.quantity--;
+
+        if (item.quantity === 0) {
+            form.items.splice(existingItemIndex, 1);
         }
-        const address = encodeURIComponent(`${event.location_info.address}, ${event.location_info.city}`);
-        return `https://www.google.com/maps/dir//${address}`;
-    });
+    }
+}
 
-    const filterProductWithPrices = products.filter(product => product.product_prices.length > 0);
+const getQuantity = (priceId: number) => {
+    const item = form.items.find(item => item.productPriceId === priceId);
+    return item ? item.quantity : 0;
+}
+
+const isPhone = ref(false);
+
+onMounted(() => {
+    isPhone.value = window.innerWidth < 768;
+});
+
+const isLoading = ref(false);
+
+const { open: openDialog } = useDialog();
+
+const handleCheckout = () => {
+    form.post(store().url, {
+        preserveScroll: true,
+        preserveState: true,
+        onError: (error) => {
+            const orderId = Array.isArray(error.orderId) ? error.orderId[0] : error.orderId;
+            if (orderId) {
+                openDialog({
+                    component: ConfirmDialog,
+                    props: {
+                        title: 'Pending Order',
+                        description: 'You have a pending order. Would you like to view it?',
+                        confirmText: 'View Order',
+                        cancelText: 'Cancel Order',
+                        onConfirm: () => {
+                            window.location.href = checkout(parseInt(orderId)).url;
+                        },
+                        onCancel: () => {
+                            router.post(cancel(parseInt(orderId)).url, {
+                                preserveScroll: true,
+                                preserveState: true,
+                            });
+                        }
+                    }
+                });
+            }
+        },
+        onFinish: () => {
+            isLoading.value = false;
+        }
+    });
+}
+
+const mapUrl = computed(() => {
+    if (event.location_info.mapLink) {
+        return event.location_info.mapLink;
+    }
+    const address = encodeURIComponent(`${event.location_info.address}, ${event.location_info.city}`);
+    return `https://www.google.com/maps/dir//${address}`;
+});
+
+const filterProductWithPrices = products.filter(product => product.product_prices.length > 0);
 
 </script>
 
@@ -146,8 +147,12 @@
             </Link>
             <div class="flex flex-col gap-4">
                 <div v-if="referralCode"
-                    class="bg-moovin-green text-moovin-dark-green font-bold text-center p-2 rounded">
-                    Referral code applied: {{ referralCode }}
+                    class="bg-moovin-green text-moovin-dark-green font-bold text-center p-2 rounded flex gap-2 items-center">
+                    <button @click="router.delete(referral.remove(event.slug), { preserveScroll: true })"
+                        class="hover:bg-black/10 bg-black/20 p-1 rounded transition-colors">
+                        <X :size="16" />
+                    </button>
+                    <span>Referral code applied: {{ referralCode }}</span>
                 </div>
                 <div>
                     <img v-if="!isPhone" :src="event.horizontal_image_url ?? 'https://placehold.co/1480x600/png'"
@@ -199,7 +204,7 @@
                             <div class="flex flex-col mb-2">
                                 <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
                                 <span v-if="product.description" class="text-sm text-neutral-400">{{ product.description
-                                    }}</span>
+                                }}</span>
                             </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id">
@@ -218,7 +223,7 @@
                                             </div>
                                             <span class="text-moovin-lime text-lg font-black" v-if="price.price > 0">${{
                                                 price.price
-                                            }}</span>
+                                                }}</span>
                                             <span class="text-moovin-lime text-lg font-bold" v-else>Free</span>
                                         </div>
                                         <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
@@ -241,7 +246,7 @@
                                                 </Button>
                                                 <Button size="icon" variant="default">{{
                                                     getQuantity(price.id)
-                                                }}</Button>
+                                                    }}</Button>
                                                 <Button size="icon" variant="default"
                                                     :disabled="getQuantity(price.id) >= (price.limit_max_per_order ?? product.max_per_order ?? Infinity)"
                                                     @click="addToCart(product, price)">

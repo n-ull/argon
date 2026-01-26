@@ -14,7 +14,7 @@ class OrderController extends Controller
         try {
             $data = $request->validated();
             $data['userId'] = $request->user()?->id;
-            $data['referral_code'] = session('referral_code');
+            $data['referral_code'] = session('referral_code_'.$data['eventId']);
 
             $orderDTO = CreateOrderData::from($data);
 
