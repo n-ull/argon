@@ -30,8 +30,6 @@ class InvitePromoter
             'commission_value' => $validated['commission_value'],
         ]);
 
-
-
         return $invitation;
     }
 
@@ -45,6 +43,6 @@ class InvitePromoter
 
         $result = $this->handle($eventId, $validated);
 
-        return redirect()->back();
+        return back()->with('message', flash_message('Promoter invited successfully', 'The promoter has been invited successfully', 'success'));
     }
 }

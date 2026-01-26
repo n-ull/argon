@@ -168,24 +168,30 @@ const invitationColumns: DataTableColumns<Invitation> = [
         key: 'actions',
         render(row: Invitation) {
             if (row.status !== 'pending') return '-';
-            return h(NSpace, { align: 'center' }, {
-                default: () => [
-                    h(NButton, {
-                        size: 'small',
-                        secondary: true,
-                        onClick: () => {
-                            const url = window.location.origin + '/promoters/invitations/' + row.token;
-                            navigator.clipboard.writeText(url);
-                            message.success('Link copied to clipboard');
-                        }
-                    }, { default: () => 'Copy Link' }),
-                    h(NButton, {
-                        size: 'small',
-                        quaternary: true,
-                        type: 'error',
-                        onClick: () => deleteInvitation(row)
-                    }, { default: () => h(NIcon, null, { default: () => h(Trash2) }) })
-                ]
+            return h(DataTableRowActions, {
+                options: [
+                    {
+                        label: 'Copy Link',
+                        key: 'copy',
+                        icon: () => h(NIcon, null, { default: () => h(Copy, { class: 'text-neutral-500' }) }),
+                        props: { style: { color: 'rgb(115 115 115)' } }
+                    },
+                    {
+                        label: 'Delete Invitation',
+                        key: 'delete',
+                        icon: () => h(NIcon, null, { default: () => h(Trash2, { class: 'text-red-500' }) }),
+                        props: { style: { color: 'rgb(239 68 68)' } }
+                    }
+                ],
+                onSelect: (key) => {
+                    if (key === 'copy') {
+                        const url = window.location.origin + '/promoters/invitations/' + row.token;
+                        navigator.clipboard.writeText(url);
+                        message.success('Link copied to clipboard');
+                    } else if (key === 'delete') {
+                        deleteInvitation(row);
+                    }
+                }
             });
         }
     }
@@ -246,7 +252,7 @@ const deleteInvitation = (invitation: Invitation) => {
             confirmText: 'Delete',
             cancelText: 'Cancel',
             onConfirm: () => {
-                router.delete('/manage/event/promoters/invitations/' + invitation.id, {
+                router.delete('/manage/event/' + event.id + '/promoters/invitations/' + invitation.id, {
                     onSuccess: () => message.success('Invitation deleted successfully')
                 });
             }
@@ -283,6 +289,8 @@ const deleteInvitation = (invitation: Invitation) => {
                     :scroll-x="1000" :row-props="rowProps" v-model:checked-row-keys="selectedRowKeys"
                     :row-key="(row: any) => row.id" />
 
+                <hr>
+
                 <!-- Invitations Header -->
                 <div class="mt-8 mb-4">
                     <h2 class="text-xl font-bold mb-2">Invitations</h2>
@@ -290,10 +298,9 @@ const deleteInvitation = (invitation: Invitation) => {
                 </div>
 
                 <!-- Invitations Table -->
-                <div class="bg-neutral-900 border rounded p-4">
-                    <NDataTable :columns="invitationColumns" :data="invitations" :pagination="{ pageSize: 10 }" bordered
-                        :scroll-x="1000" :row-key="(row: any) => row.id" />
-                </div>
+                <NDataTable :columns="invitationColumns" :data="invitations" :pagination="{ pageSize: 10 }" bordered
+                    :scroll-x="1000" :row-key="(row: any) => row.id" />
+
             </div>
         </div>
     </ManageEventLayout>
