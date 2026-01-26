@@ -5,11 +5,14 @@ namespace Domain\Promoters\Models;
 use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\Promoters\Exceptions\ActiveInvitationAlreadyExists;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Promoter extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'referral_code',
@@ -49,4 +52,8 @@ class Promoter extends Model
         ]);
     }
 
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\Promoters\Models\PromoterFactory::new();
+    }
 }

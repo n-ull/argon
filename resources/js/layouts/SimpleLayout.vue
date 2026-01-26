@@ -61,6 +61,13 @@ const items = computed<NavItem[]>(() => {
                 href: '/tickets',
             },
         );
+
+        if (user.value.promoter) {
+            navItems.push({
+                title: 'Promoter',
+                href: '/promoters/dashboard',
+            });
+        }
     }
 
     return navItems;

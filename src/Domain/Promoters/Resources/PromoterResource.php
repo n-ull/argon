@@ -23,6 +23,7 @@ class PromoterResource extends JsonResource
             'commission_type' => $this->pivot->commission_type,
             'commission_value' => $this->pivot->commission_value,
             'enabled' => $this->pivot->enabled,
+            'commissions_count' => $this->whenCounted('commissions'),
         ];
     }
 }

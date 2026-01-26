@@ -142,6 +142,9 @@ Route::group([
         Route::get('{event}/vouchers', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'vouchers'])
             ->name('vouchers');
 
+        Route::patch('{event}/promoters/{promoter}/enable', \Domain\Promoters\Actions\EnablePromoterForEvent::class)
+            ->name('promoters.enable');
+
         Route::delete('{event}/promoters/{promoter}', \Domain\Promoters\Actions\RemovePromoterFromEvent::class)
             ->name('promoters.delete');
 
@@ -171,6 +174,7 @@ Route::group([
     'as' => 'promoters.',
 ], function () {
     Route::get('invitations/{token}', [\App\Modules\Promoters\Controllers\PromoterInvitationController::class, 'show'])->name('invitations.show');
+    Route::get('dashboard', \App\Modules\Promoters\Controllers\PromoterDashboardController::class)->name('dashboard');
 });
 
 Route::group([

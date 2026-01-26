@@ -89,7 +89,11 @@ class ManageEventController extends Controller
 
     public function promoters(int $eventId)
     {
-        $event = Event::where('id', $eventId)->first()->load(['organizer', 'promoters', 'promoterInvitations']);
+        $event = Event::where('id', $eventId)->first()->load(['organizer', 'promoters' => function ($query) use ($eventId) {
+            $query->withCount(['commissions' => function ($query) use ($eventId) {
+                $query->where('event_id', $eventId)->completed();
+            }]);
+        }, 'promoterInvitations']);
 
         return Inertia::render('organizers/event/Promoters', [
             'event' => $event,

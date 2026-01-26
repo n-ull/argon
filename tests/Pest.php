@@ -20,7 +20,7 @@ use Domain\ProductCatalog\Models\ProductPrice;
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature', 'Unit');
+    ->in('Feature', 'Unit', 'Integration');
 
 /*
 |--------------------------------------------------------------------------

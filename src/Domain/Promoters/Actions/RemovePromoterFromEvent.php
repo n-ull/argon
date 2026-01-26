@@ -15,8 +15,16 @@ class RemovePromoterFromEvent
         $event = Event::findOrFail($eventId);
         $promoter = Promoter::findOrFail($promoterId);
 
-        // Detach the promoter from the event
-        $event->promoters()->detach($promoter->id);
+        // Check if promoter has any commissions for this event
+        $hasCommissions = $promoter->commissions()->where('event_id', $eventId)->exists();
+
+        if ($hasCommissions) {
+            // Disable the promoter instead of detaching
+            $event->promoters()->updateExistingPivot($promoter->id, ['enabled' => false]);
+        } else {
+            // Detach the promoter from the event
+            $event->promoters()->detach($promoter->id);
+        }
     }
 
     public function asController(int $eventId, int $promoterId)

@@ -14,10 +14,10 @@ import { promoters as promotersRoute, dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event, Promoter } from '@/types';
 import DataTableRowActions from '@/components/DataTableRowActions.vue';
-import { Copy, Trash2 } from 'lucide-vue-next';
+import { Copy, Trash2, RotateCcw } from 'lucide-vue-next';
 import CreatePromoterDialog from './dialogs/CreatePromoterDialog.vue';
 import { useDialog } from '@/composables/useDialog';
-import { deleteMethod } from '@/routes/manage/event/promoters';
+import { deleteMethod, enable } from '@/routes/manage/event/promoters';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 
 interface Invitation {
@@ -40,6 +40,8 @@ interface Props {
 const { event, promoters, invitations } = defineProps<Props>();
 
 const message = useMessage();
+
+console.log(promoters);
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
@@ -87,8 +89,8 @@ const columns: DataTableColumns<Promoter> = [
         }
     },
     {
-        title: 'Tickets Sold',
-        key: 'tickets_sold',
+        title: 'Completed Commissions',
+        key: 'commissions_count',
         minWidth: 100,
     },
     {
@@ -120,6 +122,17 @@ const columns: DataTableColumns<Promoter> = [
                         key: 'delete',
                         icon: () => h(NIcon, null, { default: () => h(Trash2, { class: 'text-red-500' }) }),
                         props: { style: { color: 'rgb(239 68 68)' } } // red-500
+                    },
+                    row.enabled ? {
+                        label: 'Disable Promoter',
+                        key: 'disable',
+                        icon: () => h(NIcon, null, { default: () => h(RotateCcw, { class: 'text-blue-500' }) }),
+                        props: { style: { color: 'rgb(59 130 246)' } } // blue-500
+                    } : {
+                        label: 'Enable Promoter',
+                        key: 'enable',
+                        icon: () => h(NIcon, null, { default: () => h(RotateCcw, { class: 'text-blue-500' }) }),
+                        props: { style: { color: 'rgb(59 130 246)' } } // blue-500
                     }
                 ],
                 onSelect: (key) => {
@@ -130,6 +143,8 @@ const columns: DataTableColumns<Promoter> = [
                         // For now let's just handle delete.
                     } else if (key === 'delete') {
                         deletePromoter(row);
+                    } else if (key === 'enable') {
+                        enablePromoter(row);
                     }
                 }
             });
@@ -222,6 +237,25 @@ const openCreatePromoterDialog = () => {
 };
 
 
+
+const enablePromoter = (promoter: Promoter) => {
+    openDialog({
+        component: ConfirmDialog,
+        props: {
+            title: 'Enable Promoter',
+            description: 'Are you sure you want to enable this promoter for the event?',
+            confirmText: 'Enable',
+            cancelText: 'Cancel',
+            onConfirm: () => {
+                router.visit(enable({ event: event.id, promoter: promoter.id }), {
+                    method: 'patch',
+                    onSuccess: () => message.success('Promoter enabled successfully'),
+                    preserveScroll: true
+                });
+            }
+        }
+    });
+};
 
 const deletePromoter = (promoter: Promoter) => {
     openDialog({

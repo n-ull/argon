@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Domain\Ordering\Events\OrderCompleted;
+use Domain\Ordering\Events\OrderCreated;
+use Domain\Promoters\Listeners\CreateCommissionForOrder;
 use Domain\Ticketing\Listeners\GenerateTicketsForOrder;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
@@ -31,8 +33,13 @@ class AppServiceProvider extends ServiceProvider
             GenerateTicketsForOrder::class
         );
 
+        Event::listen(
+            OrderCreated::class,
+            CreateCommissionForOrder::class
+        );
+
         Inertia::share([
-            'locale' => fn() => App::getLocale(),
+            'locale' => fn () => App::getLocale(),
         ]);
     }
 }

@@ -57,6 +57,7 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
+    promoter?: Promoter | null;
 }
 
 export type EventStatus = 'draft' | 'published' | 'ended' | 'cancelled' | 'deleted' | 'archived';
