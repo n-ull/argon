@@ -178,6 +178,7 @@ Route::group([
 ], function () {
     Route::get('invitations/{token}', [\App\Modules\Promoters\Controllers\PromoterInvitationController::class, 'show'])->name('invitations.show');
     Route::get('dashboard', \App\Modules\Promoters\Controllers\PromoterDashboardController::class)->name('dashboard');
+    Route::get('events/{event}/stats', \App\Modules\Promoters\Controllers\PromoterStatsController::class)->name('events.stats');
 });
 
 Route::group([

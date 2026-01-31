@@ -274,6 +274,10 @@ const handleRowClick = (row: Order) => {
                             <p>Total:</p>
                             <p>{{ selectedOrder.subtotal }}</p>
                         </div>
+                        <div v-if="selectedOrder.referral_code">
+                            <p>Promoter:</p>
+                            <p>{{ selectedOrder.referral_code }}</p>
+                        </div>
                         <div v-if="selectedOrder.used_payment_gateway_snapshot">
                             <p>Payment Method:</p>
                             <p>{{ selectedOrder.used_payment_gateway_snapshot }}</p>

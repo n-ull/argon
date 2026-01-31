@@ -2,8 +2,10 @@
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { NCard, NDataTable, NStatistic, NNumberAnimation } from 'naive-ui';
-import { h } from 'vue';
+import { NCard, NDataTable, NStatistic, NNumberAnimation, NButton, NModal, NSpin, NList, NListItem, NThing } from 'naive-ui';
+import { h, ref } from 'vue';
+import axios from 'axios';
+import { stats } from '@/routes/promoters/events';
 
 defineProps<{
     events: Array<Event>;
@@ -22,8 +24,46 @@ const columns = [
     {
         title: 'Status',
         key: 'status',
+    },
+    {
+        title: 'Actions',
+        key: 'actions',
+        render(row: Event) {
+            return h(
+                NButton,
+                {
+                    size: 'small',
+                    type: 'primary',
+                    ghost: true,
+                    onClick: () => openDetails(row)
+                },
+                { default: () => 'Details' }
+            );
+        }
     }
 ];
+
+const showModal = ref(false);
+const loading = ref(false);
+const selectedEventStats = ref<Array<{ product_name: string; quantity: number }>>([]);
+const selectedEventTitle = ref('');
+
+const openDetails = async (event: Event) => {
+    selectedEventTitle.value = event.title;
+    selectedEventStats.value = [];
+    showModal.value = true;
+    loading.value = true;
+    try {
+        // @ts-ignore
+        const url = stats(event.id).url;
+        const response = await axios.get(url);
+        selectedEventStats.value = response.data;
+    } catch (error) {
+        console.error('Failed to fetch stats', error);
+    } finally {
+        loading.value = false;
+    }
+};
 
 const commissionColumns = [
     {
@@ -83,5 +123,27 @@ const commissionColumns = [
                 </NCard>
             </div>
         </div>
+
+        <NModal v-model:show="showModal" preset="card" :title="`Sales Details: ${selectedEventTitle}`"
+            style="width: 600px; max-width: 90vw;" :segmented="{ content: 'soft', footer: 'soft' }">
+            <div v-if="loading" class="flex justify-center p-8">
+                <NSpin size="large" />
+            </div>
+            <div v-else>
+                <NList hoverable v-if="selectedEventStats.length > 0">
+                    <NListItem v-for="stat in selectedEventStats" :key="stat.product_name">
+                        <div class="flex justify-between items-center w-full">
+                            <span class="font-medium">{{ stat.product_name }}</span>
+                            <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold">
+                                {{ stat.quantity }} sold
+                            </span>
+                        </div>
+                    </NListItem>
+                </NList>
+                <div v-else class="text-center text-gray-400 py-8">
+                    No sales recorded for this event yet.
+                </div>
+            </div>
+        </NModal>
     </SimpleLayout>
 </template>

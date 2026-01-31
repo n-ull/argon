@@ -362,33 +362,33 @@ const deleteInvitation = (invitation: Invitation) => {
 
             </div>
         </div>
-    </ManageEventLayout>
 
-    <NModal v-model:show="statsModalOpen" preset="card" title="Promoter Sales Stats" style="width: 600px;">
-        <template #header>
-            Sales Stats for {{ selectedPromoterName }}
-        </template>
-        <div v-if="loadingStats" class="flex justify-center p-8">
-            <NSpin size="large" />
-        </div>
-        <div v-else>
-            <NTable v-if="selectedPromoterStats.length > 0" :bordered="false" :single-line="false">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th class="text-right">Quantity Sold</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="stat in selectedPromoterStats" :key="stat.product_id">
-                        <td>{{ stat.product_name }}</td>
-                        <td class="text-right">{{ stat.quantity }}</td>
-                    </tr>
-                </tbody>
-            </NTable>
-            <div v-else class="text-center text-gray-500 py-4">
-                No sales found for this promoter.
+        <NModal v-model:show="statsModalOpen" preset="card" title="Promoter Sales Stats" style="width: 600px;">
+            <template #header>
+                Sales Stats for {{ selectedPromoterName }}
+            </template>
+            <div v-if="loadingStats" class="flex justify-center p-8">
+                <NSpin size="large" />
             </div>
-        </div>
-    </NModal>
+            <div v-else>
+                <NTable v-if="selectedPromoterStats.length > 0" :bordered="false" :single-line="false">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-right">Quantity Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="stat in selectedPromoterStats" :key="stat.product_id">
+                            <td>{{ stat.product_name }}</td>
+                            <td class="text-right">{{ stat.quantity }}</td>
+                        </tr>
+                    </tbody>
+                </NTable>
+                <div v-else class="text-center text-gray-500 py-4">
+                    No sales found for this promoter.
+                </div>
+            </div>
+        </NModal>
+    </ManageEventLayout>
 </template>
