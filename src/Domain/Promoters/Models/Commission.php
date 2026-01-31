@@ -39,4 +39,13 @@ class Commission extends Model
             $query->where('status', 'completed');
         });
     }
+
+    protected $appends = [
+        'order_status',
+    ];
+
+    public function getOrderStatusAttribute()
+    {
+        return $this->order->status;
+    }
 }

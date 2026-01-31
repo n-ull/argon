@@ -38,8 +38,12 @@ const commissionColumns = [
         key: 'created_at',
     },
     {
-        title: 'Status',
+        title: 'Payment Status',
         key: 'status',
+    },
+    {
+        title: 'Order Status',
+        key: 'order_status',
     }
 ];
 </script>
@@ -62,7 +66,7 @@ const commissionColumns = [
                         </NStatistic>
                     </NCard>
                     <NCard>
-                        <NStatistic label="Total Commissions">
+                        <NStatistic label="Total Completed Commissions">
                             <NNumberAnimation :from="0" :to="commissions.length" />
                         </NStatistic>
                     </NCard>
@@ -74,10 +78,9 @@ const commissionColumns = [
                 </NCard>
 
                 <!-- Commissions Table -->
-                <NCard title="Recent Commissions" class="mt-6">
+                <NCard title="Recent Completed Commissions" class="mt-6">
                     <NDataTable :columns="commissionColumns" :data="commissions" :pagination="{ pageSize: 10 }" />
                 </NCard>
-
             </div>
         </div>
     </SimpleLayout>
