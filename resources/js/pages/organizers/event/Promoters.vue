@@ -8,7 +8,11 @@ import {
     type DataTableColumns,
     NIcon,
     useMessage,
+    NModal,
+    NSpin,
+    NTable,
 } from 'naive-ui';
+import axios from 'axios';
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
 import { promoters as promotersRoute, dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
@@ -19,6 +23,7 @@ import CreatePromoterDialog from './dialogs/CreatePromoterDialog.vue';
 import { useDialog } from '@/composables/useDialog';
 import { deleteMethod, enable } from '@/routes/manage/event/promoters';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import { promoterStats } from '@/actions/App/Modules/EventManagement/Controllers/ManageEventController';
 
 interface Invitation {
     id: number;
@@ -217,8 +222,28 @@ const rowProps = (row: Promoter) => ({
     onClick: () => handleRowClick(row)
 });
 
+const statsModalOpen = ref(false);
+const loadingStats = ref(false);
+const selectedPromoterStats = ref<any[]>([]);
+const selectedPromoterName = ref('');
+
 const handleRowClick = (row: Promoter) => {
-    console.log(row);
+    statsModalOpen.value = true;
+    loadingStats.value = true;
+    selectedPromoterStats.value = [];
+    selectedPromoterName.value = row.name;
+
+    axios.get(promoterStats({ event: event.id, promoter: row.id }).url)
+        .then(response => {
+            selectedPromoterStats.value = response.data;
+        })
+        .catch(error => {
+            message.error('Failed to load promoter stats');
+            console.error(error);
+        })
+        .finally(() => {
+            loadingStats.value = false;
+        });
 };
 
 const selectedRowKeys = ref<number[]>([]);
@@ -338,4 +363,32 @@ const deleteInvitation = (invitation: Invitation) => {
             </div>
         </div>
     </ManageEventLayout>
+
+    <NModal v-model:show="statsModalOpen" preset="card" title="Promoter Sales Stats" style="width: 600px;">
+        <template #header>
+            Sales Stats for {{ selectedPromoterName }}
+        </template>
+        <div v-if="loadingStats" class="flex justify-center p-8">
+            <NSpin size="large" />
+        </div>
+        <div v-else>
+            <NTable v-if="selectedPromoterStats.length > 0" :bordered="false" :single-line="false">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-right">Quantity Sold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="stat in selectedPromoterStats" :key="stat.product_id">
+                        <td>{{ stat.product_name }}</td>
+                        <td class="text-right">{{ stat.quantity }}</td>
+                    </tr>
+                </tbody>
+            </NTable>
+            <div v-else class="text-center text-gray-500 py-4">
+                No sales found for this promoter.
+            </div>
+        </div>
+    </NModal>
 </template>

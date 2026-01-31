@@ -139,4 +139,31 @@ class ManageEventController extends Controller
             'event' => $event,
         ]);
     }
+
+    public function promoterStats(int $eventId, int $promoterId)
+    {
+        $event = Event::findOrFail($eventId);
+        $promoter = \Domain\Promoters\Models\Promoter::findOrFail($promoterId);
+
+        $stats = $event->orders()
+            ->where('referral_code', $promoter->referral_code)
+            ->where('status', \Domain\Ordering\Enums\OrderStatus::COMPLETED)
+            ->with(['orderItems.product'])
+            ->get()
+            ->flatMap(function ($order) {
+                return $order->orderItems;
+            })
+            ->groupBy('product_id')
+            ->map(function ($items) {
+                $product = $items->first()->product;
+                return [
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'quantity' => $items->sum('quantity'),
+                ];
+            })
+            ->values();
+
+        return response()->json($stats);
+    }
 }

@@ -151,6 +151,9 @@ Route::group([
         Route::delete('{event}/promoters/invitations/{invitation}', \Domain\Promoters\Actions\DeletePromoterInvitation::class)
             ->name('promoters.invitations.delete');
 
+        Route::get('{event}/promoters/{promoter}/stats', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'promoterStats'])
+            ->name('promoters.stats');
+
         Route::patch('{event}/status', \Domain\EventManagement\Actions\UpdateEventStatus::class)
             ->name('status.update');
 
