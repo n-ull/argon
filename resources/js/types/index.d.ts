@@ -236,6 +236,7 @@ export interface Order {
     total_gross: number;
     total: number;
     referral_code?: string | null;
+    promoter?: Promoter | null;
 }
 
 export interface Client {

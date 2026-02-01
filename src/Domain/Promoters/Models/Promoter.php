@@ -19,6 +19,15 @@ class Promoter extends Model
         'enabled',
     ];
 
+    protected $appends = [
+        'name'
+    ];
+
+    public function getNameAttribute()
+    {
+        return $this->user->name;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

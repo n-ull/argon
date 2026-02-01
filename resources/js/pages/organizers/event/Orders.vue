@@ -201,6 +201,8 @@ const handleRowClick = (row: Order) => {
     selectedOrder.value = row;
     activate('right');
 }
+
+console.log(props.orders);
 </script>
 
 <template>
@@ -270,13 +272,19 @@ const handleRowClick = (row: Order) => {
                             <p>Status:</p>
                             <OrderStatusBadge :status="selectedOrder.status" />
                         </div>
-                        <div>
-                            <p>Total:</p>
-                            <p>{{ selectedOrder.subtotal }}</p>
+                        <div class="flex justify-between">
+                            <div>
+                                <p>Subtotal:</p>
+                                <p>{{ selectedOrder.subtotal }}</p>
+                            </div>
+                            <div>
+                                <p>Total Gross:</p>
+                                <p>{{ selectedOrder.total_gross }}</p>
+                            </div>
                         </div>
                         <div v-if="selectedOrder.referral_code">
                             <p>Promoter:</p>
-                            <p>{{ selectedOrder.referral_code }}</p>
+                            <p>{{ selectedOrder.promoter?.name }}</p>
                         </div>
                         <div v-if="selectedOrder.used_payment_gateway_snapshot">
                             <p>Payment Method:</p>

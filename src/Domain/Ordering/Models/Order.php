@@ -5,11 +5,13 @@ namespace Domain\Ordering\Models;
 use App\Models\User;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Enums\OrderStatus;
+use Domain\Promoters\Models\Promoter;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -104,6 +106,11 @@ class Order extends Model
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function promoter(): HasOne
+    {
+        return $this->hasOne(Promoter::class, 'referral_code', 'referral_code');
     }
 
     protected static function newFactory()

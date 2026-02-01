@@ -63,7 +63,7 @@ class ManageEventController extends Controller
     {
         $event = Event::where('id', $eventId)->first()->load('organizer');
 
-        $query = $event->orders()->with('client:id,name,email')->withCount('orderItems');
+        $query = $event->orders()->with(['client:id,name,email', 'promoter'])->withCount('orderItems');
 
         // Search by client name, email, or reference ID
         if ($request->filled('search')) {
