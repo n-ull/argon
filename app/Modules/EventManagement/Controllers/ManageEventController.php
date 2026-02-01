@@ -29,6 +29,26 @@ class ManageEventController extends Controller
         ]);
     }
 
+    public function analyticsSales(Request $request, int $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        $period = $request->input('period', 'day');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        $data = \Domain\Ordering\Actions\GetEventSalesAnalytics::run($event, $period, $startDate, $endDate);
+
+        return response()->json($data);
+    }
+
+    public function analyticsPromoters(int $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        $data = \Domain\Promoters\Actions\GetPromoterSalesAnalytics::run($event);
+
+        return response()->json($data);
+    }
+
     public function products(int $eventId)
     {
         $event = Event::where('id', $eventId)->first()->load('organizer');

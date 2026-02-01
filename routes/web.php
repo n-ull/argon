@@ -100,6 +100,12 @@ Route::group([
         Route::get('{event}/analyitics', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'analytics'])
             ->name('analytics');
 
+        Route::get('{event}/analytics/sales', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'analyticsSales'])
+            ->name('analytics.sales');
+
+        Route::get('{event}/analytics/promoters', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'analyticsPromoters'])
+            ->name('analytics.promoters');
+
         Route::get('{event}/products', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'products'])
             ->name('products');
 
