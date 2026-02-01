@@ -16,7 +16,7 @@ class PaymentServiceProvider extends ServiceProvider
     {
         $this->app->singleton(PaymentProcessor::class, function (Application $app) {
             return new PaymentProcessor([
-                'mercadopago' => new MercadoPagoGateway(),
+                'mp' => new MercadoPagoGateway(),
             ]);
         });
     }
