@@ -15,9 +15,12 @@ class PromoterInvitationController extends Controller
             ->with(['event.organizer'])
             ->firstOrFail();
 
+        $isEmailRegistered = \App\Models\User::where('email', $invitation->email)->exists();
+
         return Inertia::render('promoters/invitations/Show', [
             'invitation' => $invitation,
             'event' => $invitation->event,
+            'isEmailRegistered' => $isEmailRegistered,
         ]);
     }
 }

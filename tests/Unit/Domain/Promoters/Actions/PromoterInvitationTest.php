@@ -98,10 +98,69 @@ test('it declines invitation', function () {
         'status' => 'pending',
     ]);
 
+
     DeclinePromoterInvitation::run($invitation->token);
 
     $this->assertDatabaseHas('promoter_invitations', [
         'id' => $invitation->id,
         'status' => 'declined',
     ]);
+});
+
+test('it prevents inviting an existing active promoter', function () {
+    $user = User::factory()->create();
+    $promoter = Promoter::create(['user_id' => $user->id, 'referral_code' => 'P1', 'enabled' => true]);
+
+    // Attach promoter to event
+    $promoter->events()->attach($this->event->id, [
+        'commission_type' => 'percentage',
+        'commission_value' => 10,
+    ]);
+
+    $data = [
+        'email' => $user->email,
+        'commission_type' => 'fixed',
+        'commission_value' => 10,
+    ];
+
+    expect(fn () => InvitePromoter::run($this->event->id, $data))
+        ->toThrow(\Illuminate\Validation\ValidationException::class);
+});
+
+test('it prevents inviting an email with pending invitation', function () {
+    $email = 'pending@example.com';
+    PromoterInvitation::create([
+        'event_id' => $this->event->id,
+        'email' => $email,
+        'token' => 'pending-token',
+        'commission_type' => 'fixed',
+        'commission_value' => 10,
+        'status' => 'pending',
+    ]);
+
+    $data = [
+        'email' => $email,
+        'commission_type' => 'fixed',
+        'commission_value' => 20,
+    ];
+
+    expect(fn () => InvitePromoter::run($this->event->id, $data))
+        ->toThrow(\Illuminate\Validation\ValidationException::class);
+});
+
+test('it sends an invitation email', function () {
+    \Illuminate\Support\Facades\Mail::fake();
+
+    $email = 'invite@example.com';
+    $data = [
+        'email' => $email,
+        'commission_type' => 'fixed',
+        'commission_value' => 10,
+    ];
+
+    InvitePromoter::run($this->event->id, $data);
+
+    \Illuminate\Support\Facades\Mail::assertQueued(\App\Mail\PromoterInvitationMail::class, function ($mail) use ($email) {
+        return $mail->hasTo($email);
+    });
 });

@@ -17,6 +17,7 @@ interface Invitation {
 const props = defineProps<{
     invitation: Invitation;
     event: Event;
+    isEmailRegistered: boolean;
 }>();
 
 const page = usePage<AppPageProps>();
@@ -68,7 +69,13 @@ const decline = () => {
                                 user.email }})
                             </NText>
 
-                            <NSpace vertical>
+                            <div v-if="user.email !== invitation.email"
+                                class="p-4 bg-red-900/20 text-red-500 rounded-lg text-sm">
+                                This invitation is intended for <strong>{{ invitation.email }}</strong>.
+                                Please log out and sign in with the correct account.
+                            </div>
+
+                            <NSpace vertical v-else>
                                 <NButton type="primary" size="large" block @click="accept" :loading="form.processing">
                                     Accept Invitation
                                 </NButton>
@@ -81,15 +88,19 @@ const decline = () => {
 
                     <div v-else>
                         <div class="space-y-4">
-                            <p>Please log in or register to accept this invitation.</p>
-                            <NSpace vertical>
-                                <NButton type="primary" size="large" block tag="a" :href="login().url">
+                            <div v-if="isEmailRegistered">
+                                <p>Please log in to accept this invitation.</p>
+                                <NButton type="primary" size="large" block tag="a"
+                                    :href="login().url + '?return_url=' + encodeURIComponent(page.url)">
                                     Log In
                                 </NButton>
-                                <NButton size="large" block tag="a" :href="register().url">
-                                    Register
+                            </div>
+                            <div v-else>
+                                <p>Accept this invitation to create your account and start prompting!</p>
+                                <NButton type="primary" size="large" block @click="accept" :loading="form.processing">
+                                    Accept & Register
                                 </NButton>
-                            </NSpace>
+                            </div>
                         </div>
                     </div>
                 </div>

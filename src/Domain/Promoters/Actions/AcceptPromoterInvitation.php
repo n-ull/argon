@@ -53,7 +53,48 @@ class AcceptPromoterInvitation
 
     public function asController(string $token, \Illuminate\Http\Request $request)
     {
-        $this->handle($token, $request->user());
+        // 1. Fetch Invitation First
+        $invitation = PromoterInvitation::where('token', $token)
+            ->where('status', 'pending')
+            ->firstOrFail();
+
+        // 2. Guest Flow
+        if (! \Illuminate\Support\Facades\Auth::check()) {
+            // Check if email already exists
+            $existingUser = \App\Models\User::where('email', $invitation->email)->first();
+
+            if ($existingUser) {
+                return redirect()->route('login')
+                    ->with('message', flash_message('Please log in to accept the invitation.', 'info'));
+            }
+
+            // Auto-register and login
+            $newUser = \App\Actions\Auth\RegisterGuestUser::run($invitation->email);
+            \Illuminate\Support\Facades\Auth::login($newUser);
+
+            $user = $newUser;
+        } else {
+            // 3. Authenticated Flow
+            $user = $request->user();
+
+            // Security Check: Ensure email matches
+            if ($user->email !== $invitation->email) {
+                // Logout the user and redirect with error, OR just forbid.
+                // The requirement says: "I don't want other emails to accept an invitation, just the email of the invitation"
+                // It's friendlier to show a meaningful error or redirect.
+                // Let's redirect to invitation page (which shares the logic) but maybe with a flash error?
+                // Or abort 403.
+                // Let's abort 403 for security, or redirect back with error.
+                if ($request->wantsJson()) {
+                    abort(403, 'This invitation is not for your email address.');
+                }
+
+                return back()->with('message', flash_error('Unauthorized', 'This invitation is for '.$invitation->email.'. You are logged in as '.$user->email.'.'));
+            }
+        }
+
+        // 4. Handle Acceptance
+        $this->handle($token, $user);
 
         return back()->with('message', flash_success('Invitation accepted', 'You have accepted the promoter invitation.'));
     }

@@ -40,10 +40,10 @@ Route::group([
         ->name('referral.remove');
 });
 
+// Orders routes (Public access for guest checkout)
 Route::group([
     'prefix' => 'orders',
     'as' => 'orders.',
-    'middleware' => ['auth', 'verified'],
 ], function () {
     Route::post('store', [\App\Modules\Ordering\Controllers\OrderController::class, 'store'])
         ->middleware('throttle:5,1')
@@ -60,6 +60,9 @@ Route::group([
 
     Route::post('checkout/{order}/payment-intent', \Domain\Ordering\Actions\CreatePaymentIntent::class)
         ->name('payment-intent');
+
+    Route::post('checkout/{order}/register', [\App\Modules\Ordering\Controllers\CheckoutAuthController::class, 'register'])
+        ->name('register');
 });
 
 // organizer routes

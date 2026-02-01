@@ -115,6 +115,7 @@ const columns: DataTableColumns<Promoter> = [
         align: 'center',
         render(row: Promoter) {
             return h(DataTableRowActions, {
+                onClick: (e: MouseEvent) => e.stopPropagation(),
                 options: [
                     {
                         label: 'Copy URL',

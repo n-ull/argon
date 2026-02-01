@@ -3,12 +3,17 @@ import Section from '@/components/argon/layout/Section.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { formatDate } from '@/lib/utils';
 import { show } from '@/routes/events';
-import { cancel, paymentIntent } from '@/routes/orders';
+import orders, { cancel, paymentIntent } from '@/routes/orders';
 import { Order, OrganizerSettings } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { Clock } from 'lucide-vue-next';
-import { NButton } from 'naive-ui';
+import { NButton, NInput } from 'naive-ui';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { login, register } from '@/routes';
+
+const page = usePage();
+const user = computed(() => page.props.auth.user);
 
 interface Props {
     order: Order,
@@ -21,6 +26,7 @@ const { order, settings } = defineProps<Props>();
 console.log(order);
 
 const paymentMethod = ref('cash');
+const guestEmail = ref('');
 const timeLeft = ref(Math.max(0, Math.floor((new Date(order.expires_at!).getTime() - new Date().getTime()) / 1000)));
 let timerInterval: number | undefined;
 
@@ -52,6 +58,12 @@ const cancelOrder = () => {
 const createIntent = () => {
     router.post(paymentIntent({ order: order.id }));
 }
+
+const quickRegister = () => {
+    router.post(orders.register({ order: order.id }), {
+        email: guestEmail.value
+    });
+};
 
 </script>
 
@@ -103,7 +115,8 @@ const createIntent = () => {
                 </table>
             </div>
 
-            <div class="flex flex-col gap-2 p-4 border border-moovin-lime rounded-lg">
+            <div class="flex flex-col gap-2 p-4 border border-moovin-lime rounded-lg"
+                v-if="parseFloat(order.total_gross.toString()) > 0">
                 <div>
                     <div class="flex items-center gap-2">
                         <input type="radio" id="mercadopago" value="mercadopago" v-model="paymentMethod"
@@ -119,6 +132,27 @@ const createIntent = () => {
                 <p v-if="!settings.is_mercadopago_active" class="text-red-500">MercadoPago is not active for this event
                 </p>
                 <p v-if="!settings.is_modo_active" class="text-red-500">MODO is not active for this event</p>
+            </div>
+
+            <div v-if="!user" class="p-4 border border-blue-200 bg-blue-50/10 rounded-lg space-y-4">
+                <h3 class="font-bold text-lg">Account</h3>
+                <p class="text-sm">You are checking out as a guest. You can create an account to save your order.</p>
+
+                <div class="flex flex-col gap-2">
+                    <div class="flex gap-2">
+                        <NInput v-model:value="guestEmail" placeholder="Enter your email" />
+                        <NButton type="info" ghost @click="quickRegister" :disabled="!guestEmail">
+                            Create Account
+                        </NButton>
+                    </div>
+                    <div class="flex gap-2">
+                        <NButton class="flex-1" tag="a"
+                            :href="login().url + '?return_url=' + encodeURIComponent(page.url)">Log In</NButton>
+                        <NButton class="flex-1" tag="a"
+                            :href="register().url + '?return_url=' + encodeURIComponent(page.url)">Register
+                        </NButton>
+                    </div>
+                </div>
             </div>
 
             <!-- Taxes and Fees Breakdown Card -->
@@ -154,7 +188,9 @@ const createIntent = () => {
                 <NButton type="error" ghost @click="cancelOrder">
                     Cancel Order
                 </NButton>
-                <NButton @click="createIntent" type="primary" size="large">Pay</NButton>
+                <NButton @click="createIntent" type="primary" size="large">
+                    {{ parseFloat(order.total_gross.toString()) > 0 ? 'Pay' : 'Confirm' }}
+                </NButton>
             </div>
         </Section>
 

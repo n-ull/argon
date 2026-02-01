@@ -11,7 +11,8 @@ class CreatePaymentIntent
     use AsAction;
 
     public function __construct(
-        private PaymentProcessor $paymentProcessor
+        private PaymentProcessor $paymentProcessor,
+        private \Domain\Ordering\Services\OrderService $orderService
     ) {
     }
 
@@ -21,9 +22,15 @@ class CreatePaymentIntent
      * @param array $data
      * @param string $raiseMethod 'internal' or 'split'
      */
-    public function handle(Order $order, array $data, string $raiseMethod): string
+    public function handle(Order $order, array $data, string $raiseMethod)
     {
-        dd($order, $data, $raiseMethod);
+        // Check if order is free
+        if ($order->total_gross <= 0) {
+            $this->orderService->completePendingOrder($order->id);
+            return redirect()->route('orders.show', $order);
+        }
+
+        // dd($order, $data, $raiseMethod);
         return $this->paymentProcessor->createIntent($order, $data, $raiseMethod);
     }
 
@@ -32,6 +39,6 @@ class CreatePaymentIntent
         $order = Order::with('event.organizer.settings')->find($orderId);
         $raiseMethod = $order->event->organizer->settings->raise_money_method;
 
-        $this->handle($order, [], $raiseMethod);
+        return $this->handle($order, [], $raiseMethod);
     }
 }

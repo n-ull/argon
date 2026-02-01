@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('organizer_settings', function (Blueprint $table) {
-            $table->decimal('service_fee', 5, 2)->default(10.00)->after('organizer_id');
-        });
+        if (! Schema::hasColumn('organizer_settings', 'service_fee')) {
+            Schema::table('organizer_settings', function (Blueprint $table) {
+                $table->decimal('service_fee', 5, 2)->default(10.00)->after('organizer_id');
+            });
+        }
     }
 
     /**

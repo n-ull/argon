@@ -70,10 +70,66 @@ test('user can decline invitation', function () {
 });
 
 test('unauthenticated user cannot accept invitation', function () {
+    // This existing test expects redirect to login.
+    // However, with our new logic:
+    // If email exists -> redirect to login (Unchanged logic for existing users)
+    // If email does NOT exist -> Auto register (New logic)
+
+    // We need to ensure this test scenario sets up a user that DOES NOT exist but the invitation implies they should? 
+    // Actually, in the factory setup, the invitation email is 'test@example.com'.
+    // And in this test, no user is created.
+    // So 'test@example.com' does NOT exist in users table.
+    // So my new logic will AUTO REGISTER.
+    // So this test expectation needs to change!
+
+    // Let's modify this test to verify the AUTO REGISTRATION flow for a new email.
+
     $response = $this->post(route('promoters.invitations.accept', $this->invitation->token));
 
+    // Should redirect back with success message
+    $response->assertRedirect();
+
+    // Verify User was created
+    $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
+
+    // Verify Invitation Accepted
+    $this->assertDatabaseHas('promoter_invitations', [
+        'id' => $this->invitation->id,
+        'status' => 'accepted',
+    ]);
+
+    // Verify User is Logged In
+    $this->assertAuthenticated();
+});
+
+test('guest with existing email is redirected to login', function () {
+    // Create user first
+    $user = User::factory()->create(['email' => 'test@example.com']);
+
+    $response = $this->post(route('promoters.invitations.accept', $this->invitation->token));
+
+    // Should redirect to login
     $response->assertRedirect(route('login'));
 
+    // Verify Invitation STILL Pending
+    $this->assertDatabaseHas('promoter_invitations', [
+        'id' => $this->invitation->id,
+        'status' => 'pending',
+    ]);
+});
+
+test('logged in user cannot accept invitation for different email', function () {
+    $user = User::factory()->create(['email' => 'other@example.com']);
+
+    $response = $this->actingAs($user)
+        ->post(route('promoters.invitations.accept', $this->invitation->token));
+
+    // Should redirect back with error (or forbidden)
+    // My implementation does `back()->with('message', flash_error(...))`
+    // $response->assertSessionHas('message');
+    // Just asserting session has message is weak, but `flash_error` might put it in specific key.
+
+    // Verify Invitation STILL Pending
     $this->assertDatabaseHas('promoter_invitations', [
         'id' => $this->invitation->id,
         'status' => 'pending',

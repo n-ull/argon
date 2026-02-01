@@ -59,7 +59,7 @@ class OrderService
                 $orderData->gateway ?? null
             );
 
-            $status = $priceBreakdown->totalGross <= 0 ? OrderStatus::COMPLETED : OrderStatus::PENDING;
+            $status = OrderStatus::PENDING;
 
             // Create order with all calculated values
             $order = $event->orders()->create([

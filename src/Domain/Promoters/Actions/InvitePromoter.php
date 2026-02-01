@@ -19,6 +19,20 @@ class InvitePromoter
 
         if ($user) {
             $promoter = \Domain\Promoters\Models\Promoter::where('user_id', $user->id)->first();
+
+            // Check if user is already a promoter for this event
+            if ($promoter && $event->promoters()->where('promoter_id', $promoter->id)->exists()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => 'This user is already a promoter for this event.',
+                ]);
+            }
+        }
+
+        // Check for pending invitations
+        if ($event->promoterInvitations()->where('email', $validated['email'])->where('status', 'pending')->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'This email already has a pending invitation for this event.',
+            ]);
         }
 
         $invitation = PromoterInvitation::create([
@@ -29,6 +43,8 @@ class InvitePromoter
             'commission_type' => $validated['commission_type'],
             'commission_value' => $validated['commission_value'],
         ]);
+
+        \Illuminate\Support\Facades\Mail::to($validated['email'])->send(new \App\Mail\PromoterInvitationMail($invitation));
 
         return $invitation;
     }
