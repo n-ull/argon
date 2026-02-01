@@ -9,6 +9,8 @@ use Domain\EventManagement\Enums\TaxFeeType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Domain\OrganizerManagement\Models\Organizer;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * TaxAndFee Model
@@ -34,6 +36,7 @@ class TaxAndFee extends Model
     protected $table = 'taxes_and_fees';
 
     protected $fillable = [
+        'organizer_id',
         'type',
         'name',
         'calculation_type',
@@ -41,6 +44,7 @@ class TaxAndFee extends Model
         'display_mode',
         'applicable_gateways',
         'is_active',
+        'is_default',
     ];
 
     protected $casts = [
@@ -49,7 +53,8 @@ class TaxAndFee extends Model
         'display_mode' => DisplayMode::class,
         'applicable_gateways' => 'array',
         'is_active' => 'boolean',
-        'value' => 'decimal:4',
+        'is_default' => 'boolean',
+        'value' => 'float',
     ];
 
     // TODO: make this a BelongsToMany relationship, to reuse this taxes inside other events
@@ -62,9 +67,14 @@ class TaxAndFee extends Model
             ->orderByPivot('sort_order');
     }
 
+    public function organizer(): BelongsTo
+    {
+        return $this->belongsTo(Organizer::class);
+    }
+
     public function isApplicableToGateway(?string $gateway): bool
     {
-        if (is_null($this->applicable_gateways)) {
+        if (empty($this->applicable_gateways)) {
             return true;
         }
 

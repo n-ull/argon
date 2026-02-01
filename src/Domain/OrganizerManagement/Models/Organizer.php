@@ -4,6 +4,7 @@ namespace Domain\OrganizerManagement\Models;
 
 use App\Models\User;
 use Domain\EventManagement\Models\Event;
+use Domain\EventManagement\Models\TaxAndFee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -74,6 +75,11 @@ class Organizer extends Model
             'is_modo_active' => false,
             'is_mercadopago_active' => false,
         ]);
+    }
+
+    public function taxesAndFees(): HasMany
+    {
+        return $this->hasMany(TaxAndFee::class);
     }
 
     protected static function newFactory()

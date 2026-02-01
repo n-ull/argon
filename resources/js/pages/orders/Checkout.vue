@@ -6,8 +6,8 @@ import { show } from '@/routes/events';
 import { cancel } from '@/routes/orders';
 import { Order, OrganizerSettings } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { Clock, LucideInfo } from 'lucide-vue-next';
-import { NButton, NIcon, NPopover } from 'naive-ui';
+import { Clock } from 'lucide-vue-next';
+import { NButton } from 'naive-ui';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {
@@ -15,7 +15,10 @@ interface Props {
     settings: OrganizerSettings
 }
 
+
 const { order, settings } = defineProps<Props>();
+
+console.log(order);
 
 const paymentMethod = ref('cash');
 const timeLeft = ref(Math.max(0, Math.floor((new Date(order.expires_at!).getTime() - new Date().getTime()) / 1000)));
@@ -114,17 +117,33 @@ const cancelOrder = () => {
                 <p v-if="!settings.is_modo_active" class="text-red-500">MODO is not active for this event</p>
             </div>
 
+            <!-- Taxes and Fees Breakdown Card -->
+            <div class="p-4 border border-moovin-lime rounded-lg"
+                v-if="(order.taxes_snapshot?.filter(t => t.display_mode !== 'integrated').length ?? 0) || (order.fees_snapshot?.filter(f => f.display_mode !== 'integrated').length ?? 0)">
+                <p class="font-bold mb-2">Taxes and Fees</p>
+                <div class="space-y-2 text-sm text-neutral-700">
+                    <template v-for="tax in order.taxes_snapshot" :key="tax.name">
+                        <div v-if="tax.display_mode !== 'integrated'" class="flex justify-between">
+                            <span>{{ tax.name }} ({{ tax.calculation_type === 'percentage' ? tax.value + '%' : '$' +
+                                tax.value }})</span>
+                            <span>${{ tax.calculated_amount }}</span>
+                        </div>
+                    </template>
+                    <template v-for="fee in order.fees_snapshot" :key="fee.name">
+                        <div v-if="fee.display_mode !== 'integrated'" class="flex justify-between">
+                            <span :class="{ 'font-medium': fee.is_service_fee }">{{ fee.name }} {{ fee.is_service_fee ?
+                                '' :
+                                `(${fee.calculation_type === 'percentage' ? fee.value + '%' : '$' + fee.value})`
+                                }}</span>
+                            <span>${{ fee.calculated_amount }}</span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
             <div
                 class="p-4 border border-moovin-dark-green bg-moovin-lime text-moovin-dark-green rounded-lg flex justify-between items-center">
-                <p>Total: ${{ order.subtotal }}</p>
-                <n-popover trigger="hover">
-                    <template #trigger>
-                        <n-icon size="20">
-                            <LucideInfo />
-                        </n-icon>
-                    </template>
-                    <span>Taxes and Fees: ${{ order.taxes_total || 0 }}</span>
-                </n-popover>
+                <p class="font-bold text-lg">Total: ${{ order.total_gross || order.total }}</p>
             </div>
 
             <div class="flex justify-between items-center">

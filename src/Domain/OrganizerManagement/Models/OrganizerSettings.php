@@ -31,6 +31,7 @@ class OrganizerSettings extends Model
 
     protected $fillable = [
         'organizer_id',
+        'service_fee',
         'raise_money_method',
         'raise_money_account',
         'is_modo_active',

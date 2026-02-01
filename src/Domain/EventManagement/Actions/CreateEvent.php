@@ -15,12 +15,19 @@ class CreateEvent
 
     public function __construct(
         private EventManagerService $eventManager
-    ) {}
+    ) {
+    }
 
     public function handle(Organizer $organizer, array $validatedData): Event
     {
         $validatedData['organizer_id'] = $organizer->id;
         $event = $this->eventManager->createEvent($validatedData);
+
+        // Attach default taxes and fees
+        $defaultTaxes = $organizer->taxesAndFees()->where('is_default', true)->get();
+        if ($defaultTaxes->isNotEmpty()) {
+            $event->taxesAndFees()->attach($defaultTaxes->pluck('id'));
+        }
 
         event(new EventCreated($event));
 

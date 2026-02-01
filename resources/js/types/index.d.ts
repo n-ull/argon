@@ -62,6 +62,30 @@ export interface User {
 
 export type EventStatus = 'draft' | 'published' | 'ended' | 'cancelled' | 'deleted' | 'archived';
 
+export interface TaxAndFeeSnapshot {
+    id: number | null;
+    type: 'tax' | 'fee';
+    name: string;
+    calculation_type: 'percentage' | 'fixed';
+    value: number;
+    display_mode: 'separated' | 'integrated';
+    calculated_amount: number;
+    is_service_fee?: boolean;
+}
+
+export interface TaxAndFee {
+    id: number;
+    organizer_id: number;
+    type: 'tax' | 'fee';
+    name: string;
+    calculation_type: 'percentage' | 'fixed';
+    value: number;
+    display_mode: 'separated' | 'integrated';
+    applicable_gateways: string[] | null;
+    is_active: boolean;
+    is_default: boolean;
+}
+
 export interface Event {
     id: number;
     title: string;
@@ -81,12 +105,13 @@ export interface Event {
     organizer_id?: number;
     products_count?: number | null;
     orders_count?: number | null;
-    taxes_and_fees: string[];
+    taxes_and_fees?: TaxAndFee[];
     widget_stats?: WidgetStats;
 }
 
-export interface EventForm extends Omit<Event, 'organizer' | 'products'> {
+export interface EventForm extends Omit<Event, 'organizer' | 'products' | 'taxes_and_fees'> {
     organizer_id: number;
+    taxes_and_fees: number[];
 }
 
 export interface WidgetStats {
@@ -168,6 +193,7 @@ export interface OrganizerSettings {
     created_at?: string | null;
     updated_at?: string | null;
     deleted_at?: string | null;
+    service_fee: number;
 }
 
 export interface Ticket {
@@ -198,10 +224,10 @@ export interface Order {
     paid_at?: string | null;
     deleted_at?: string | null;
     items_snapshot: OrderItem[];
-    fees_snapshot: any;
+    fees_snapshot: TaxAndFeeSnapshot[];
     fees_total: number;
     status: string;
-    taxes_snapshot: any;
+    taxes_snapshot: TaxAndFeeSnapshot[];
     taxes_total: number;
     event?: Event | null;
     settings?: OrganizerSettings | null;

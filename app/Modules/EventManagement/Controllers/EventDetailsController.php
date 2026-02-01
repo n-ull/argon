@@ -16,7 +16,7 @@ class EventDetailsController extends Controller
      */
     public function __invoke(EventModel $event)
     {
-        $event->load(['organizer']);
+        $event->load(['organizer', 'taxesAndFees']);
 
         $products = $event->products()
             ->withGlobalScope('available', new AvailableProductsScope)
@@ -27,7 +27,17 @@ class EventDetailsController extends Controller
                 },
             ])
             ->orderBy('sort_order')
-            ->get();
+            ->orderBy('sort_order')
+            ->get()
+            ->each(function ($product) use ($event) {
+                // Manually set the event relation to share the already loaded taxesAndFees
+                $product->setRelation('event', $event);
+
+                // Ensure prices have access to their parent product (which has the event)
+                $product->product_prices->each(function ($price) use ($product) {
+                    $price->setRelation('product', $product);
+                });
+            });
 
         // Update unique visitors statistics plus one
         $ipAddress = request()->ip();

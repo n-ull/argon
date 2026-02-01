@@ -18,6 +18,10 @@ class UpdateEventSettingsController extends Controller
 
         $event->update($validated);
 
+        if (isset($validated['taxes_and_fees'])) {
+            $event->taxesAndFees()->sync($validated['taxes_and_fees']);
+        }
+
         return redirect()->route('manage.event.settings', $event->id)->with('message', flash_success(
             'Event settings updated.',
             'Your event settings has been updated successfully.'

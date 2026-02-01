@@ -6,9 +6,21 @@ import { NSelect } from 'naive-ui';
 
 interface Props {
     event: InertiaForm<EventForm>;
+    availableTaxes: Array<{
+        id: number;
+        name: string;
+        type: string;
+        value: number;
+        calculation_type: string;
+    }>;
 }
 
-const { event } = defineProps<Props>();
+const { event, availableTaxes } = defineProps<Props>();
+
+const taxOptions = availableTaxes.map(tax => ({
+    label: `${tax.name} (${tax.calculation_type === 'percentage' ? tax.value + '%' : '$' + tax.value}) - ${tax.type.toUpperCase()}`,
+    value: tax.id,
+}));
 
 </script>
 
@@ -32,8 +44,8 @@ const { event } = defineProps<Props>();
             <div class="space-y-2">
                 <label for="taxesAndFees">Taxes and Fees</label>
                 <p class="text-xs text-neutral-400">Enable taxes and fees</p>
-                <!-- TODO: retrieve taxes and fees from API organizer settings -->
-                <n-select v-model:value="event.taxes_and_fees" filterable multiple placeholder="Select taxes and fees">
+                <n-select v-model:value="event.taxes_and_fees" :options="taxOptions" filterable multiple
+                    placeholder="Select taxes and fees">
                     <template #arrow>
                         <transition name="slide-left">
                             <LucideBadgeDollarSign />

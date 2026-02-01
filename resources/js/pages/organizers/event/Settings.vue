@@ -14,9 +14,16 @@ import { formatDateForPicker } from '@/lib/utils';
 
 interface Props {
     event: Event;
+    availableTaxes: Array<{
+        id: number;
+        name: string;
+        type: string;
+        value: number;
+        calculation_type: string;
+    }>;
 }
 
-const { event } = defineProps<Props>();
+const { event, availableTaxes } = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -43,7 +50,8 @@ const form = useForm<SettingsForm>({
     location_info: {
         ...event.location_info,
         country: event.location_info?.country || 'Argentina',
-    }
+    },
+    taxes_and_fees: event.taxes_and_fees?.map(tax => tax.id) || [],
 });
 
 </script>
@@ -61,7 +69,7 @@ const form = useForm<SettingsForm>({
                         <LocationForm :event="form" />
                     </n-tab-pane>
                     <n-tab-pane name="payment" tab="Payment">
-                        <PaymentForm :event="form" />
+                        <PaymentForm :event="form" :available-taxes="availableTaxes" />
                     </n-tab-pane>
                     <n-tab-pane name="status" tab="Status">
                         <StatusForm :event="event" />

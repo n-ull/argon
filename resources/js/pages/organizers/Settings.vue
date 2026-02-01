@@ -19,14 +19,39 @@ import {
     NAlert,
     NIcon,
     NStatistic,
+    NList,
+    NListItem,
+    NThing,
+    NTag,
+    NModal,
+    NRadioGroup,
+    NRadioButton,
+    NInputNumber,
+    NPopconfirm,
 } from 'naive-ui';
 import { ref, onMounted } from 'vue';
 import {
     Image as ImageIcon,
     Wallet as WalletIcon,
     CheckCircle as ConnectedIcon,
-    AlertCircle as DisconnectedIcon
+    AlertCircle as DisconnectedIcon,
+    Plus as PlusIcon,
+    Pencil as EditIcon,
+    Trash2 as DeleteIcon,
 } from 'lucide-vue-next';
+
+interface TaxAndFee {
+    id: number;
+    organizer_id: number;
+    type: 'tax' | 'fee';
+    name: string;
+    calculation_type: 'percentage' | 'fixed';
+    value: number;
+    display_mode: 'separated' | 'integrated';
+    applicable_gateways: string[] | null;
+    is_active: boolean;
+    is_default: boolean;
+}
 
 interface Props {
     organizer: Organizer & {
@@ -36,7 +61,8 @@ interface Props {
             raise_money_account: string | null;
             is_modo_active: boolean;
             is_mercadopago_active: boolean;
-        } | null
+        } | null;
+        taxes_and_fees: TaxAndFee[];
     };
 }
 
@@ -79,9 +105,6 @@ const raiseMoneyOptions = [
     { label: 'Split (MercadoPago Split)', value: 'split' },
 ];
 
-// Placeholder for Service Fee Visual
-const serviceFee = 10; // 10%
-
 const activeTab = ref('general');
 
 onMounted(() => {
@@ -94,6 +117,59 @@ onMounted(() => {
 const updateTabUrl = (value: string) => {
     activeTab.value = value;
     window.location.hash = value;
+};
+// Taxes and Fees Logic
+const showTaxModal = ref(false);
+const editingTax = ref<TaxAndFee | null>(null);
+
+const taxForm = useForm({
+    name: '',
+    type: 'tax' as 'tax' | 'fee',
+    calculation_type: 'percentage' as 'percentage' | 'fixed',
+    value: 0,
+    display_mode: 'separated' as 'separated' | 'integrated',
+    is_active: true,
+    is_default: false,
+});
+
+const openCreateTaxModal = () => {
+    editingTax.value = null;
+    taxForm.reset();
+    showTaxModal.value = true;
+};
+
+const openEditTaxModal = (tax: TaxAndFee) => {
+    editingTax.value = tax;
+    taxForm.name = tax.name;
+    taxForm.type = tax.type;
+    taxForm.calculation_type = tax.calculation_type;
+    taxForm.value = Number(tax.value);
+    taxForm.display_mode = tax.display_mode;
+    taxForm.is_active = Boolean(tax.is_active);
+    taxForm.is_default = Boolean(tax.is_default);
+    showTaxModal.value = true;
+};
+
+const submitTaxForm = () => {
+    const url = editingTax.value
+        ? `/manage/organizer/${props.organizer.id}/taxes-and-fees/${editingTax.value.id}`
+        : `/manage/organizer/${props.organizer.id}/taxes-and-fees`;
+
+    const method = editingTax.value ? 'put' : 'post';
+
+    taxForm[method](url, {
+        preserveScroll: true,
+        onSuccess: () => {
+            showTaxModal.value = false;
+            taxForm.reset();
+        },
+    });
+};
+
+const deleteTax = (tax: TaxAndFee) => {
+    useForm({}).delete(`/manage/organizer/${props.organizer.id}/taxes-and-fees/${tax.id}`, {
+        preserveScroll: true,
+    });
 };
 </script>
 
@@ -175,7 +251,7 @@ const updateTabUrl = (value: string) => {
                                         <p class="text-sm text-gray-500">The fee applied to each ticket sale.</p>
                                     </div>
                                     <div class="ml-auto">
-                                        <n-statistic label="" :value="serviceFee">
+                                        <n-statistic label="" :value="props.organizer.settings?.service_fee">
                                             <template #suffix>%</template>
                                         </n-statistic>
                                     </div>
@@ -264,6 +340,143 @@ const updateTabUrl = (value: string) => {
                                 </div>
                             </n-form>
                         </div>
+                    </n-tab-pane>
+
+                    <n-tab-pane name="taxesandfees" tab="Taxes and Fees">
+                        <div class="flex justify-end mb-4">
+                            <n-button type="primary" @click="openCreateTaxModal">
+                                <template #icon>
+                                    <n-icon :component="PlusIcon" />
+                                </template>
+                                Add Tax/Fee
+                            </n-button>
+                        </div>
+
+                        <n-list bordered>
+                            <n-list-item v-for="item in props.organizer.taxes_and_fees" :key="item.id">
+                                <template #suffix>
+                                    <div class="flex gap-2">
+                                        <n-button size="small" secondary @click="openEditTaxModal(item)">
+                                            <template #icon>
+                                                <n-icon :component="EditIcon" />
+                                            </template>
+                                        </n-button>
+                                        <n-popconfirm @positive-click="deleteTax(item)" negative-text="Cancel"
+                                            positive-text="Delete">
+                                            <template #trigger>
+                                                <n-button size="small" type="error" secondary>
+                                                    <template #icon>
+                                                        <n-icon :component="DeleteIcon" />
+                                                    </template>
+                                                </n-button>
+                                            </template>
+                                            Are you sure you want to delete this item?
+                                        </n-popconfirm>
+                                    </div>
+                                </template>
+                                <n-thing>
+                                    <template #header>
+                                        {{ item.name }}
+                                        <n-tag size="small" :type="item.type === 'tax' ? 'error' : 'warning'"
+                                            class="ml-2">
+                                            {{ item.type.toUpperCase() }}
+                                        </n-tag>
+                                        <n-tag size="small" :type="item.is_active ? 'success' : 'default'" class="ml-2"
+                                            :bordered="false">
+                                            {{ item.is_active ? 'Active' : 'Inactive' }}
+                                        </n-tag>
+                                        <n-tag size="small" type="info" class="ml-2" v-if="item.is_default"
+                                            :bordered="false">
+                                            Default
+                                        </n-tag>
+                                    </template>
+                                    <template #description>
+                                        <div class="flex gap-4 text-xs text-gray-500">
+                                            <span>
+                                                Value: {{ item.value }}{{ item.calculation_type === 'percentage' ? '%' :
+                                                    '' }}
+                                            </span>
+                                            <span>
+                                                Mode: {{ item.display_mode }}
+                                            </span>
+                                        </div>
+                                    </template>
+                                </n-thing>
+                            </n-list-item>
+                            <div v-if="props.organizer.taxes_and_fees.length === 0"
+                                class="p-4 text-center text-gray-500">
+                                No taxes or fees configured.
+                            </div>
+                        </n-list>
+
+                        <n-modal v-model:show="showTaxModal">
+                            <n-card style="width: 600px" :title="editingTax ? 'Edit Tax/Fee' : 'Add Tax/Fee'"
+                                :bordered="false" size="huge" role="dialog" aria-modal="true">
+                                <n-form label-placement="top">
+                                    <n-grid :x-gap="24" :y-gap="24" cols="1 s:1 m:2">
+                                        <n-grid-item>
+                                            <n-form-item label="Name">
+                                                <n-input v-model:value="taxForm.name"
+                                                    placeholder="e.g. VAT, Service Charge" />
+                                            </n-form-item>
+                                        </n-grid-item>
+                                        <n-grid-item>
+                                            <n-form-item label="Type">
+                                                <n-radio-group v-model:value="taxForm.type" name="type">
+                                                    <n-radio-button value="tax" label="Tax" />
+                                                    <n-radio-button value="fee" label="Fee" />
+                                                </n-radio-group>
+                                            </n-form-item>
+                                        </n-grid-item>
+                                        <n-grid-item>
+                                            <n-form-item label="Calculation">
+                                                <n-radio-group v-model:value="taxForm.calculation_type" name="calc">
+                                                    <n-radio-button value="percentage" label="Percentage (%)" />
+                                                    <n-radio-button value="fixed" label="Fixed Amount" />
+                                                </n-radio-group>
+                                            </n-form-item>
+                                        </n-grid-item>
+                                        <n-grid-item>
+                                            <n-form-item label="Value">
+                                                <n-input-number v-model:value="taxForm.value" :min="0"
+                                                    button-placement="both" />
+                                            </n-form-item>
+                                        </n-grid-item>
+                                        <n-grid-item>
+                                            <n-form-item label="Display Mode">
+                                                <n-select v-model:value="taxForm.display_mode" :options="[
+                                                    { label: 'Separated (Shown as separate line item)', value: 'separated' },
+                                                    { label: 'Integrated (Included in price)', value: 'integrated' }
+                                                ]" />
+                                            </n-form-item>
+                                        </n-grid-item>
+                                        <n-grid-item>
+                                            <div class="flex gap-4">
+                                                <n-form-item label="Status">
+                                                    <n-switch v-model:value="taxForm.is_active">
+                                                        <template #checked>Active</template>
+                                                        <template #unchecked>Inactive</template>
+                                                    </n-switch>
+                                                </n-form-item>
+                                                <n-form-item label="Default">
+                                                    <n-switch v-model:value="taxForm.is_default">
+                                                        <template #checked>Yes</template>
+                                                        <template #unchecked>No</template>
+                                                    </n-switch>
+                                                </n-form-item>
+                                            </div>
+                                        </n-grid-item>
+                                    </n-grid>
+
+                                    <div class="flex justify-end mt-4 gap-2">
+                                        <n-button @click="showTaxModal = false">Cancel</n-button>
+                                        <n-button type="primary" @click="submitTaxForm" :loading="taxForm.processing">
+                                            {{ editingTax ? 'Update' : 'Create' }}
+                                        </n-button>
+                                    </div>
+                                </n-form>
+                            </n-card>
+                        </n-modal>
                     </n-tab-pane>
                 </n-tabs>
             </n-card>

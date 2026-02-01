@@ -87,6 +87,15 @@ Route::group([
 
         Route::put('{organizer}/settings', \Domain\OrganizerManagement\Actions\SaveSettings::class)
             ->name('settings.update');
+
+        Route::post('{organizer}/taxes-and-fees', [\App\Modules\OrganizerManagement\Controllers\TaxAndFeeController::class, 'store'])
+            ->name('taxes-and-fees.store');
+
+        Route::put('{organizer}/taxes-and-fees/{taxAndFee}', [\App\Modules\OrganizerManagement\Controllers\TaxAndFeeController::class, 'update'])
+            ->name('taxes-and-fees.update');
+
+        Route::delete('{organizer}/taxes-and-fees/{taxAndFee}', [\App\Modules\OrganizerManagement\Controllers\TaxAndFeeController::class, 'destroy'])
+            ->name('taxes-and-fees.destroy');
     });
 
     // manage event
