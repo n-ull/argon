@@ -57,6 +57,9 @@ Route::group([
 
     Route::post('checkout/{order}/cancel', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'cancel'])
         ->name('cancel');
+
+    Route::post('checkout/{order}/payment-intent', \Domain\Ordering\Actions\CreatePaymentIntent::class)
+        ->name('payment-intent');
 });
 
 // organizer routes

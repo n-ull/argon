@@ -3,7 +3,7 @@ import Section from '@/components/argon/layout/Section.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { formatDate } from '@/lib/utils';
 import { show } from '@/routes/events';
-import { cancel } from '@/routes/orders';
+import { cancel, paymentIntent } from '@/routes/orders';
 import { Order, OrganizerSettings } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { Clock } from 'lucide-vue-next';
@@ -48,6 +48,10 @@ onUnmounted(() => {
 const cancelOrder = () => {
     confirm('Are you sure you want to cancel?') && router.post(cancel(order.id));
 };
+
+const createIntent = () => {
+    router.post(paymentIntent({ order: order.id }));
+}
 
 </script>
 
@@ -150,7 +154,7 @@ const cancelOrder = () => {
                 <NButton type="error" ghost @click="cancelOrder">
                     Cancel Order
                 </NButton>
-                <NButton type="primary" size="large">Pay</NButton>
+                <NButton @click="createIntent" type="primary" size="large">Pay</NButton>
             </div>
         </Section>
 
