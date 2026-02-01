@@ -59,6 +59,7 @@ Route::group([
         ->name('cancel');
 
     Route::post('checkout/{order}/payment-intent', \Domain\Ordering\Actions\CreatePaymentIntent::class)
+        ->middleware(['auth'])
         ->name('payment-intent');
 
     Route::post('checkout/{order}/register', [\App\Modules\Ordering\Controllers\CheckoutAuthController::class, 'register'])

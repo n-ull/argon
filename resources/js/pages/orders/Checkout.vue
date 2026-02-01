@@ -147,9 +147,7 @@ const quickRegister = () => {
                     </div>
                     <div class="flex gap-2">
                         <NButton class="flex-1" tag="a"
-                            :href="login().url + '?return_url=' + encodeURIComponent(page.url)">Log In</NButton>
-                        <NButton class="flex-1" tag="a"
-                            :href="register().url + '?return_url=' + encodeURIComponent(page.url)">Register
+                            :href="login().url + '?return_url=' + encodeURIComponent(page.url)">I have an account
                         </NButton>
                     </div>
                 </div>
@@ -172,7 +170,7 @@ const quickRegister = () => {
                             <span :class="{ 'font-medium': fee.is_service_fee }">{{ fee.name }} {{ fee.is_service_fee ?
                                 '' :
                                 `(${fee.calculation_type === 'percentage' ? fee.value + '%' : '$' + fee.value})`
-                                }}</span>
+                            }}</span>
                             <span>${{ fee.calculated_amount }}</span>
                         </div>
                     </template>
@@ -184,7 +182,7 @@ const quickRegister = () => {
                 <p class="font-bold text-lg">Total: ${{ order.total_gross || order.total }}</p>
             </div>
 
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center" v-if="user">
                 <NButton type="error" ghost @click="cancelOrder">
                     Cancel Order
                 </NButton>
