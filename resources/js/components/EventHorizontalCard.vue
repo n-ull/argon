@@ -31,13 +31,13 @@ const formattedDate = computed(() => {
 <template>
     <div class="relative w-full rounded-2xl overflow-hidden bg-transparent transition hover:shadow-lg group">
         <!-- Image Section -->
-        <div class="h-48 w-full bg-gray-200 overflow-hidden">
+        <div class="h-32 w-full bg-gray-200 overflow-hidden">
             <Link :href="show(event.slug)">
-            <img v-if="event.horizontal_image_url" :src="event.horizontal_image_url" :alt="event.title"
-                class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
-            <div v-else class="h-full w-full bg-neutral-800 flex items-center justify-center text-neutral-600">
-                <span class="text-4xl font-bold opacity-20">{{ event.title.charAt(0) }}</span>
-            </div>
+                <img v-if="event.cover_image_path" :src="`/storage/${event.cover_image_path}`" :alt="event.title"
+                    class="h-full w-full object-fit transition duration-300 group-hover:scale-105" />
+                <div v-else class="h-full w-full bg-neutral-800 flex items-center justify-center text-neutral-600">
+                    <span class="text-4xl font-bold opacity-20">{{ event.title.charAt(0) }}</span>
+                </div>
             </Link>
         </div>
 
@@ -46,7 +46,7 @@ const formattedDate = computed(() => {
             class="bg-moovin-lime p-4 ticket-shape-bottom relative z-10 h-16 flex items-center border-b border-b-moovin-green border-dashed">
             <h2 class="text-xl font-bold text-moovin-dark-green leading-tight line-clamp-1 w-full">
                 <Link :href="show(event.slug)" class="hover:underline decoration-moovin-dark-green/30">
-                {{ event.title }}
+                    {{ event.title }}
                 </Link>
             </h2>
         </div>

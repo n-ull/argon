@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EventVerticalCard from '@/components/EventVerticalCard.vue';
+import EventHorizontalCard from '@/components/EventHorizontalCard.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, PaginatedResponse } from '@/types';
 import { Head, InfiniteScroll } from '@inertiajs/vue3';
@@ -29,7 +29,7 @@ const { events } = defineProps<Props>();
             <div class="space-y-4">
                 <InfiniteScroll data="events">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <EventVerticalCard v-for="event in events.data" :key="event.id" :event="event" />
+                        <EventHorizontalCard v-for="event in events.data" :key="event.id" :event="event" />
                     </div>
                     <!-- <template #next="{ loading, fetch, hasMore }">
                         <button v-if="hasMore" @click="fetch" :disabled="loading">

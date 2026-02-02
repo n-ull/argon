@@ -102,6 +102,8 @@ export interface Event {
     created_at?: string | null;
     updated_at?: string | null;
     deleted_at?: string | null;
+    cover_image_path?: string | null;
+    poster_image_path?: string | null;
     organizer_id?: number;
     products_count?: number | null;
     orders_count?: number | null;
@@ -112,6 +114,8 @@ export interface Event {
 export interface EventForm extends Omit<Event, 'organizer' | 'products' | 'taxes_and_fees'> {
     organizer_id: number;
     taxes_and_fees: number[];
+    cover_image?: File | null;
+    poster_image?: File | null;
 }
 
 export interface WidgetStats {

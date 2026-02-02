@@ -16,6 +16,14 @@ class UpdateEventSettingsController extends Controller
         $validated = $request->validated();
         $validated['slug'] = Str::slug($validated['title'], '-', 'es');
 
+        if ($request->hasFile('cover_image')) {
+            $validated['cover_image_path'] = $request->file('cover_image')->store('events/covers', 'public');
+        }
+
+        if ($request->hasFile('poster_image')) {
+            $validated['poster_image_path'] = $request->file('poster_image')->store('events/posters', 'public');
+        }
+
         $event = Event::findOrFail($eventId);
 
         Gate::authorize('update', $event);

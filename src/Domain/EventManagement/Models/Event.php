@@ -82,6 +82,8 @@ class Event extends Model
         'event_category_id',
         'organizer_id',
         'slug',
+        'cover_image_path',
+        'poster_image_path',
     ];
 
     protected $casts = [

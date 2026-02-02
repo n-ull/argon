@@ -159,10 +159,15 @@ const filterProductWithPrices = products.filter(product => product.product_price
                     <span>Referral code applied: {{ referralCode }}</span>
                 </div>
                 <div>
-                    <img v-if="!isPhone" :src="event.horizontal_image_url ?? 'https://placehold.co/1480x600/png'"
-                        class="w-full object-cover rounded" alt="Event Image" />
-                    <img v-else :src="event.vertical_image_url ?? 'https://placehold.co/800x1024/png'"
-                        class="w-full object-cover rounded" alt="Event Image" />
+                    <img v-if="!isPhone && event.cover_image_path" :src="`/storage/${event.cover_image_path}`"
+                        class="w-full object-cover rounded" alt="Event Cover Image" />
+                    <img v-else-if="!isPhone" src="https://placehold.co/1480x600/png"
+                        class="w-full object-cover rounded" alt="Event Cover Placeholder" />
+
+                    <img v-if="isPhone && event.poster_image_path" :src="`/storage/${event.poster_image_path}`"
+                        class="w-full object-cover rounded" alt="Event Poster Image" />
+                    <img v-else-if="isPhone" src="https://placehold.co/800x1024/png" class="w-full object-cover rounded"
+                        alt="Event Poster Placeholder" />
                 </div>
 
                 <div class="bg-neutral-900 rounded space-y-2 flex flex-col">
@@ -195,8 +200,8 @@ const filterProductWithPrices = products.filter(product => product.product_price
                 <div class="bg-moovin-green p-4 rounded space-y-2">
                     <h2 class="font-bold">Organized by</h2>
                     <div class="flex items-center gap-2">
-                        <img src="https://placehold.co/400x400/png" class="w-12 h-12 rounded-full"
-                            alt="Organizer Logo" />
+                        <img v-if="event.organizer.logo" :src="`/storage/${event.organizer.logo}`"
+                            class="w-12 h-12 rounded-full" alt="Organizer Logo" />
                         <span class="text-moovin-dark-green text-xl font-black">{{ event.organizer.name }}</span>
                     </div>
                 </div>
@@ -208,8 +213,9 @@ const filterProductWithPrices = products.filter(product => product.product_price
                             :key="product.id" class="border p-4 rounded">
                             <div class="flex flex-col mb-2">
                                 <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
-                                <span v-if="product.description" class="text-sm text-neutral-400">{{ product.description
-                                    }}</span>
+                                <span v-if="product.description" class="text-sm text-neutral-400">{{
+                                    product.description
+                                }}</span>
                             </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id">

@@ -45,8 +45,8 @@ const eventDate = ticket.event?.start_date ? format(new Date(ticket.event.start_
         :class="{ 'opacity-75 grayscale-[0.5]': isInactive, 'border-moovin-lila': ticket.type === 'static', 'border-moovin-lime': ticket.type === 'dynamic' }">
         <!-- Card Header with Image/Icon -->
         <div class="relative h-32 w-full overflow-hidden bg-zinc-800">
-            <template v-if="ticket.event?.horizontal_image_url">
-                <img :src="ticket.event.horizontal_image_url" :alt="ticket.event.title"
+            <template v-if="ticket.event?.cover_image_path">
+                <img :src="`/storage/${ticket.event.cover_image_path}`" :alt="ticket.event.title"
                     class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             </template>
             <div v-else class="flex h-full w-full items-center justify-center">
@@ -87,12 +87,12 @@ const eventDate = ticket.event?.start_date ? format(new Date(ticket.event.start_
             </div>
 
             <div class="mt-6 flex items-center justify-between border-t border-zinc-800 pt-4">
-                <div class="flex flex-col">
+                <!-- <div class="flex flex-col">
                     <span class="text-[10px] uppercase tracking-wider text-zinc-400">Token</span>
                     <span class="font-mono text-xs font-semibold text-zinc-400">#{{
                         ticket.token.slice(0, 8)
-                    }}</span>
-                </div>
+                        }}</span>
+                </div> -->
 
                 <Link :href="show(ticket.id)"
                     class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-zinc-900 transition-colors hover:bg-zinc-100">

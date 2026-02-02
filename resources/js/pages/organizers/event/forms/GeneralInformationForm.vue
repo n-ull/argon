@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { InertiaForm } from '@inertiajs/vue3';
 import type { EventForm } from '@/types';
-import { NInput, NDatePicker } from 'naive-ui';
+import { NInput, NDatePicker, NUpload, NIcon, NText } from 'naive-ui';
 import { computed, watch } from 'vue';
+import { Image as ImageIcon } from 'lucide-vue-next';
 
 interface Props {
     event: InertiaForm<EventForm>;
@@ -76,6 +77,51 @@ watch(visualSlug, (newSlug) => {
                 maxRows: 6,
             }" v-model:value="event.description" id="description"></n-input>
             <p v-if="event.errors.description" class="text-xs text-red-500">{{ event.errors.description }}</p>
+            <p v-if="event.errors.description" class="text-xs text-red-500">{{ event.errors.description }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-2">
+                <label>Cover Image (Horizontal)</label>
+                <div class="text-xs text-gray-500 mb-2">Recommended size: 1920x1080px</div>
+                <n-upload list-type="image-card" :max="1" directory-dnd :default-file-list="event.cover_image_path ? [{
+                    id: 'cover',
+                    name: 'Cover Image',
+                    status: 'finished',
+                    url: `/storage/${event.cover_image_path}`
+                }] : []" @change="(options) => {
+                        event.cover_image = options.fileList[0]?.file || null;
+                    }">
+                    <n-upload-dragger>
+                        <div class="flex flex-col items-center justify-center gap-2 p-4">
+                            <n-icon size="24" :component="ImageIcon" />
+                            <n-text style="font-size: 12px">Upload Cover</n-text>
+                        </div>
+                    </n-upload-dragger>
+                </n-upload>
+                <p v-if="event.errors.cover_image" class="text-xs text-red-500">{{ event.errors.cover_image }}</p>
+            </div>
+
+            <div class="space-y-2">
+                <label>Poster Image (Vertical)</label>
+                <div class="text-xs text-gray-500 mb-2">Recommended size: 1080x1920px (Story format)</div>
+                <n-upload list-type="image-card" :max="1" directory-dnd :default-file-list="event.poster_image_path ? [{
+                    id: 'poster',
+                    name: 'Poster Image',
+                    status: 'finished',
+                    url: `/storage/${event.poster_image_path}`
+                }] : []" @change="(options) => {
+                        event.poster_image = options.fileList[0]?.file || null;
+                    }">
+                    <n-upload-dragger>
+                        <div class="flex flex-col items-center justify-center gap-2 p-4">
+                            <n-icon size="24" :component="ImageIcon" />
+                            <n-text style="font-size: 12px">Upload Poster</n-text>
+                        </div>
+                    </n-upload-dragger>
+                </n-upload>
+                <p v-if="event.errors.poster_image" class="text-xs text-red-500">{{ event.errors.poster_image }}</p>
+            </div>
         </div>
 
         <div class="flex gap-4 items-center">

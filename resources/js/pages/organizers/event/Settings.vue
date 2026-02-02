@@ -52,6 +52,8 @@ const form = useForm<SettingsForm>({
         country: event.location_info?.country || 'Argentina',
     },
     taxes_and_fees: event.taxes_and_fees?.map(tax => tax.id) || [],
+    cover_image: null,
+    poster_image: null,
 });
 
 </script>

@@ -100,7 +100,10 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.put(settings(props.organizer.id).url, {
+    form.transform((data) => ({
+        ...data,
+        _method: 'PUT',
+    })).post(settings(props.organizer.id).url, {
         preserveScroll: true,
     });
 };
@@ -222,7 +225,7 @@ const deleteTax = (tax: TaxAndFee) => {
                                             id: 'logo',
                                             name: 'Logo',
                                             status: 'finished',
-                                            url: props.organizer.logo
+                                            url: props.organizer.logo ? `/storage/${props.organizer.logo}` : ''
                                         }] : []" @change="(options) => {
                                             if (options.fileList.length > 0) {
                                                 form.logo = options.fileList[0].file;
