@@ -103,6 +103,9 @@ Route::group([
 
         Route::delete('{organizer}/taxes-and-fees/{taxAndFee}', [\App\Modules\OrganizerManagement\Controllers\TaxAndFeeController::class, 'destroy'])
             ->name('taxes-and-fees.destroy');
+
+        // Route::get('{organizer}/mercadopago/vinculate', \Domain\OrganizerManagement\Actions\VinculateMercadoPagoAccount::class)
+        //     ->name('mercadopago.vinculate');
     });
 
     // manage event
@@ -217,5 +220,7 @@ Route::group([
     Route::post('invitations/{token}/accept', \Domain\Promoters\Actions\AcceptPromoterInvitation::class)->name('invitations.accept');
     Route::post('invitations/{token}/decline', \Domain\Promoters\Actions\DeclinePromoterInvitation::class)->name('invitations.decline');
 });
+
+Route::get('mercado-pago/callback', \App\Modules\OrganizerManagement\Controllers\MercadoPagoOAuthController::class)->name('mp.oauth');
 
 require __DIR__.'/settings.php';

@@ -31,7 +31,7 @@ class ManageOrganizations extends Controller
     public function settings(Organizer $organizer)
     {
         return Inertia::render('organizers/Settings', [
-            'organizer' => $organizer->load(['settings', 'taxesAndFees']),
+            'organizer' => $organizer->load(['settings', 'taxesAndFees', 'mercadoPagoAccount']),
         ]);
     }
 

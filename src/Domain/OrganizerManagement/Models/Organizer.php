@@ -77,6 +77,11 @@ class Organizer extends Model
         ]);
     }
 
+    public function mercadoPagoAccount(): HasOne
+    {
+        return $this->hasOne(MercadoPagoAccount::class);
+    }
+
     public function taxesAndFees(): HasMany
     {
         return $this->hasMany(TaxAndFee::class);

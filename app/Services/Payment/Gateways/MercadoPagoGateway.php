@@ -32,6 +32,8 @@ class MercadoPagoGateway implements PaymentGateway
         $accessToken = $data['access_token'];
         MercadoPagoConfig::setAccessToken($accessToken);
 
+        \Log::info('Creating split intent', $data);
+
         try {
             $preference = new PreferenceClient;
             $order = $data['order'];
@@ -47,25 +49,27 @@ class MercadoPagoGateway implements PaymentGateway
             $items[] = $item;
 
             $payer = new \MercadoPago\Resources\Preference\Payer;
-            $payer->email = $order->user->email;
-            $payer->name = $order->user->name ?? 'No Name';
-            $payer->surname = $order->user->last_name ?? 'No Last Name';
+            $payer->email = $order->client->email;
+            $payer->name = $order->client->name ?? 'No Name';
+            $payer->surname = $order->client->last_name ?? 'No Last Name';
+
+            $backUrls = array(
+                'success' => route('orders.show', $order->id),
+                'failure' => route('orders.show', $order->id),
+            );
 
             $response = $preference->create([
                 'items' => $items,
                 'payer' => $payer,
-                'back_urls' => [
-                    'success' => route('orders.show', $order->id),
-                    'failure' => route('orders.show', $order->id),
-                    'pending' => route('orders.show', $order->id),
-                ],
-                'auto_return' => 'approved',
+                'back_urls' => $backUrls,
                 'external_reference' => $order->reference_id,
                 'expiration_date_from' => date('c'),
                 'expiration_date_to' => date('c', strtotime('+10 minutes')),
                 'marketplace_fee' => $data['service_fee'],
                 'marketplace' => config('services.mercadopago.app_id'),
             ]);
+
+            \Log::info('Preference Created', [$response]);
 
             return $response->init_point;
         } catch (\Exception $e) {
@@ -78,6 +82,8 @@ class MercadoPagoGateway implements PaymentGateway
         $accessToken = env('APP_ENV') === 'production' ? config('services.mercadopago.access_token') : config('services.mercadopago.test_access_token');
         MercadoPagoConfig::setAccessToken($accessToken);
 
+        \Log::info('Creating intent', $data);
+
         try {
             $preference = new PreferenceClient;
             $order = $data['order'];
@@ -93,25 +99,32 @@ class MercadoPagoGateway implements PaymentGateway
             $items[] = $item;
 
             $payer = new \MercadoPago\Resources\Preference\Payer;
-            $payer->email = $order->user->email;
-            $payer->name = $order->user->name ?? 'No Name';
-            $payer->surname = $order->user->last_name ?? 'No Last Name';
+            $payer->email = $order->client->email;
+            $payer->name = $order->client->name ?? 'No Name';
+            $payer->surname = $order->client->last_name ?? 'No Last Name';
+
+
+            $backUrls = array(
+                'success' => route('orders.show', $order->id),
+                'failure' => route('orders.show', $order->id)
+            );
+
 
             $response = $preference->create([
                 'items' => $items,
                 'payer' => $payer,
-                'back_urls' => [
-                    'success' => route('orders.show', $order->id),
-                    'failure' => route('orders.show', $order->id),
-                    'pending' => route('orders.show', $order->id),
-                ],
-                'auto_return' => 'approved',
+                'back_urls' => $backUrls,
                 'external_reference' => $order->reference_id,
                 'expiration_date_from' => date('c'),
                 'expiration_date_to' => date('c', strtotime('+10 minutes')),
             ]);
 
+            \Log::info('Preference Created', [$response]);
+
             return $response->init_point;
+        } catch (\MercadoPago\Exceptions\MPApiException $e) {
+            \Log::info('API RESPONSE MP', [$e->getApiResponse()]);
+            throw $e;
         } catch (\Exception $e) {
             throw $e;
         }

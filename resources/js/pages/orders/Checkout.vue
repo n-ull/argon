@@ -55,8 +55,43 @@ const cancelOrder = () => {
     confirm('Are you sure you want to cancel?') && router.post(cancel(order.id));
 };
 
-const createIntent = () => {
-    router.post(paymentIntent({ order: order.id }));
+
+function getCookie(name: string) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+}
+
+const createIntent = async () => {
+    try {
+        const url = paymentIntent({ order: order.id }).url;
+        const xsrfToken = getCookie('XSRF-TOKEN');
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-XSRF-TOKEN': decodeURIComponent(xsrfToken || '')
+            },
+            body: JSON.stringify({
+                gateway: paymentMethod.value === 'mercadopago' ? 'mp' : paymentMethod.value
+            })
+        });
+
+        if (!response.ok) {
+            console.error('Network response was not ok');
+            return;
+        }
+
+        const data = await response.json();
+
+        if (data.url) {
+            window.open(data.url, '_blank');
+        }
+    } catch (error) {
+        console.error('Error creating payment intent:', error);
+    }
 }
 
 const quickRegister = () => {
@@ -113,7 +148,7 @@ const quickRegister = () => {
                         </tr>
                     </tbody>
                 </table>
-            </div>
+            </div>orde
 
             <div class="flex flex-col gap-2 p-4 border border-moovin-lime rounded-lg"
                 v-if="parseFloat(order.total_gross.toString()) > 0">
@@ -170,7 +205,7 @@ const quickRegister = () => {
                             <span :class="{ 'font-medium': fee.is_service_fee }">{{ fee.name }} {{ fee.is_service_fee ?
                                 '' :
                                 `(${fee.calculation_type === 'percentage' ? fee.value + '%' : '$' + fee.value})`
-                            }}</span>
+                                }}</span>
                             <span>${{ fee.calculated_amount }}</span>
                         </div>
                     </template>

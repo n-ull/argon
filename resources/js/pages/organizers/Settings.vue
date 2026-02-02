@@ -29,7 +29,7 @@ import {
     NInputNumber,
     NPopconfirm,
 } from 'naive-ui';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import {
     Image as ImageIcon,
     Wallet as WalletIcon,
@@ -63,6 +63,10 @@ interface Props {
             is_mercadopago_active: boolean;
         } | null;
         taxes_and_fees: TaxAndFee[];
+        mercado_pago_account?: {
+            id: number;
+            public_key: string;
+        } | null;
     };
 }
 
@@ -98,7 +102,13 @@ const submit = () => {
 };
 
 // Mock state for MercadoPago linkage
-const isMercadoPagoVinculated = ref(false);
+const isMercadoPagoVinculated = computed(() => !!props.organizer.mercado_pago_account);
+// const vinculateUrl = computed(() => `/manage/organizer/${props.organizer.id}/mercadopago/vinculate`);
+const isLinking = ref(false);
+
+const handleLinkAccount = async () => {
+    window.location.href = "https://auth.mercadopago.com/authorization?client_id=3662159661325622&redirect_uri=https%3A%2F%2Fmoovin.ar%2Fmercado-pago%2Fcallback&response_type=code&platform_id=mp";
+};
 
 const raiseMoneyOptions = [
     { label: 'Internal (Recaudación Interna)', value: 'internal' },
@@ -270,12 +280,13 @@ const deleteTax = (tax: TaxAndFee) => {
                                                 </div>
                                                 <n-switch v-model:value="form.is_mercadopago_active" />
                                             </div>
-                                            <div class="flex items-center justify-between">
+                                            <div
+                                                class="flex items-center justify-between opacity-40 cursor-not-allowed">
                                                 <div>
                                                     <span class="text-base font-medium">MODO</span>
                                                     <p class="text-xs text-gray-500">Enable payments via MODO</p>
                                                 </div>
-                                                <n-switch v-model:value="form.is_modo_active" />
+                                                <n-switch disabled v-model:value="form.is_modo_active" />
                                             </div>
                                         </div>
                                     </n-card>
@@ -310,12 +321,14 @@ const deleteTax = (tax: TaxAndFee) => {
                                                                 <span class="font-medium">MercadoPago Account</span>
                                                                 <span class="text-xs"
                                                                     :class="isMercadoPagoVinculated ? 'text-green-600' : 'text-orange-600'">
-                                                                    {{ isMercadoPagoVinculated }}
+                                                                    {{ isMercadoPagoVinculated ? "Connected" :
+                                                                        "Not Connected" }}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         <n-button v-if="!isMercadoPagoVinculated" size="small"
-                                                            type="info" secondary>
+                                                            type="info" secondary :loading="isLinking"
+                                                            @click="handleLinkAccount">
                                                             Link Account
                                                         </n-button>
                                                         <n-button v-else size="small" type="error" secondary>

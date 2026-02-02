@@ -17,6 +17,7 @@ return [
     'mercadopago' => [
         'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
         'app_id' => env('MERCADOPAGO_CLIENT_ID'),
+        'client_secret' => env('MERCADOPAGO_CLIENT_SECRET'),
         'test_access_token' => env('TEST_MERCADOPAGO_ACCESS_TOKEN'),
     ],
 
