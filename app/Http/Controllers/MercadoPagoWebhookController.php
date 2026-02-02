@@ -46,8 +46,6 @@ class MercadoPagoWebhookController extends Controller
                 } catch (MPApiException $e) {
                     \Log::info('MP Api Exception', [$e->getApiResponse()->getContent()]);
                     return response()->json(['message' => $e->getMessage(), 'api_response' => $e->getApiResponse()->getContent()], 400);
-                } catch (\Exception $e) {
-                    return response()->json(['message' => $e->getMessage()], 400);
                 }
             }
 
