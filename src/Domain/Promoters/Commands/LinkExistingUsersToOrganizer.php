@@ -12,7 +12,7 @@ class LinkExistingUsersToOrganizer extends Command
 {
     protected $signature = 'promoters:link-existing 
                             {organizer : The ID of the organizer} 
-                            {emails* : List of emails to link} 
+                            {emails?* : List of emails to link} 
                             {--file= : Optional path to a file containing emails}';
 
     protected $description = 'Link existing users as promoters to an organizer without sending invitations';
@@ -27,7 +27,7 @@ class LinkExistingUsersToOrganizer extends Command
             return Command::FAILURE;
         }
 
-        $emails = $this->argument('emails');
+        $emails = $this->argument('emails') ?? [];
         $filePath = $this->option('file');
 
         if ($filePath) {
@@ -35,28 +35,45 @@ class LinkExistingUsersToOrganizer extends Command
                 $this->error("File not found: {$filePath}");
                 return Command::FAILURE;
             }
-            $fileEmails = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+            // Read the entire file content
+            $content = file_get_contents($filePath);
+
+            // Regex to extract emails
+            $pattern = '/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/';
+            preg_match_all($pattern, $content, $matches);
+
+            $fileEmails = $matches[0] ?? [];
             $emails = array_merge($emails, $fileEmails);
         }
 
         $emails = array_unique(array_filter(array_map('trim', $emails)));
 
+        // DEBUG
+        // dump($emails);
+
         if (empty($emails)) {
-            $this->warn("No emails provided.");
+            $this->warn("No emails provided (or found in file).");
             return Command::SUCCESS;
         }
 
-        $this->info("Processing ".count($emails)." emails for organizer: {$organizer->name}");
+        $this->info("Processing ".count($emails)." unique emails for organizer: {$organizer->name}");
 
         $linkedCount = 0;
         $notFoundCount = 0;
         $alreadyLinkedCount = 0;
 
         foreach ($emails as $email) {
+            // Validate email format just in case
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $this->warn("Skipping invalid email: {$email}");
+                continue;
+            }
+
             $user = User::where('email', $email)->first();
 
             if (! $user) {
-                $this->warn("User not found: {$email}");
+                $this->warn("User not found: {$email} (Skipped - this command only links EXISTING users)");
                 $notFoundCount++;
                 continue;
             }
@@ -64,10 +81,9 @@ class LinkExistingUsersToOrganizer extends Command
             DB::transaction(function () use ($user, $organizer, &$linkedCount, &$alreadyLinkedCount, $email) {
                 $promoter = Promoter::firstOrCreate(
                     ['user_id' => $user->id],
-                    ['enabled' => true, 'referral_code' => \Str::random(10)] // Ensure referral code is generated if creating
+                    ['enabled' => true, 'referral_code' => \Str::random(10)]
                 );
 
-                // Ensure referral code if it wasn't set (though firstOrCreate handles 'create', but standard promoter creation might have logic)
                 if (! $promoter->referral_code) {
                     $promoter->update(['referral_code' => \Str::random(10)]);
                 }
@@ -78,8 +94,8 @@ class LinkExistingUsersToOrganizer extends Command
                 } else {
                     $promoter->organizers()->attach($organizer->id, [
                         'enabled' => true,
-                        'commission_type' => 'percentage', // Default, maybe should be configurable?
-                        'commission_value' => 10, // Default
+                        'commission_type' => 'percentage',
+                        'commission_value' => 10,
                     ]);
                     $this->info("Linked: {$email}");
                     $linkedCount++;
