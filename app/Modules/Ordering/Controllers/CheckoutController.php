@@ -27,6 +27,8 @@ class CheckoutController extends Controller
             'settings' => [
                 'is_modo_active' => $settings->is_modo_active,
                 'is_mercadopago_active' => $settings->is_mercadopago_active,
+                'raise_money_method' => $settings->raise_money_method,
+                'is_account_linked' => $order->event->organizer->owner->mercadoPagoAccount()->exists(),
             ],
         ]);
     }

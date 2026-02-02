@@ -17,7 +17,10 @@ const user = computed(() => page.props.auth.user);
 
 interface Props {
     order: Order,
-    settings: OrganizerSettings
+    settings: OrganizerSettings & {
+        raise_money_method: string;
+        is_account_linked: boolean;
+    }
 }
 
 
@@ -148,14 +151,14 @@ const quickRegister = () => {
                         </tr>
                     </tbody>
                 </table>
-            </div>orde
+            </div>
 
             <div class="flex flex-col gap-2 p-4 border border-moovin-lime rounded-lg"
                 v-if="parseFloat(order.total_gross.toString()) > 0">
                 <div>
                     <div class="flex items-center gap-2">
                         <input type="radio" id="mercadopago" value="mercadopago" v-model="paymentMethod"
-                            :disabled="!settings.is_mercadopago_active">
+                            :disabled="!settings.is_mercadopago_active || (settings.raise_money_method === 'split' && !settings.is_account_linked)">
                         <label for="mercadopago">MercadoPago</label>
                     </div>
                     <div class="flex items-center gap-2">
@@ -165,6 +168,10 @@ const quickRegister = () => {
                     </div>
                 </div>
                 <p v-if="!settings.is_mercadopago_active" class="text-red-500">MercadoPago is not active for this event
+                </p>
+                <p v-if="settings.is_mercadopago_active && settings.raise_money_method === 'split' && !settings.is_account_linked"
+                    class="text-orange-500">
+                    MercadoPago is temporarily unavailable (Configuration Pending)
                 </p>
                 <p v-if="!settings.is_modo_active" class="text-red-500">MODO is not active for this event</p>
             </div>

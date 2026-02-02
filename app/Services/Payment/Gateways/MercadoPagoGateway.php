@@ -64,14 +64,17 @@ class MercadoPagoGateway implements PaymentGateway
                 'back_urls' => $backUrls,
                 'external_reference' => $order->reference_id,
                 'expiration_date_from' => date('c'),
-                'expiration_date_to' => date('c', strtotime('+10 minutes')),
-                'marketplace_fee' => $data['service_fee'],
-                'marketplace' => config('services.mercadopago.app_id'),
+                'expiration_date_to' => date('c', strtotime('+15 minutes')),
+                'marketplace_fee' => $order->service_fee_snapshot,
+                'token' => config('services.mercadopago.client_secret')
             ]);
 
             \Log::info('Preference Created', [$response]);
 
             return $response->init_point;
+        } catch (\MercadoPago\Exceptions\MPApiException $e) {
+            \Log::info('API RESPONSE MP', [$e->getApiResponse()]);
+            throw $e;
         } catch (\Exception $e) {
             throw $e;
         }

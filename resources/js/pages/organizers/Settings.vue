@@ -63,10 +63,14 @@ interface Props {
             is_mercadopago_active: boolean;
         } | null;
         taxes_and_fees: TaxAndFee[];
-        mercado_pago_account?: {
+
+        owner?: {
             id: number;
-            public_key: string;
-        } | null;
+            mercado_pago_account?: {
+                id: number;
+                public_key: string;
+            } | null;
+        };
     };
 }
 
@@ -102,7 +106,7 @@ const submit = () => {
 };
 
 // Mock state for MercadoPago linkage
-const isMercadoPagoVinculated = computed(() => !!props.organizer.mercado_pago_account);
+const isMercadoPagoVinculated = computed(() => !!props.organizer.owner?.mercado_pago_account);
 // const vinculateUrl = computed(() => `/manage/organizer/${props.organizer.id}/mercadopago/vinculate`);
 const isLinking = ref(false);
 

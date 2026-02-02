@@ -35,7 +35,6 @@ class PriceCalculationService
         }
 
         // Separate taxes and fees
-        // Separate taxes and fees
         $taxes = $taxesAndFees->where('type', TaxFeeType::TAX);
         $fees = $taxesAndFees->where('type', TaxFeeType::FEE);
 
@@ -106,6 +105,7 @@ class PriceCalculationService
             itemsSnapshot: $itemsSnapshot,
             taxesSnapshot: $taxesSnapshot,
             feesSnapshot: $feesSnapshot,
+            serviceFeeSnapshot: $serviceFeeAmount,
         );
     }
 

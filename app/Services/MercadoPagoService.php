@@ -17,7 +17,7 @@ final class MercadoPagoService
         //
     }
 
-    public static function OAuthVinculation($code, $organizerId)
+    public static function OAuthVinculation($code, \App\Models\User $user)
     {
         $accessToken = config('services.mercadopago.access_token');
         MercadoPagoConfig::setAccessToken($accessToken);
@@ -35,7 +35,7 @@ final class MercadoPagoService
             MercadoPagoAccount::create([
                 'access_token' => $response->access_token,
                 'refresh_token' => $response->refresh_token,
-                'organizer_id' => $organizerId,
+                'user_id' => $user->id,
                 'public_key' => $response->public_key,
                 'expires_in' => $response->expires_in,
                 'mp_user_id' => $response->user_id,
@@ -48,6 +48,48 @@ final class MercadoPagoService
 
             return $response;
         } catch (\Exception $e) {
+            \Log::error('MercadoPagoService: OAuth Vinculation Failed', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'response' => $e->getApiResponse()
+            ]);
+            throw $e;
+        }
+    }
+
+    public static function refreshToken(MercadoPagoAccount $account)
+    {
+        $accessToken = config('services.mercadopago.access_token');
+        MercadoPagoConfig::setAccessToken($accessToken);
+
+        $client = new OAuthClient;
+        $request = new \MercadoPago\Client\OAuth\OAuthRefreshRequest;
+        $request->client_id = config('services.mercadopago.app_id');
+        $request->client_secret = config('services.mercadopago.client_secret');
+        $request->refresh_token = $account->refresh_token;
+
+        try {
+            $response = $client->refresh($request);
+
+            $account->update([
+                'access_token' => $response->access_token,
+                'refresh_token' => $response->refresh_token,
+                'public_key' => $response->public_key,
+                'expires_in' => $response->expires_in,
+                'mp_user_id' => $response->user_id,
+            ]);
+
+            \Log::info('MercadoPagoService: Token Refreshed', [
+                'user_id' => $account->user_id
+            ]);
+
+            return $response;
+        } catch (\MercadoPago\Exceptions\MPApiException $e) {
+            \Log::error('MercadoPagoService: Token Refresh Failed', [
+                'user_id' => $account->user_id,
+                'error' => $e->getMessage(),
+                'response' => $e->getApiResponse()
+            ]);
             throw $e;
         }
     }

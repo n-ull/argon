@@ -13,7 +13,9 @@ class PriceBreakdown
         public readonly array $itemsSnapshot,
         public readonly array $taxesSnapshot,
         public readonly array $feesSnapshot,
-    ) {}
+        public readonly float $serviceFeeSnapshot,
+    ) {
+    }
 
     public function toArray(): array
     {
@@ -26,6 +28,7 @@ class PriceBreakdown
             'items_snapshot' => $this->itemsSnapshot,
             'taxes_snapshot' => $this->taxesSnapshot,
             'fees_snapshot' => $this->feesSnapshot,
+            'service_fee_snapshot' => $this->serviceFeeSnapshot,
         ];
     }
 }

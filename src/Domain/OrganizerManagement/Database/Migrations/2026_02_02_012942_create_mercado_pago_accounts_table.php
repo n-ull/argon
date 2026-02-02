@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('mercado_pago_accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('organizer_id')->constrained('organizers')->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('access_token')->nullable();
             $table->string('public_key')->nullable();
             $table->string('code')->nullable();

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class MercadoPagoAccount extends Model
 {
     protected $fillable = [
-        'organizer_id',
+        'user_id',
         'access_token',
         'public_key',
         'code',
@@ -17,8 +17,8 @@ class MercadoPagoAccount extends Model
         'mp_user_id',
     ];
 
-    public function organizer(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Organizer::class);
+        return $this->belongsTo(\App\Models\User::class);
     }
 }

@@ -75,6 +75,7 @@ class OrderService
                 'reference_id' => $this->referenceIdService->create(),
                 'organizer_raise_method_snapshot' => $event->organizer->settings->raise_money_method ?? null,
                 'used_payment_gateway_snapshot' => $orderData->gateway ?? null,
+                'service_fee_snapshot' => $priceBreakdown->serviceFeeSnapshot,
                 'expires_at' => now()->addMinutes(15),
                 'status' => $status,
                 'referral_code' => $orderData->referral_code ?? null,

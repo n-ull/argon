@@ -104,4 +104,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Promoter::class);
     }
+
+    public function mercadoPagoAccount(): HasOne
+    {
+        return $this->hasOne(\Domain\OrganizerManagement\Models\MercadoPagoAccount::class);
+    }
 }

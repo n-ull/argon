@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $total_gross
  * @property string $status
  * @property string $expires_at
+ * @property float $service_fee_snapshot
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -60,6 +61,7 @@ class Order extends Model
         'used_payment_gateway_snapshot',
         'user_id',
         'expires_at',
+        'service_fee_snapshot',
         'referral_code',
     ];
 
