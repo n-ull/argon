@@ -34,7 +34,7 @@ class CreatePaymentIntent
         $data['method'] = $raiseMethod;
 
         if ($data['method'] == 'split') {
-            $data['access_token'] = $order->event->organizer->mercadoPagoAccount->access_token;
+            $data['access_token'] = $order->event->organizer->owner->mercadoPagoAccount->access_token;
             $data['service_fee'] = $order->event->organizer->settings->service_fee;
         }
 
