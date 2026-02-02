@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MercadoPagoWebhookController;
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
 use App\Modules\Ticketing\Controllers\TicketIndexController;
@@ -227,5 +228,7 @@ Route::group([
 });
 
 Route::get('mercado-pago/callback', \App\Modules\OrganizerManagement\Controllers\MercadoPagoOAuthController::class)->middleware(['auth'])->name('mp.oauth');
+
+Route::post('webhooks/mercadopago', MercadoPagoWebhookController::class)->name('mp.webhook');
 
 require __DIR__.'/settings.php';

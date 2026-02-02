@@ -5,6 +5,7 @@ namespace App\Services;
 use Domain\OrganizerManagement\Models\MercadoPagoAccount;
 use MercadoPago\Client\OAuth\OAuthClient;
 use MercadoPago\Client\OAuth\OAuthCreateRequest;
+use MercadoPago\Client\Payment\PaymentClient;
 use MercadoPago\MercadoPagoConfig;
 
 final class MercadoPagoService
@@ -15,6 +16,16 @@ final class MercadoPagoService
     public function __construct()
     {
         //
+    }
+
+    public function getPayment($id)
+    {
+        MercadoPagoConfig::setAccessToken(config('services.mercadopago.access_token'));
+
+        $client = new PaymentClient;
+        $payment = $client->get($id);
+
+        return $payment;
     }
 
     public static function OAuthVinculation($code)
