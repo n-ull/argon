@@ -58,6 +58,11 @@ class MercadoPagoGateway implements PaymentGateway
                 'failure' => route('orders.show', $order->id),
             );
 
+            \Log::info('Preference Data', [
+                $items,
+                $order->service_fee_snapshot,
+            ]);
+
             $response = $preference->create([
                 'items' => $items,
                 'payer' => $payer,
@@ -73,7 +78,7 @@ class MercadoPagoGateway implements PaymentGateway
 
             return $response->init_point;
         } catch (\MercadoPago\Exceptions\MPApiException $e) {
-            \Log::info('API RESPONSE MP', [$e->getApiResponse()]);
+            \Log::error('API RESPONSE MP', [$e->getApiResponse()]);
             throw $e;
         } catch (\Exception $e) {
             throw $e;
@@ -126,7 +131,7 @@ class MercadoPagoGateway implements PaymentGateway
 
             return $response->init_point;
         } catch (\MercadoPago\Exceptions\MPApiException $e) {
-            \Log::info('API RESPONSE MP', [$e->getApiResponse()]);
+            \Log::error('API RESPONSE MP', [$e->getApiResponse()]);
             throw $e;
         } catch (\Exception $e) {
             throw $e;

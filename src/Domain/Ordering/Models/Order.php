@@ -74,6 +74,7 @@ class Order extends Model
         'subtotal' => 'decimal:2',
         'taxes_total' => 'decimal:2',
         'fees_total' => 'decimal:2',
+        'service_fee_snapshot' => 'float',
     ];
 
     protected $appends = [
