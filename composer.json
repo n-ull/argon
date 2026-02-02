@@ -17,9 +17,11 @@
         "laravel/wayfinder": "^0.1.9",
         "lorisleiva/laravel-actions": "^2.9",
         "lunarstorm/laravel-ddd": "^2.0",
+        "mailgun/mailgun-php": "^4.3",
         "mercadopago/dx-php": "3.8.0",
         "pragmarx/google2fa-laravel": "^2.3",
-        "spatie/laravel-data": "^4.18"
+        "spatie/laravel-data": "^4.18",
+        "symfony/mailgun-mailer": "^8.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",
