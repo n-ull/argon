@@ -7,7 +7,7 @@ Tu cuenta ha sido creada exitosamente. Para acceder, utiliza las siguientes cred
 <br>
 **Contraseña:** {{ $password }}
 
-@component('mail::button', ['url' => route('login')])
+@component('mail::button', ['url' => config('app.frontend_url').'/login'])
 Iniciar Sesión
 @endcomponent
 

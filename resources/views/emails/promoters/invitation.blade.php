@@ -3,7 +3,7 @@
 
 Has sido invitado a promocionar los eventos de **{{ $companyName }}**.
 
-@component('mail::button', ['url' => route('promoters.invitations.show', $invitation->token)])
+@component('mail::button', ['url' => config('app.frontend_url').'/promoters/invitations/'.$invitation->token])
 Aceptar Invitación
 @endcomponent
 

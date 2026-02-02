@@ -9,7 +9,7 @@ Se ha completado una nueva venta para el evento **{{ $commission->event->name }}
 - **Monto ganado:** ${{ number_format($commission->amount, 2) }}
 - **Pedido:** #{{ $commission->order->reference_id }}
 
-@component('mail::button', ['url' => route('promoters.dashboard')])
+@component('mail::button', ['url' => config('app.frontend_url').'/promoters/dashboard'])
 Ir a mi Panel
 @endcomponent
 
