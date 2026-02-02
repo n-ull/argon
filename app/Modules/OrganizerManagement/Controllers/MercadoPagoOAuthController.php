@@ -16,7 +16,7 @@ class MercadoPagoOAuthController extends Controller
             return response()->json(['message' => 'Invalid code'], 400);
         }
 
-        MercadoPagoService::OAuthVinculation($code, auth()->user());
+        MercadoPagoService::OAuthVinculation($code);
 
         return redirect()->route('dashboard')->with('message', flash_message('MercadoPago account linked successfully', 'The MercadoPago account has been linked successfully.'));
     }

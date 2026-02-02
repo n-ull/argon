@@ -17,7 +17,7 @@ final class MercadoPagoService
         //
     }
 
-    public static function OAuthVinculation($code, \App\Models\User $user)
+    public static function OAuthVinculation($code)
     {
         $accessToken = config('services.mercadopago.access_token');
         MercadoPagoConfig::setAccessToken($accessToken);
@@ -35,7 +35,7 @@ final class MercadoPagoService
             MercadoPagoAccount::create([
                 'access_token' => $response->access_token,
                 'refresh_token' => $response->refresh_token,
-                'user_id' => $user->id,
+                'user_id' => auth()->user()->id,
                 'public_key' => $response->public_key,
                 'expires_in' => $response->expires_in,
                 'mp_user_id' => $response->user_id,
@@ -49,7 +49,7 @@ final class MercadoPagoService
             return $response;
         } catch (\Exception $e) {
             \Log::error('MercadoPagoService: OAuth Vinculation Failed', [
-                'user_id' => $user->id,
+                'user_id' => auth()->user()->id,
                 'error' => $e->getMessage(),
                 'response' => $e->getApiResponse()
             ]);
