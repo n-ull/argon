@@ -11,7 +11,6 @@ class PromoterInvitationController extends Controller
     public function show(string $token)
     {
         $invitation = PromoterInvitation::where('token', $token)
-            ->where('status', 'pending')
             ->with(['organizer'])
             ->firstOrFail();
 

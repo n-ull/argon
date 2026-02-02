@@ -10,7 +10,9 @@ import AuthBase from '@/layouts/AuthLayout.vue';
 import { register } from '@/routes';
 import login, { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import { Eye, EyeOff } from 'lucide-vue-next';
 import { Form, Head, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 defineProps<{
     status?: string;
@@ -20,6 +22,8 @@ defineProps<{
 
 const page = usePage();
 const returnUrl = new URLSearchParams(page.url.split('?')[1]).get('return_url') || undefined;
+
+const showPassword = ref(false);
 </script>
 
 <template>
@@ -48,8 +52,16 @@ const returnUrl = new URLSearchParams(page.url.split('?')[1]).get('return_url') 
                             Forgot password?
                         </TextLink>
                     </div>
-                    <Input id="password" type="password" name="password" required :tabindex="2"
-                        autocomplete="current-password" placeholder="Password" />
+                    <div class="relative">
+                        <Input id="password" :type="showPassword ? 'text' : 'password'" name="password" required
+                            :tabindex="2" autocomplete="current-password" placeholder="Password" />
+                        <button type="button" @click="showPassword = !showPassword"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 focus:outline-none"
+                            tabindex="-1">
+                            <Eye v-if="!showPassword" class="h-4 w-4" />
+                            <EyeOff v-else class="h-4 w-4" />
+                        </button>
+                    </div>
                     <InputError :message="errors.password" />
                 </div>
 

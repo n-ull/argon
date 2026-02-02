@@ -5,6 +5,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import type { AppPageProps, Organizer } from '@/types';
 import invitations from '@/routes/promoters/invitations';
 import { register, login } from '@/routes';
+import { dashboard } from '@/routes/promoters';
 
 interface Invitation {
     id: number;
@@ -12,6 +13,7 @@ interface Invitation {
     token: string;
     commission_type: string;
     commission_value: number;
+    status: string;
 }
 
 const props = defineProps<{
@@ -75,6 +77,21 @@ const decline = () => {
                                 Please log out and sign in with the correct account.
                             </div>
 
+                            <div v-else-if="invitation.status === 'accepted'"
+                                class="p-6 bg-green-900/20 text-green-500 rounded-lg text-center">
+                                <h3 class="text-xl font-bold mb-2">Invitation Accepted</h3>
+                                <p>You have accepted this invitation. You can now access your promoter dashboard.</p>
+                                <NButton class="mt-4" type="primary" tag="a" :href="dashboard()">
+                                    Go to Dashboard
+                                </NButton>
+                            </div>
+
+                            <div v-else-if="invitation.status === 'declined'"
+                                class="p-6 bg-red-900/20 text-red-500 rounded-lg text-center">
+                                <h3 class="text-xl font-bold mb-2">Invitation Declined</h3>
+                                <p>You have declined this invitation.</p>
+                            </div>
+
                             <NSpace vertical v-else>
                                 <NButton type="primary" size="large" block @click="accept" :loading="form.processing">
                                     Accept Invitation
@@ -88,18 +105,36 @@ const decline = () => {
 
                     <div v-else>
                         <div class="space-y-4">
-                            <div v-if="isEmailRegistered">
-                                <p>Please log in to accept this invitation.</p>
-                                <NButton type="primary" size="large" block tag="a"
-                                    :href="login().url + '?return_url=' + encodeURIComponent(page.url)">
-                                    Log In
+                            <div v-if="invitation.status === 'accepted'"
+                                class="p-6 bg-green-900/20 text-green-500 rounded-lg text-center">
+                                <h3 class="text-xl font-bold mb-2">Invitation Accepted</h3>
+                                <p>You have accepted this invitation. You can now access your promoter dashboard.</p>
+                                <NButton class="mt-4" type="primary" tag="a" href="/promoter">
+                                    Go to Dashboard
                                 </NButton>
                             </div>
+
+                            <div v-else-if="invitation.status === 'declined'"
+                                class="p-6 bg-red-900/20 text-red-500 rounded-lg text-center">
+                                <h3 class="text-xl font-bold mb-2">Invitation Declined</h3>
+                                <p>You have declined this invitation.</p>
+                            </div>
+
                             <div v-else>
-                                <p>Accept this invitation to create your account and start prompting!</p>
-                                <NButton type="primary" size="large" block @click="accept" :loading="form.processing">
-                                    Accept & Register
-                                </NButton>
+                                <div v-if="isEmailRegistered">
+                                    <p>Please log in to accept this invitation.</p>
+                                    <NButton type="primary" size="large" block tag="a"
+                                        :href="login().url + '?return_url=' + encodeURIComponent(page.url)">
+                                        Log In
+                                    </NButton>
+                                </div>
+                                <div v-else>
+                                    <p>Accept this invitation to create your account and start prompting!</p>
+                                    <NButton type="primary" size="large" block @click="accept"
+                                        :loading="form.processing">
+                                        Accept & Register
+                                    </NButton>
+                                </div>
                             </div>
                         </div>
                     </div>

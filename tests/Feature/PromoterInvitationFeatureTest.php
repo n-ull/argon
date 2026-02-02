@@ -136,3 +136,19 @@ test('logged in user cannot accept invitation for different email', function () 
         'status' => 'pending',
     ]);
 });
+
+test('user can view accepted invitation', function () {
+    $user = User::factory()->create(['email' => 'test@example.com']);
+    $promoter = \Domain\Promoters\Models\Promoter::factory()->create(['user_id' => $user->id]);
+    $this->invitation->update(['status' => 'accepted', 'promoter_id' => $promoter->id]); // Mock acceptance
+
+    $response = $this->actingAs($user)
+        ->get(route('promoters.invitations.show', $this->invitation->token));
+
+    $response->assertStatus(200)
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('promoters/invitations/Show')
+            ->where('invitation.status', 'accepted')
+        );
+});
+

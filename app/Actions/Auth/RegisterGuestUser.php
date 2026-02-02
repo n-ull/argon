@@ -2,6 +2,7 @@
 
 namespace App\Actions\Auth;
 
+use App\Mail\GuestUserCreated;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -38,10 +39,7 @@ class RegisterGuestUser
 
         // I'll stick to a simple implementation and allow the user to refine the email template later if needed.
 
-        Mail::raw("Welcome! Your account has been created.\n\nEmail: {$email}\nPassword: {$password}\n\nPlease login and change your password.", function ($message) use ($email) {
-            $message->to($email)
-                ->subject('Your Account Details');
-        });
+        Mail::to($email)->send(new GuestUserCreated($user, $password));
 
         return $user;
     }
