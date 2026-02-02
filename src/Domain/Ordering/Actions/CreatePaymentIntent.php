@@ -27,7 +27,7 @@ class CreatePaymentIntent
         // Check if order is free
         if ($order->total_gross <= 0) {
             $this->orderService->completePendingOrder($order->id);
-            return redirect()->route('orders.show', $order);
+            return route('orders.show', $order);
         }
 
         $data['order'] = $order;

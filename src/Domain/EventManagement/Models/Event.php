@@ -4,6 +4,7 @@ namespace Domain\EventManagement\Models;
 
 use Domain\EventManagement\Casts\LocationInfoJson;
 use Domain\EventManagement\Enums\EventStatus;
+use Domain\EventManagement\Policies\EventPolicy;
 use Domain\Ordering\Enums\OrderStatus;
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
@@ -12,6 +13,7 @@ use Domain\ProductCatalog\Models\Product;
 use Domain\Promoters\Models\Promoter;
 use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Models\Ticket;
+use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -63,6 +65,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @mixin \Eloquent
  */
+#[UsePolicy(EventPolicy::class)]
 class Event extends Model
 {
     use HasFactory, SoftDeletes;

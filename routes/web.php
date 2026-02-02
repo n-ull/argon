@@ -13,7 +13,7 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('dashboard', DashboardController::class)->name('dashboard');
+Route::get('dashboard', DashboardController::class)->name('dashboard')->middleware('auth');
 
 Route::group([
     'prefix' => 'tickets',

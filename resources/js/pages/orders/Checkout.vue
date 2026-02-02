@@ -28,7 +28,7 @@ const { order, settings } = defineProps<Props>();
 
 console.log(order);
 
-const paymentMethod = ref('cash');
+const paymentMethod = ref('');
 const guestEmail = ref('');
 const timeLeft = ref(Math.max(0, Math.floor((new Date(order.expires_at!).getTime() - new Date().getTime()) / 1000)));
 let timerInterval: number | undefined;
@@ -38,6 +38,8 @@ const formattedTime = computed(() => {
     const seconds = timeLeft.value % 60;
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 });
+
+const isFree = computed(() => parseFloat(order.total_gross.toString()) <= 0);
 
 onMounted(() => {
     timerInterval = setInterval(() => {
@@ -90,7 +92,11 @@ const createIntent = async () => {
         const data = await response.json();
 
         if (data.url) {
-            window.open(data.url, '_blank');
+            if (isFree.value) {
+                router.visit(data.url);
+            } else {
+                window.open(data.url, '_blank');
+            }
         }
     } catch (error) {
         console.error('Error creating payment intent:', error);
@@ -228,7 +234,7 @@ const quickRegister = () => {
                 <NButton type="error" ghost @click="cancelOrder">
                     Cancel Order
                 </NButton>
-                <NButton @click="createIntent" type="primary" size="large">
+                <NButton @click="createIntent" type="primary" size="large" :disabled="!isFree && !paymentMethod">
                     {{ parseFloat(order.total_gross.toString()) > 0 ? 'Pay' : 'Confirm' }}
                 </NButton>
             </div>

@@ -5,12 +5,15 @@ namespace App\Modules\EventManagement\Controllers;
 use App\Http\Controllers\Controller;
 use Domain\EventManagement\Enums\EventStatus;
 use Domain\EventManagement\Models\Event as EventModel;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class EventIndexController extends Controller
 {
     public function index()
     {
+        Gate::authorize('viewAny', EventModel::class);
+
         // Filter and search
         $query = EventModel::query();
 

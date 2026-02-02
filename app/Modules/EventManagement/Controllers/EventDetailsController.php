@@ -7,6 +7,7 @@ use Domain\EventManagement\Models\Event as EventModel;
 use Domain\EventManagement\Resources\EventResource;
 use Domain\ProductCatalog\Resources\ProductResource;
 use Domain\ProductCatalog\Scopes\AvailableProductsScope;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class EventDetailsController extends Controller
@@ -16,6 +17,8 @@ class EventDetailsController extends Controller
      */
     public function __invoke(EventModel $event)
     {
+        Gate::authorize('view', $event);
+
         $event->load(['organizer', 'taxesAndFees']);
 
         $products = $event->products()

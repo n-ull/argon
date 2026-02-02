@@ -3,13 +3,13 @@ import InfoWidget from '@/components/dashboard/InfoWidget.vue';
 import EventStatusBadge from '@/components/EventStatusBadge.vue';
 import EventActions from '@/components/EventActions.vue';
 import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
-import { dashboard, products } from '@/routes/manage/event';
+import { dashboard, products, settings } from '@/routes/manage/event';
 import { update as updateStatusRoute } from '@/routes/manage/event/status';
 import { show as eventShow } from '@/routes/events';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { BookA, Copy, DollarSign, Download, Eye, EyeClosed, Gift, Plus, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
+import { BookA, Copy, DollarSign, Download, Eye, EyeClosed, Gift, Globe, MapIcon, Plus, ScanQrCode, SettingsIcon, ShoppingCart } from 'lucide-vue-next';
 import { NButton, NIcon, NInput } from 'naive-ui';
 import { toast } from 'vue-sonner';
 
@@ -94,8 +94,9 @@ const publishEvent = () => {
             <div class="mt-4 p-4 bg-neutral-900 rounded">
                 <div class="space-y-2" v-if="event.products_count === 0 || event.status !== 'published'">
                     <h2 class="text-lg font-semibold">Your event isn't ready yet</h2>
-                    <p class="text-sm text-neutral-400">Once you've added your products and configured your event, you
-                        can start selling tickets.</p>
+                    <p class="text-sm text-neutral-400">Once you've added your products and configured your event
+                        location, you
+                        can publish and start selling tickets.</p>
                     <div class="flex items-center gap-2">
                         <Link :href="products(event.id).url">
                             <NButton tertiary icon-placement="left" size="large" v-if="event.products_count === 0">
@@ -108,7 +109,19 @@ const publishEvent = () => {
                             </NButton>
                         </Link>
 
-                        <NButton v-if="event.status !== 'published'" tertiary size="large" @click="publishEvent">
+                        <Link :href="settings({ event: event.id }).url">
+                            <NButton tertiary icon-placement="left" size="large">
+                                <template #icon>
+                                    <NIcon>
+                                        <MapIcon />
+                                    </NIcon>
+                                </template>
+                                Set Location at Settings
+                            </NButton>
+                        </Link>
+
+                        <NButton v-if="event.status !== 'published'" :disabled="!event.location_info" tertiary
+                            size="large" @click="publishEvent">
                             <template #icon>
                                 <NIcon>
                                     <Eye />
@@ -116,6 +129,17 @@ const publishEvent = () => {
                             </template>
                             Publish Event
                         </NButton>
+
+                        <Link :href="eventShow({ slug: event.slug }).url">
+                            <NButton tertiary icon-placement="left" size="large">
+                                <template #icon>
+                                    <NIcon>
+                                        <Globe />
+                                    </NIcon>
+                                </template>
+                                Preview Event
+                            </NButton>
+                        </Link>
                     </div>
                 </div>
                 <div v-else>
@@ -127,10 +151,10 @@ const publishEvent = () => {
                             <NButton tertiary icon-placement="left" size="large">
                                 <template #icon>
                                     <NIcon>
-                                        <Eye />
+                                        <Globe />
                                     </NIcon>
                                 </template>
-                                View Event Page
+                                Preview Event
                             </NButton>
                         </Link>
                     </div>

@@ -5,6 +5,7 @@ namespace App\Modules\EventManagement\Controllers;
 use App\Http\Controllers\Controller;
 use Domain\EventManagement\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class ManageEventController extends Controller
@@ -12,6 +13,8 @@ class ManageEventController extends Controller
     public function dashboard(int $eventId)
     {
         $event = Event::findOrFail($eventId)->load('organizer');
+        Gate::authorize('update', $event);
+
         $event->loadCount('products');
         $event->append('widget_stats');
 
@@ -23,6 +26,7 @@ class ManageEventController extends Controller
     public function analytics(int $eventId)
     {
         $event = Event::where('id', $eventId)->first()->load('organizer');
+        Gate::authorize('update', $event);
 
         return Inertia::render('organizers/event/Analytics', [
             'event' => $event,
@@ -32,6 +36,8 @@ class ManageEventController extends Controller
     public function analyticsSales(Request $request, int $eventId)
     {
         $event = Event::findOrFail($eventId);
+        Gate::authorize('update', $event);
+
         $period = $request->input('period', 'day');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -44,6 +50,8 @@ class ManageEventController extends Controller
     public function analyticsPromoters(int $eventId)
     {
         $event = Event::findOrFail($eventId);
+        Gate::authorize('update', $event);
+
         $data = \Domain\Promoters\Actions\GetPromoterSalesAnalytics::run($event);
 
         return response()->json($data);
@@ -52,6 +60,7 @@ class ManageEventController extends Controller
     public function products(int $eventId)
     {
         $event = Event::where('id', $eventId)->first()->load('organizer');
+        Gate::authorize('update', $event);
 
         return Inertia::render('organizers/event/Products', [
             'event' => $event,
