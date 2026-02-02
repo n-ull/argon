@@ -6,6 +6,7 @@ use App\Services\MercadoPagoService;
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Services\OrderService;
 use Illuminate\Http\Request;
+use MercadoPago\Exceptions\MPApiException;
 
 class MercadoPagoWebhookController extends Controller
 {
@@ -42,6 +43,9 @@ class MercadoPagoWebhookController extends Controller
                     $order->save();
 
                     return response()->json(['message' => 'Order updated successfully'], 200);
+                } catch (MPApiException $e) {
+                    \Log::info('MP Api Exception', [$e->getApiResponse()->getContent()]);
+                    return response()->json(['message' => $e->getMessage()], 400);
                 } catch (\Exception $e) {
                     return response()->json(['message' => $e->getMessage()], 400);
                 }

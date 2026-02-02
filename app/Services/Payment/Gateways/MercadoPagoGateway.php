@@ -78,7 +78,7 @@ class MercadoPagoGateway implements PaymentGateway
 
             return $response->init_point;
         } catch (\MercadoPago\Exceptions\MPApiException $e) {
-            \Log::error('API RESPONSE MP', [$e->getApiResponse()]);
+            \Log::error('API RESPONSE MP', [$e->getApiResponse()->getContent()]);
             throw $e;
         } catch (\Exception $e) {
             throw $e;
@@ -131,7 +131,7 @@ class MercadoPagoGateway implements PaymentGateway
 
             return $response->init_point;
         } catch (\MercadoPago\Exceptions\MPApiException $e) {
-            \Log::error('API RESPONSE MP', [$e->getApiResponse()]);
+            \Log::error('API RESPONSE MP', [$e->getApiResponse()->getContent()]);
             throw $e;
         } catch (\Exception $e) {
             throw $e;
