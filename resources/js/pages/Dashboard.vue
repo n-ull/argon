@@ -138,7 +138,7 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
                     <div class="flex -space-x-2">
                         <img v-for="organizer in props.organizers.slice(0, 3)" :key="organizer.id"
                             class="inline-block size-8 rounded-full ring-2 ring-neutral-900 "
-                            :src="organizer.logo ?? 'https://placehold.co/300x300/png'" :alt="organizer.name">
+                            :src="'storage/' + organizer.logo" :alt="organizer.name">
                         <span v-if="props.organizers.length > 3"
                             class="inline-flex items-center justify-center size-8 rounded-full ring-2 bg-neutral-200 text-xs font-bold text-neutral-700">
                             +{{ props.organizers.length - 3 }}
