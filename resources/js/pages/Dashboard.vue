@@ -12,6 +12,7 @@ import OrganizerSelectorDialog from '@/components/OrganizerSelectorDialog.vue';
 import { NInput, NSelect, NSpace, NIcon, NPagination, NTag, NEmpty } from 'naive-ui';
 import { Search } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
+import organizer from '@/routes/manage/organizer';
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -224,7 +225,7 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
                     icon="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                     color="blue" />
 
-                <DashboardTestButton link="/organizers/create" title="Create Organization"
+                <DashboardTestButton :link="organizer.create().url" title="Create Organization"
                     description="Start a new organization"
                     icon="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                     color="green" />
