@@ -18,17 +18,15 @@ import { Form } from '@inertiajs/vue3'
             <SectionHeader title="Create Organizer"
                 description="Create a new organizer to manage events and inventory" />
 
-            <Form method="post" :action="organizer.create()">
-                <div class="flex flex-col gap-4">
-                    <Label for="name">Name</Label>
-                    <Input type="text" name="name" />
-                    <Label for="email">Email</Label>
-                    <Input type="email" name="email" />
-                    <Label for="phone">Phone</Label>
-                    <Input type="number" name="phone" />
+            <Form v-bind="organizer.create.store.form()" class="flex flex-col gap-4">
+                <Label for="name">Name</Label>
+                <Input type="text" name="name" />
+                <Label for="email">Email</Label>
+                <Input type="email" name="email" />
+                <Label for="phone">Phone</Label>
+                <Input type="number" name="phone" />
 
-                    <Button type="submit" class="mt-4">Create</Button>
-                </div>
+                <Button type="submit" class="mt-4">Create</Button>
             </Form>
         </Section>
     </SimpleLayout>

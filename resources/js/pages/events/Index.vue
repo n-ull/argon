@@ -18,10 +18,10 @@ const { events } = defineProps<Props>();
     <SimpleLayout>
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                <h1 class="text-3xl font-bold text-white">
                     Events
                 </h1>
-                <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p class="mt-2 text-sm text-gray-400">
                     Browse upcoming events
                 </p>
             </div>
@@ -39,8 +39,8 @@ const { events } = defineProps<Props>();
                 </InfiniteScroll>
 
                 <div v-if="events.data.length === 0"
-                    class="rounded-lg border border-gray-200 bg-white p-12 text-center dark:border-gray-700 dark:bg-gray-800">
-                    <p class="text-gray-500 dark:text-gray-400">
+                    class="rounded-lg border p-12 text-center border-gray-700 bg-gray-800">
+                    <p class="text-gray-400">
                         No events found
                     </p>
                 </div>
