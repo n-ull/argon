@@ -7,34 +7,36 @@ import {
     DialogFooter,
 } from '@/components/ui/dialog';
 import { ref } from 'vue';
-import { NButton, NInput, NRadioGroup, NRadio } from 'naive-ui';
+import { NButton, NInput, NRadioGroup, NRadio, NInputNumber } from 'naive-ui';
 import { useForm } from '@inertiajs/vue3';
-import { promoters } from '@/actions/App/Modules/EventManagement/Controllers/ManageEventController';
+import { useDialog } from '@/composables/useDialog';
+import { store } from '@/routes/manage/organizer/promoters';
 
-interface Props {
-    title: string;
+const props = defineProps<{
+    title?: string;
     description?: string;
-    eventId: number;
-}
+    organizerId: number;
+}>();
 
-const props = defineProps<Props>();
-
-const emit = defineEmits(['close']);
-
-const handleClose = () => {
-    emit('close');
-};
+const { close } = useDialog();
 
 const commissionType = ref<'percentage' | 'fixed'>('percentage');
 
 const form = useForm({
     email: '',
-    commission_type: 'percentage',
-    commission_value: '',
+    commission_type: 'percentage', // fixed, percentage
+    commission_value: 0,
 });
 
-const handleSubmit = () => {
-    form.post(promoters({ event: props.eventId }).url);
+// @ts-ignore
+const route = window.route;
+
+const submit = () => {
+    form.post(store({ organizer: props.organizerId }).url, {
+        onSuccess: () => {
+            close();
+        },
+    });
 };
 </script>
 
@@ -60,14 +62,16 @@ const handleSubmit = () => {
                     <NRadio value="percentage">Percentage</NRadio>
                     <NRadio value="fixed">Fixed</NRadio>
                 </NRadioGroup>
-                <NInput placeholder="Commission" v-model:value="form.commission_value">
+
+                <NInputNumber placeholder="Commission" v-model:value="form.commission_value" :show-button="false">
                     <template #prefix>
                         <span v-if="commissionType === 'fixed'">$</span>
                         <span v-else>%</span>
                     </template>
-                </NInput>
+                </NInputNumber>
+
                 <span v-if="form.errors.commission_value" class="text-red-500 text-xs">{{ form.errors.commission_value
-                }}</span>
+                    }}</span>
                 <span class="text-xs text-gray-400">Commission for the promoter</span>
 
                 <div v-if="commissionType === 'fixed'" class="text-xs text-gray-400">
@@ -81,8 +85,8 @@ const handleSubmit = () => {
         </form>
 
         <DialogFooter class="flex justify-end gap-2 pt-4">
-            <NButton type="default" @click="handleClose">Cancel</NButton>
-            <NButton type="primary" @click="handleSubmit">Add Promoter</NButton>
+            <NButton type="default" @click="close">Cancel</NButton>
+            <NButton type="primary" @click="submit">Add Promoter</NButton>
         </DialogFooter>
     </DialogContent>
 </template>

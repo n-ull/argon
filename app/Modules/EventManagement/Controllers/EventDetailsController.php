@@ -57,9 +57,9 @@ class EventDetailsController extends Controller
             $code = request()->input('referr');
             $promoter = \Domain\Promoters\Models\Promoter::where('referral_code', $code)->first();
 
-            if ($promoter && $promoter->events()
-                ->where('event_id', $event->id)
-                ->where('promoter_events.enabled', true)
+            if ($promoter && $promoter->organizers()
+                ->where('organizers.id', $event->organizer_id)
+                ->wherePivot('enabled', true)
                 ->exists()) {
                 session(['referral_code_'.$event->id => $code]);
             }

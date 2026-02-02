@@ -9,18 +9,18 @@ class DeletePromoterInvitation
 {
     use AsAction;
 
-    public function handle(int $eventId, int $invitationId)
+    public function handle(int $organizerId, int $invitationId)
     {
-        $invitation = PromoterInvitation::where('event_id', $eventId)
+        $invitation = PromoterInvitation::where('organizer_id', $organizerId)
             ->where('id', $invitationId)
             ->firstOrFail();
 
         $invitation->delete();
     }
 
-    public function asController(int $eventId, int $invitationId)
+    public function asController(int $organizerId, int $invitationId)
     {
-        $this->handle($eventId, $invitationId);
+        $this->handle($organizerId, $invitationId);
 
         return redirect()->back();
     }

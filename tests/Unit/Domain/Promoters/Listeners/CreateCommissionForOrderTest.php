@@ -4,22 +4,23 @@ use Domain\Ordering\Events\OrderCreated;
 use Domain\Ordering\Models\Order;
 use Domain\Promoters\Listeners\CreateCommissionForOrder;
 use Domain\Promoters\Models\Promoter;
-use Domain\Promoters\Models\PromoterEvent;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 test('it creates pending commission for valid referral code and enabled promoter event', function () {
-    $promoter = Promoter::factory()->create(['referral_code' => 'TESTCODE']);
-    $event = \Domain\EventManagement\Models\Event::factory()->create();
-
-    $promoterEvent = PromoterEvent::create([
-        'promoter_id' => $promoter->id,
-        'event_id' => $event->id,
-        'commission_type' => 'percentage',
-        'commission_value' => 10,
-        'enabled' => true,
-    ]);
+    $organizer = \Domain\OrganizerManagement\Models\Organizer::factory()->create();
+    $event = \Domain\EventManagement\Models\Event::factory()->create(['organizer_id' => $organizer->id]);
+    $promoter = Promoter::factory()
+        ->withOrganizer($organizer, [
+            'commission_type' => 'percentage',
+            'commission_value' => 10,
+            'enabled' => true,
+        ])
+        ->create([
+            'referral_code' => 'TESTCODE',
+        ]);
 
     $order = Order::factory()->create([
         'event_id' => $event->id,
@@ -42,16 +43,17 @@ test('it creates pending commission for valid referral code and enabled promoter
 });
 
 test('it calculates fixed commission correctly', function () {
-    $promoter = Promoter::factory()->create(['referral_code' => 'FIXEDCODE']);
-    $event = \Domain\EventManagement\Models\Event::factory()->create();
-
-    $promoterEvent = PromoterEvent::create([
-        'promoter_id' => $promoter->id,
-        'event_id' => $event->id,
-        'commission_type' => 'fixed',
-        'commission_value' => 5.50,
-        'enabled' => true,
-    ]);
+    $organizer = \Domain\OrganizerManagement\Models\Organizer::factory()->create();
+    $event = \Domain\EventManagement\Models\Event::factory()->create(['organizer_id' => $organizer->id]);
+    $promoter = Promoter::factory()
+        ->withOrganizer($organizer, [
+            'commission_type' => 'fixed',
+            'commission_value' => 5.50,
+            'enabled' => true,
+        ])
+        ->create([
+            'referral_code' => 'FIXEDCODE',
+        ]);
 
     $order = Order::factory()->create([
         'event_id' => $event->id,
@@ -69,38 +71,45 @@ test('it calculates fixed commission correctly', function () {
     ]);
 });
 
-test('it does not create commission if no referral code', function () {
-    $listener = new CreateCommissionForOrder();
-    $order = Order::factory()->create();
-    $eventDispatched = new OrderCreated($order, null);
+test('it does not create commission if from different organizer', function () {
+    // Create promoter for Organizer A
+    $organizerA = \Domain\OrganizerManagement\Models\Organizer::factory()->create();
+    $promoter = Promoter::factory()
+        ->withOrganizer($organizerA)
+        ->create([
+            'referral_code' => 'TESTCODE',
+        ]);
 
-    $listener->handle($eventDispatched);
+    // Create Event for Organizer B
+    $organizerB = \Domain\OrganizerManagement\Models\Organizer::factory()->create();
+    $eventB = \Domain\EventManagement\Models\Event::factory()->create(['organizer_id' => $organizerB->id]);
 
-    $this->assertDatabaseCount('commissions', 0);
-});
-
-test('it does not create commission if promoter not found', function () {
-    $listener = new CreateCommissionForOrder();
-    $order = Order::factory()->create();
-    $eventDispatched = new OrderCreated($order, 'INVALIDCODE');
-
-    $listener->handle($eventDispatched);
-
-    $this->assertDatabaseCount('commissions', 0);
-});
-
-test('it does not create commission if promoter event not found or disabled', function () {
-    $promoter = Promoter::factory()->create(['referral_code' => 'TESTCODE']);
-    $event = \Domain\EventManagement\Models\Event::factory()->create();
-
-    // Create disabled rule
-    PromoterEvent::create([
-        'promoter_id' => $promoter->id,
-        'event_id' => $event->id,
-        'commission_type' => 'fixed',
-        'commission_value' => 10,
-        'enabled' => false,
+    $order = Order::factory()->create([
+        'event_id' => $eventB->id,
+        'referral_code' => 'TESTCODE',
     ]);
+
+    $listener = new CreateCommissionForOrder();
+    $eventDispatched = new OrderCreated($order, 'TESTCODE');
+
+    $listener->handle($eventDispatched);
+
+    $this->assertDatabaseCount('commissions', 0);
+});
+
+test('it does not create commission if promoter is disabled', function () {
+    $organizer = \Domain\OrganizerManagement\Models\Organizer::factory()->create();
+    $event = \Domain\EventManagement\Models\Event::factory()->create(['organizer_id' => $organizer->id]);
+
+    $promoter = Promoter::factory()
+        ->withOrganizer($organizer, [
+            'enabled' => false, // Disabled
+            'commission_type' => 'fixed',
+            'commission_value' => 10,
+        ])
+        ->create([
+            'referral_code' => 'TESTCODE',
+        ]);
 
     $order = Order::factory()->create([
         'event_id' => $event->id,

@@ -17,26 +17,34 @@ class AcceptPromoterInvitation
             ->where('status', 'pending')
             ->firstOrFail();
 
-        // 1. Ensure Promoter Profile
+        // 1. Ensure Promoter Profile linked to Organizer
+        // We need to check if a promoter for this user + organizer already exists?
+        // Logic: Create if not exists.
+
         $promoter = Promoter::firstOrCreate(
-            ['user_id' => $user->id],
-            ['referral_code' => $this->generateReferralCode()]
+            [
+                'user_id' => $user->id,
+            ],
+            [
+                'referral_code' => $this->generateReferralCode(),
+                'enabled' => true,
+            ]
         );
 
-        // 2. Link to Event (Create PromoterEvent)
-        // Check if already linked to avoid duplicates/errors
-        if (! $promoter->events()->where('event_id', $invitation->event_id)->exists()) {
-            $promoter->events()->attach($invitation->event_id, [
+        $promoter->organizers()->syncWithoutDetaching([
+            $invitation->organizer_id => [
                 'commission_type' => $invitation->commission_type,
                 'commission_value' => $invitation->commission_value,
                 'enabled' => true,
-            ]);
-        }
+            ]
+        ]);
+
+        // 2. No longer need to link to specific events (PromoterEvent).
 
         // 3. Update Invitation
         $invitation->update([
             'status' => 'accepted',
-            'promoter_id' => $promoter->id, // Ensure it's linked now
+            'promoter_id' => $promoter->id,
         ]);
 
         return $invitation;

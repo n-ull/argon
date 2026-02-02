@@ -17,14 +17,16 @@ test('it can get promoter sales stats', function () {
     $organizer->users()->attach($user);
 
     $event = Event::factory()->create(['organizer_id' => $organizer->id]);
-    $promoter = Promoter::factory()->create([
-        'user_id' => $user->id,
-        'referral_code' => 'TESTCODE'
-    ]);
-    $event->promoters()->attach($promoter, [
-        'commission_type' => 'fixed',
-        'commission_value' => 10
-    ]);
+    $promoter = Promoter::factory()
+        ->withOrganizer($organizer, [
+            'commission_type' => 'fixed',
+            'commission_value' => 10
+        ])
+        ->create([
+            'user_id' => $user->id,
+            'referral_code' => 'TESTCODE',
+        ]);
+    // No need to attach to event anymore
 
     // Products
     $productA = Product::factory()->create(['event_id' => $event->id, 'name' => 'Product A']);
@@ -71,7 +73,7 @@ test('it can get promoter sales stats', function () {
 
 
     $response = $this->actingAs($user)
-        ->get(route('manage.event.promoters.stats', ['event' => $event->id, 'promoter' => $promoter->id]));
+        ->get(route('manage.event.promoters.stats', ['event' => $event, 'promoter' => $promoter]));
 
     $response->assertStatus(200);
 

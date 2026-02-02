@@ -15,9 +15,11 @@ class PromoterDashboardController
             abort(403, 'User is not a promoter');
         }
 
+
         return Inertia::render('promoters/Dashboard', [
-            'events' => $promoter->events,
-            'commissions' => $promoter->commissions()->completed()->get(),
+            'events' => \Domain\EventManagement\Models\Event::whereIn('organizer_id', $promoter->organizers()->pluck('organizers.id'))->get(),
+            'commissions' => $promoter->commissions()->get(),
+            'referral_code' => $promoter->referral_code,
         ]);
     }
 }

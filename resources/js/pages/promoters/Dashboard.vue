@@ -2,14 +2,19 @@
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import { NCard, NDataTable, NStatistic, NNumberAnimation, NButton, NModal, NSpin, NList, NListItem, NThing } from 'naive-ui';
+import { NCard, NDataTable, NStatistic, NNumberAnimation, NButton, NModal, NSpin, NList, NListItem, NThing, NIcon } from 'naive-ui';
 import { h, ref } from 'vue';
 import axios from 'axios';
 import { stats } from '@/routes/promoters/events';
+import DataTableRowActions from '@/components/DataTableRowActions.vue';
+import { CopyIcon, InfoIcon } from 'lucide-vue-next';
+import { toast } from 'vue-sonner';
+import { show } from '@/routes/events';
 
-defineProps<{
+const props = defineProps<{
     events: Array<Event>;
     commissions: Array<any>;
+    referral_code: String;
 }>();
 
 const columns = [
@@ -30,14 +35,31 @@ const columns = [
         key: 'actions',
         render(row: Event) {
             return h(
-                NButton,
+                DataTableRowActions,
                 {
-                    size: 'small',
-                    type: 'primary',
-                    ghost: true,
-                    onClick: () => openDetails(row)
-                },
-                { default: () => 'Details' }
+                    onClick: (e: MouseEvent) => e.stopPropagation(),
+                    options: [
+                        {
+                            label: 'Details',
+                            key: 'details',
+                            icon: () => h(NIcon, null, { default: () => h(InfoIcon) }),
+                        },
+                        {
+                            label: 'Copy Link',
+                            key: 'copy-link',
+                            icon: () => h(NIcon, null, { default: () => h(CopyIcon) }),
+                        }
+                    ],
+                    onSelect: (key) => {
+                        if (key === 'details') {
+                            openDetails(row);
+                        } else {
+                            const url = window.location.origin + show(row.slug).url;
+                            navigator.clipboard.writeText(url + '?referral=' + props.referral_code);
+                            toast.success('Link copied to clipboard')
+                        }
+                    }
+                }
             );
         }
     }

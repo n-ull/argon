@@ -80,4 +80,20 @@ class ManageOrganizations extends Controller
             'userIsOwner' => $organizer->owner_id === auth()->id(),
         ]);
     }
+
+    public function promoters(Organizer $organizer)
+    {
+        $organizer->load(['promoters' => function ($query) {
+            $query->withCount('commissions');
+        }]);
+
+        // We also need invitations
+        $invitations = \Domain\Promoters\Models\PromoterInvitation::where('organizer_id', $organizer->id)->get();
+
+        return Inertia::render('organizers/Promoters', [
+            'organizer' => $organizer,
+            'promoters' => \Domain\Promoters\Resources\PromoterResource::collection($organizer->promoters)->resolve(),
+            'invitations' => $invitations,
+        ]);
+    }
 }

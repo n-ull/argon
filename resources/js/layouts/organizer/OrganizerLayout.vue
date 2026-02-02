@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
-import { cooperators, events, settings, show } from '@/routes/manage/organizer';
+import { cooperators, events, promoters, settings, show } from '@/routes/manage/organizer';
 import type { BreadcrumbItemType, NavItem, Organizer } from '@/types';
 import { usePage } from '@inertiajs/vue3';
-import { Calendar, LayoutGrid, LucideMessageCircleQuestion, Settings, UsersRound } from 'lucide-vue-next';
+import { Calendar, LayoutGrid, LucideMessageCircleQuestion, Settings, UsersRound, Megaphone } from 'lucide-vue-next';
 import { GlobalTheme, NConfigProvider, darkTheme } from 'naive-ui';
 import { computed, watch } from 'vue';
 import GlobalDialog from '@/components/GlobalDialog.vue';
@@ -68,6 +68,11 @@ const mainNavItems: NavItem[] = [
         title: 'Cooperators',
         href: cooperators(props.organizer.id),
         icon: UsersRound,
+    },
+    {
+        title: 'Promoters',
+        href: promoters(props.organizer.id),
+        icon: Megaphone,
     },
     ...(userIsOwner.value
         ? [

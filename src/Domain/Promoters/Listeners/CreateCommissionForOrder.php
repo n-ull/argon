@@ -5,7 +5,7 @@ namespace Domain\Promoters\Listeners;
 use Domain\Ordering\Events\OrderCreated;
 use Domain\Promoters\Models\Commission;
 use Domain\Promoters\Models\Promoter;
-use Domain\Promoters\Models\PromoterEvent;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CreateCommissionForOrder implements ShouldQueue
@@ -26,21 +26,24 @@ class CreateCommissionForOrder implements ShouldQueue
             return;
         }
 
-        $promoterEvent = PromoterEvent::query()
-            ->where('promoter_id', $promoter->id)
-            ->where('event_id', $event->order->event_id)
-            ->where('enabled', true)
-            ->first();
+        // Check if promoter belongs to the event's organizer
+        $organizerId = $event->order->event->organizer_id;
+        $relationship = $promoter->organizers()->where('organizer_id', $organizerId)->first();
 
-        if (! $promoterEvent) {
-            \Illuminate\Support\Facades\Log::info('PromoterEvent rule not found or disabled', [
+        if (! $relationship) {
+            \Illuminate\Support\Facades\Log::info('Promoter does not belong to event organizer', [
                 'promoter_id' => $promoter->id,
-                'event_id' => $event->order->event_id
+                'event_organizer' => $organizerId
             ]);
             return;
         }
 
-        $amount = $this->calculateCommission($event->order, $promoterEvent);
+        if (! $relationship->pivot->enabled) {
+            \Illuminate\Support\Facades\Log::info('Promoter is disabled for this organizer', ['promoter_id' => $promoter->id]);
+            return;
+        }
+
+        $amount = $this->calculateCommission($event->order, $relationship->pivot);
         \Illuminate\Support\Facades\Log::info('Calculated amount', ['amount' => $amount]);
 
         Commission::create([
@@ -53,13 +56,13 @@ class CreateCommissionForOrder implements ShouldQueue
         \Illuminate\Support\Facades\Log::info('Commission created');
     }
 
-    protected function calculateCommission($order, $promoterEvent): float
+    protected function calculateCommission($order, $settings): float
     {
-        if ($promoterEvent->commission_type === 'fixed') {
-            return (float) $promoterEvent->commission_value;
+        if ($settings->commission_type === 'fixed') {
+            return (float) $settings->commission_value;
         }
 
         // Percentage calculation based on total_gross
-        return round(($order->total_gross * $promoterEvent->commission_value) / 100, 2);
+        return round(($order->total_gross * $settings->commission_value) / 100, 2);
     }
 }

@@ -7,6 +7,7 @@ use Domain\EventManagement\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Domain\Promoters\Models\Promoter;
 
 class ManageEventController extends Controller
 {
@@ -116,20 +117,20 @@ class ManageEventController extends Controller
         ]);
     }
 
-    public function promoters(int $eventId)
-    {
-        $event = Event::where('id', $eventId)->first()->load(['organizer', 'promoters' => function ($query) use ($eventId) {
-            $query->withCount(['commissions' => function ($query) use ($eventId) {
-                $query->where('event_id', $eventId)->completed();
-            }]);
-        }, 'promoterInvitations']);
+    // public function promoters(int $eventId)
+    // {
+    //     $event = Event::where('id', $eventId)->first()->load(['organizer', 'promoters' => function ($query) use ($eventId) {
+    //         $query->withCount(['commissions' => function ($query) use ($eventId) {
+    //             $query->where('event_id', $eventId)->completed();
+    //         }]);
+    //     }, 'promoterInvitations']);
 
-        return Inertia::render('organizers/event/Promoters', [
-            'event' => $event,
-            'promoters' => \Domain\Promoters\Resources\PromoterResource::collection($event->promoters)->resolve(),
-            'invitations' => $event->promoterInvitations,
-        ]);
-    }
+    //     return Inertia::render('organizers/event/Promoters', [
+    //         'event' => $event,
+    //         'promoters' => \Domain\Promoters\Resources\PromoterResource::collection($event->promoters)->resolve(),
+    //         'invitations' => $event->promoterInvitations,
+    //     ]);
+    // }
 
     public function settings(int $eventId)
     {
@@ -172,10 +173,12 @@ class ManageEventController extends Controller
         ]);
     }
 
-    public function promoterStats(int $eventId, int $promoterId)
+    public function promoterStats(Request $request, Event $event, Promoter $promoter)
     {
-        $event = Event::findOrFail($eventId);
-        $promoter = \Domain\Promoters\Models\Promoter::findOrFail($promoterId);
+        // Verify promoter belongs to the event's organizer
+        if (! $promoter->organizers()->where('organizer_id', $event->organizer_id)->exists()) {
+            abort(404);
+        }
 
         $stats = $event->orders()
             ->where('referral_code', $promoter->referral_code)
@@ -192,6 +195,7 @@ class ManageEventController extends Controller
                     'product_id' => $product->id,
                     'product_name' => $product->name,
                     'quantity' => $items->sum('quantity'),
+                    'total_sales' => $items->sum('total_price'),
                 ];
             })
             ->values();

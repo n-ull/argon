@@ -18,12 +18,12 @@ class PromoterInvitationMail extends Mailable implements ShouldQueue
     public function __construct(PromoterInvitation $invitation)
     {
         $this->invitation = $invitation;
-        $this->companyName = $invitation->event->organizer->name;
+        $this->companyName = $invitation->organizer->name;
     }
 
     public function build()
     {
-        return $this->subject('Invitation to be a Promoter')
+        return $this->subject('Invitación para ser Promotor')
             ->markdown('emails.promoters.invitation');
     }
 }

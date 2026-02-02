@@ -2,7 +2,7 @@
 import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { NButton, NCard, NSpace, NText } from 'naive-ui';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import type { AppPageProps, Event } from '@/types';
+import type { AppPageProps, Organizer } from '@/types';
 import invitations from '@/routes/promoters/invitations';
 import { register, login } from '@/routes';
 
@@ -16,7 +16,7 @@ interface Invitation {
 
 const props = defineProps<{
     invitation: Invitation;
-    event: Event;
+    organizer: Organizer; // Type needs to be imported or generic
     isEmailRegistered: boolean;
 }>();
 
@@ -44,8 +44,8 @@ const decline = () => {
             <NCard class="max-w-md w-full" :bordered="false" size="huge">
                 <template #header>
                     <div class="text-center">
-                        <h2 class="text-2xl font-bold">{{ event.title }}</h2>
-                        <p class="text-gray-400 mt-2">organized by {{ event.organizer.name }}</p>
+                        <h2 class="text-2xl font-bold">{{ organizer.name }}</h2>
+                        <p class="text-gray-400 mt-2">invited you to join their team</p>
                     </div>
                 </template>
 
@@ -56,7 +56,7 @@ const decline = () => {
                             <p class="text-sm text-gray-400">Your Commission</p>
                             <p class="text-3xl font-bold text-green-500">
                                 <span v-if="invitation.commission_type === 'percentage'">{{ invitation.commission_value
-                                }}%</span>
+                                    }}%</span>
                                 <span v-else>${{ invitation.commission_value }}</span>
                             </p>
                             <p class="text-xs text-gray-500 mt-1">per ticket sold</p>

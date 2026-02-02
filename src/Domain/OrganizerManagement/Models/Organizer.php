@@ -67,6 +67,13 @@ class Organizer extends Model
         return $this->hasMany(Event::class);
     }
 
+    public function promoters(): BelongsToMany
+    {
+        return $this->belongsToMany(\Domain\Promoters\Models\Promoter::class, 'organizer_promoter')
+            ->withPivot(['commission_type', 'commission_value', 'enabled'])
+            ->withTimestamps();
+    }
+
     public function settings(): HasOne
     {
         return $this->hasOne(OrganizerSettings::class)->withDefault([

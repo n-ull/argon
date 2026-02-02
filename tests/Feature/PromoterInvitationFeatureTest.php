@@ -13,7 +13,7 @@ beforeEach(function () {
     $organizer = \Domain\OrganizerManagement\Models\Organizer::factory()->create();
     $this->event = Event::factory()->create(['organizer_id' => $organizer->id]);
     $this->invitation = PromoterInvitation::create([
-        'event_id' => $this->event->id,
+        'organizer_id' => $organizer->id,
         'email' => 'test@example.com',
         'token' => 'valid-token',
         'commission_type' => 'fixed',
@@ -29,7 +29,7 @@ test('guest can view invitation page', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('promoters/invitations/Show')
             ->has('invitation')
-            ->has('event')
+            ->has('organizer')
         );
 });
 
@@ -46,12 +46,13 @@ test('user can accept invitation', function () {
         'status' => 'accepted',
     ]);
 
-    $this->assertDatabaseHas('promoters', ['user_id' => $user->id]);
-    $promoter = Promoter::where('user_id', $user->id)->first();
+    $promoter = \Domain\Promoters\Models\Promoter::where('user_id', $user->id)->first();
 
-    $this->assertDatabaseHas('promoter_events', [
+    $this->assertDatabaseHas('organizer_promoter', [
         'promoter_id' => $promoter->id,
-        'event_id' => $this->event->id,
+        'organizer_id' => $this->event->organizer_id,
+        'commission_type' => 'fixed',
+        'commission_value' => 10,
     ]);
 });
 

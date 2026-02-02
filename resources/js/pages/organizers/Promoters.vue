@@ -8,22 +8,18 @@ import {
     type DataTableColumns,
     NIcon,
     useMessage,
-    NModal,
-    NSpin,
-    NTable,
 } from 'naive-ui';
-import axios from 'axios';
-import ManageEventLayout from '@/layouts/organizer/ManageEventLayout.vue';
-import { promoters as promotersRoute, dashboard } from '@/routes/manage/event';
-import { show } from '@/routes/manage/organizer';
-import type { BreadcrumbItem, Event, Promoter } from '@/types';
+import OrganizerLayout from '@/layouts/organizer/OrganizerLayout.vue';
+import { show, promoters as promotersRoute } from '@/routes/manage/organizer';
+import { deleteMethod as deletePromoterRoute, enable as enablePromoterRoute } from '@/routes/manage/organizer/promoters';
+import { deleteMethod as deletePromoterInvitationRoute } from '@/routes/manage/organizer/promoters/invitations';
+
+import type { BreadcrumbItem, Organizer, Promoter } from '@/types';
 import DataTableRowActions from '@/components/DataTableRowActions.vue';
 import { Copy, Trash2, RotateCcw } from 'lucide-vue-next';
 import CreatePromoterDialog from './dialogs/CreatePromoterDialog.vue';
 import { useDialog } from '@/composables/useDialog';
-import { deleteMethod, enable } from '@/routes/manage/event/promoters';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
-import { promoterStats } from '@/actions/App/Modules/EventManagement/Controllers/ManageEventController';
 
 interface Invitation {
     id: number;
@@ -36,31 +32,25 @@ interface Invitation {
 }
 
 interface Props {
-    event: Event;
+    organizer: Organizer;
     promoters: Promoter[];
     invitations: Invitation[];
 }
 
 
-const { event, promoters, invitations } = defineProps<Props>();
+const { organizer, promoters, invitations } = defineProps<Props>();
 
 const message = useMessage();
-
-console.log(promoters);
 
 // Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: event.organizer.name,
-        href: show(event.organizer.id).url,
-    },
-    {
-        title: event.title,
-        href: dashboard(event.id).url,
+        title: organizer.name,
+        href: show(organizer.id).url,
     },
     {
         title: 'Promoters',
-        href: promotersRoute(event.id).url,
+        href: promotersRoute(organizer.id).url,
     }
 ];
 
@@ -143,13 +133,10 @@ const columns: DataTableColumns<Promoter> = [
                 ],
                 onSelect: (key) => {
                     if (key === 'copy') {
-                        // copy logic handled via row click or specific action if needed, 
-                        // but currently copy is in invitation column or manual copy.
-                        // If we want copy URL for promoter (if they have one), we can add it.
-                        // For now let's just handle delete.
+                        // copy logic
                     } else if (key === 'delete') {
                         deletePromoter(row);
-                    } else if (key === 'enable') {
+                    } else if (key === 'enable' || key === 'disable') {
                         enablePromoter(row);
                     }
                 }
@@ -220,32 +207,8 @@ const invitationColumns: DataTableColumns<Invitation> = [
 
 const rowProps = (row: Promoter) => ({
     style: { cursor: 'pointer' },
-    onClick: () => handleRowClick(row)
+    // onClick: () => handleRowClick(row) // Disabled stats for now
 });
-
-const statsModalOpen = ref(false);
-const loadingStats = ref(false);
-const selectedPromoterStats = ref<any[]>([]);
-const selectedPromoterName = ref('');
-
-const handleRowClick = (row: Promoter) => {
-    statsModalOpen.value = true;
-    loadingStats.value = true;
-    selectedPromoterStats.value = [];
-    selectedPromoterName.value = row.name;
-
-    axios.get(promoterStats({ event: event.id, promoter: row.id }).url)
-        .then(response => {
-            selectedPromoterStats.value = response.data;
-        })
-        .catch(error => {
-            message.error('Failed to load promoter stats');
-            console.error(error);
-        })
-        .finally(() => {
-            loadingStats.value = false;
-        });
-};
 
 const selectedRowKeys = ref<number[]>([]);
 
@@ -257,25 +220,25 @@ const openCreatePromoterDialog = () => {
         props: {
             title: 'Create Promoter or Add Existing Promoter',
             description: 'Put the email of the promoter you want to add. If the promoter does not exist, it will be created.',
-            eventId: event.id,
+            organizerId: organizer.id, // Changed from eventId
         }
     })
 };
 
-
-
 const enablePromoter = (promoter: Promoter) => {
+    const action = promoter.enabled ? 'disable' : 'enable';
     openDialog({
         component: ConfirmDialog,
         props: {
-            title: 'Enable Promoter',
-            description: 'Are you sure you want to enable this promoter for the event?',
-            confirmText: 'Enable',
+            title: promoter.enabled ? 'Disable Promoter' : 'Enable Promoter',
+            description: `Are you sure you want to ${action} this promoter?`,
+            confirmText: promoter.enabled ? 'Disable' : 'Enable',
             cancelText: 'Cancel',
             onConfirm: () => {
-                router.visit(enable({ event: event.id, promoter: promoter.id }), {
+                // Use new route for enabling/disabling
+                router.visit(enablePromoterRoute({ promoter: promoter.id, organizer: organizer.id }).url, {
                     method: 'patch',
-                    onSuccess: () => message.success('Promoter enabled successfully'),
+                    onSuccess: () => message.success(`Promoter ${action}d successfully`),
                     preserveScroll: true
                 });
             }
@@ -288,14 +251,11 @@ const deletePromoter = (promoter: Promoter) => {
         component: ConfirmDialog,
         props: {
             title: 'Remove Promoter',
-            description: 'Are you sure you want to remove this promoter from the event? The promoter profile will not be deleted.',
+            description: 'Are you sure you want to remove this promoter? The promoter profile will be deleted.',
             confirmText: 'Remove',
             cancelText: 'Cancel',
             onConfirm: () => {
-                router.delete(deleteMethod({
-                    event: event.id,
-                    promoter: promoter.id
-                }), {
+                router.delete(deletePromoterRoute({ promoter: promoter.id, organizer: organizer.id }).url, {
                     onSuccess: () => message.success('Promoter removed successfully')
                 });
             }
@@ -312,7 +272,7 @@ const deleteInvitation = (invitation: Invitation) => {
             confirmText: 'Delete',
             cancelText: 'Cancel',
             onConfirm: () => {
-                router.delete('/manage/event/' + event.id + '/promoters/invitations/' + invitation.id, {
+                router.delete(deletePromoterInvitationRoute({ invitation: invitation.id, organizer: organizer.id }).url, {
                     onSuccess: () => message.success('Invitation deleted successfully')
                 });
             }
@@ -323,12 +283,12 @@ const deleteInvitation = (invitation: Invitation) => {
 </script>
 
 <template>
-    <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
+    <OrganizerLayout :organizer="organizer" :breadcrumbs="breadcrumbs">
         <div class="p-6">
             <!-- Header -->
             <div class="mb-6">
                 <h1 class="text-2xl font-bold mb-2">Manage Promoters</h1>
-                <p class="text-gray-400">Manage your event promoters</p>
+                <p class="text-gray-400">Manage your organization promoters</p>
             </div>
 
             <div class="mt-4 space-y-4 bg-neutral-900 border rounded p-4">
@@ -363,33 +323,5 @@ const deleteInvitation = (invitation: Invitation) => {
 
             </div>
         </div>
-
-        <NModal v-model:show="statsModalOpen" preset="card" title="Promoter Sales Stats" style="width: 600px;">
-            <template #header>
-                Sales Stats for {{ selectedPromoterName }}
-            </template>
-            <div v-if="loadingStats" class="flex justify-center p-8">
-                <NSpin size="large" />
-            </div>
-            <div v-else>
-                <NTable v-if="selectedPromoterStats.length > 0" :bordered="false" :single-line="false">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th class="text-right">Quantity Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="stat in selectedPromoterStats" :key="stat.product_id">
-                            <td>{{ stat.product_name }}</td>
-                            <td class="text-right">{{ stat.quantity }}</td>
-                        </tr>
-                    </tbody>
-                </NTable>
-                <div v-else class="text-center text-gray-500 py-4">
-                    No sales found for this promoter.
-                </div>
-            </div>
-        </NModal>
-    </ManageEventLayout>
+    </OrganizerLayout>
 </template>

@@ -19,7 +19,7 @@ class PromoterInvitation extends Model
 {
     protected $fillable = [
         'promoter_id',
-        'event_id',
+        'organizer_id',
         'email',
         'status',
         'token',
@@ -37,8 +37,8 @@ class PromoterInvitation extends Model
         return $this->belongsTo(Promoter::class);
     }
 
-    public function event(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function organizer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(\Domain\EventManagement\Models\Event::class);
+        return $this->belongsTo(\Domain\OrganizerManagement\Models\Organizer::class);
     }
 }

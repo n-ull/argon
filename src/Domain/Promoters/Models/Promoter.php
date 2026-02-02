@@ -33,14 +33,16 @@ class Promoter extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function organizers()
+    {
+        return $this->belongsToMany(\Domain\OrganizerManagement\Models\Organizer::class, 'organizer_promoter')
+            ->withPivot(['commission_type', 'commission_value', 'enabled'])
+            ->withTimestamps();
+    }
+
     public function commissions()
     {
         return $this->hasMany(Commission::class);
-    }
-
-    public function events()
-    {
-        return $this->belongsToMany(Event::class, 'promoter_events', 'promoter_id', 'event_id');
     }
 
     public function invitations(): HasMany

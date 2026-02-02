@@ -111,8 +111,20 @@ Route::group([
         Route::delete('{organizer}/taxes-and-fees/{taxAndFee}', [\App\Modules\OrganizerManagement\Controllers\TaxAndFeeController::class, 'destroy'])
             ->name('taxes-and-fees.destroy');
 
-        // Route::get('{organizer}/mercadopago/vinculate', \Domain\OrganizerManagement\Actions\VinculateMercadoPagoAccount::class)
-        //     ->name('mercadopago.vinculate');
+        Route::get('{organizer}/promoters', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'promoters'])
+            ->name('promoters');
+
+        Route::post('{organizer}/promoters', \Domain\Promoters\Actions\InvitePromoter::class)
+            ->name('promoters.store');
+
+        Route::patch('{organizer}/promoters/{promoter}/enable', \Domain\Promoters\Actions\EnablePromoter::class)
+            ->name('promoters.enable');
+
+        Route::delete('{organizer}/promoters/{promoter}', \Domain\Promoters\Actions\RemovePromoter::class)
+            ->name('promoters.delete');
+
+        Route::delete('{organizer}/promoters/invitations/{invitation}', \Domain\Promoters\Actions\DeletePromoterInvitation::class)
+            ->name('promoters.invitations.delete');
     });
 
     // manage event
@@ -153,12 +165,6 @@ Route::group([
         Route::get('{event}/orders', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'orders'])
             ->name('orders');
 
-        Route::get('{event}/promoters', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'promoters'])
-            ->name('promoters');
-
-        Route::post('{event}/promoters', \Domain\Promoters\Actions\InvitePromoter::class)
-            ->name('promoters.store');
-
         Route::get('{event}/settings', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'settings'])
             ->name('settings');
 
@@ -174,17 +180,9 @@ Route::group([
         Route::get('{event}/vouchers', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'vouchers'])
             ->name('vouchers');
 
-        Route::patch('{event}/promoters/{promoter}/enable', \Domain\Promoters\Actions\EnablePromoterForEvent::class)
-            ->name('promoters.enable');
-
-        Route::delete('{event}/promoters/{promoter}', \Domain\Promoters\Actions\RemovePromoterFromEvent::class)
-            ->name('promoters.delete');
-
-        Route::delete('{event}/promoters/invitations/{invitation}', \Domain\Promoters\Actions\DeletePromoterInvitation::class)
-            ->name('promoters.invitations.delete');
-
         Route::get('{event}/promoters/{promoter}/stats', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'promoterStats'])
-            ->name('promoters.stats');
+            ->name('promoters.stats')
+            ->withoutScopedBindings();
 
         Route::patch('{event}/status', \Domain\EventManagement\Actions\UpdateEventStatus::class)
             ->name('status.update');
@@ -209,6 +207,8 @@ Route::group([
     'as' => 'promoters.',
 ], function () {
     Route::get('invitations/{token}', [\App\Modules\Promoters\Controllers\PromoterInvitationController::class, 'show'])->name('invitations.show');
+    Route::post('invitations/{token}/accept', \Domain\Promoters\Actions\AcceptPromoterInvitation::class)->name('invitations.accept');
+    Route::post('invitations/{token}/decline', \Domain\Promoters\Actions\DeclinePromoterInvitation::class)->name('invitations.decline');
     Route::get('dashboard', \App\Modules\Promoters\Controllers\PromoterDashboardController::class)->name('dashboard');
     Route::get('events/{event}/stats', \App\Modules\Promoters\Controllers\PromoterStatsController::class)->name('events.stats');
 });
@@ -224,8 +224,6 @@ Route::group([
     'as' => 'promoters.',
     'middleware' => ['auth', 'verified'],
 ], function () {
-    Route::post('invitations/{token}/accept', \Domain\Promoters\Actions\AcceptPromoterInvitation::class)->name('invitations.accept');
-    Route::post('invitations/{token}/decline', \Domain\Promoters\Actions\DeclinePromoterInvitation::class)->name('invitations.decline');
 });
 
 Route::get('mercado-pago/callback', \App\Modules\OrganizerManagement\Controllers\MercadoPagoOAuthController::class)->middleware(['auth'])->name('mp.oauth');

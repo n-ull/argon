@@ -12,14 +12,14 @@ class PromoterInvitationController extends Controller
     {
         $invitation = PromoterInvitation::where('token', $token)
             ->where('status', 'pending')
-            ->with(['event.organizer'])
+            ->with(['organizer'])
             ->firstOrFail();
 
         $isEmailRegistered = \App\Models\User::where('email', $invitation->email)->exists();
 
         return Inertia::render('promoters/invitations/Show', [
             'invitation' => $invitation,
-            'event' => $invitation->event,
+            'organizer' => $invitation->organizer,
             'isEmailRegistered' => $isEmailRegistered,
         ]);
     }

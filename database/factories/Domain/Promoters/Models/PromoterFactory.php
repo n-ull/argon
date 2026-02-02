@@ -18,4 +18,15 @@ class PromoterFactory extends Factory
             'enabled' => true,
         ];
     }
+
+    public function withOrganizer(\Domain\OrganizerManagement\Models\Organizer $organizer, array $pivotData = [])
+    {
+        return $this->afterCreating(function (Promoter $promoter) use ($organizer, $pivotData) {
+            $promoter->organizers()->attach($organizer->id, array_merge([
+                'commission_type' => 'fixed',
+                'commission_value' => 10,
+                'enabled' => true,
+            ], $pivotData));
+        });
+    }
 }
