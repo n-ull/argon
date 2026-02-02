@@ -63,7 +63,7 @@ const goToPage = (page: number) => {
         <div class="space-y-2 max-h-[60vh] overflow-y-auto">
             <Link :href="show(organizer.id)" v-for="organizer in paginatedOrganizers" :key="organizer.id"
                 class="flex items-center gap-4 p-4 rounded-lg border hover:bg-neutral-800 cursor-pointer transition-colors">
-                <img :src="organizer.logo ?? 'https://placehold.co/300x300/png'" :alt="organizer.name"
+                <img :src="'storage/' + organizer.logo" :alt="organizer.name"
                     class="w-12 h-12 rounded-full object-cover" />
                 <div class="flex-1">
                     <h3 class="font-semibold">{{ organizer.name }}</h3>
