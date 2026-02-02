@@ -4,7 +4,11 @@ namespace App\Providers;
 
 use Domain\Ordering\Events\OrderCompleted;
 use Domain\Ordering\Events\OrderCreated;
+use Domain\Ordering\Listeners\SendOrderCompletedEmail;
+use Domain\Promoters\Events\CommissionCompleted;
+use Domain\Promoters\Listeners\CompletePromoterCommission;
 use Domain\Promoters\Listeners\CreateCommissionForOrder;
+use Domain\Promoters\Listeners\SendPromoterCommissionNotification;
 use Domain\Ticketing\Listeners\GenerateTicketsForOrder;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
@@ -34,8 +38,23 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Event::listen(
+            OrderCompleted::class,
+            SendOrderCompletedEmail::class
+        );
+
+        Event::listen(
+            OrderCompleted::class,
+            CompletePromoterCommission::class
+        );
+
+        Event::listen(
             OrderCreated::class,
             CreateCommissionForOrder::class
+        );
+
+        Event::listen(
+            CommissionCompleted::class,
+            SendPromoterCommissionNotification::class
         );
 
         Inertia::share([

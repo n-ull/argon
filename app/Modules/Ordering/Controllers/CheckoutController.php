@@ -14,6 +14,10 @@ class CheckoutController extends Controller
     {
         $settings = $order->event->organizer->settings;
 
+        if ($order->status === OrderStatus::COMPLETED) {
+            return redirect(route('orders.show', $order->id));
+        }
+
         if ($order->status === OrderStatus::EXPIRED || $order->status === OrderStatus::CANCELLED) {
             return redirect(route('events.show', $order->event->slug))
                 ->with('message', flash_error(

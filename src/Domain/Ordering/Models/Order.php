@@ -116,6 +116,11 @@ class Order extends Model
         return $this->hasOne(Promoter::class, 'referral_code', 'referral_code');
     }
 
+    public function commission(): HasOne
+    {
+        return $this->hasOne(\Domain\Promoters\Models\Commission::class);
+    }
+
     protected static function newFactory()
     {
         return \Database\Factories\Domain\Ordering\Models\OrderFactory::new();

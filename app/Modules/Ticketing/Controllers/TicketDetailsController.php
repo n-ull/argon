@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Domain\Ticketing\Models\Ticket;
 use Domain\Ticketing\Resources\TicketResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class TicketDetailsController extends Controller
@@ -15,6 +16,8 @@ class TicketDetailsController extends Controller
      */
     public function __invoke(Ticket $ticket, Request $request)
     {
+        Gate::authorize('view', $ticket);
+
         $ticket->load(['product', 'event', 'order']);
 
         return Inertia::render('tickets/Details', [
