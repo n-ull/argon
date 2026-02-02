@@ -34,8 +34,15 @@ class BulkInvitePromoters extends Command
             return Command::FAILURE;
         }
 
-        $emails = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $emails = array_unique(array_filter(array_map('trim', $emails)));
+        // Read the entire file content
+        $content = file_get_contents($filePath);
+
+        // Regex to extract emails
+        $pattern = '/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/';
+        preg_match_all($pattern, $content, $matches);
+
+        // Get unique emails
+        $emails = array_unique($matches[0]);
 
         if (empty($emails)) {
             $this->warn("No emails found in file.");
@@ -50,15 +57,16 @@ class BulkInvitePromoters extends Command
             return Command::FAILURE;
         }
 
-        $this->info("Processing ".count($emails)." invitations for organizer: {$organizer->name}");
+        $this->info("Found ".count($emails)." unique emails. Processing invitations for organizer: {$organizer->name}");
 
         $invitedCount = 0;
         $errorCount = 0;
         $skippedCount = 0;
 
         foreach ($emails as $email) {
+            // Further validation to be safe, though regex is pretty good
             if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $this->warn("Invalid email format: {$email}");
+                $this->warn("Skipping invalid email format after extraction: {$email}");
                 $errorCount++;
                 continue;
             }
