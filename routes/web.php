@@ -77,6 +77,13 @@ Route::group([
         'prefix' => 'organizer',
         'as' => 'organizer.',
     ], function () {
+        // create organizer
+        Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'index'])
+            ->name('create');
+
+        Route::post('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
+            ->name('create.store');
+
         Route::get('{organizer}', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'show'])
             ->name('show');
 

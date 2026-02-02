@@ -18,6 +18,6 @@ class CreateOrganizerController extends Controller
     {
         $createOrganizer->handle($request->validated());
 
-        return redirect()->route('organizers.index');
+        return redirect()->route('dashboard');
     }
 }
