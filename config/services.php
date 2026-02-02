@@ -14,6 +14,12 @@ return [
     |
     */
 
+    'mercadopago' => [
+        'access_token' => env('MERCADOPAGO_ACCESS_TOKEN'),
+        'app_id' => env('MERCADOPAGO_CLIENT_ID'),
+        'test_access_token' => env('TEST_MERCADOPAGO_ACCESS_TOKEN'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
