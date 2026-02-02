@@ -78,7 +78,7 @@ Route::group([
         'as' => 'organizer.',
     ], function () {
         // create organizer
-        Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'index'])
+        Route::get('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'create'])
             ->name('create');
 
         Route::post('create', [\App\Modules\OrganizerManagement\Controllers\CreateOrganizerController::class, 'store'])
