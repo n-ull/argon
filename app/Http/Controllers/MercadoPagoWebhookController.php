@@ -26,8 +26,9 @@ class MercadoPagoWebhookController extends Controller
 
         try {
             $payment = $mp->getPayment($id);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (MPApiException $e) {
+            \Log::info('MP Api Exception', [$e->getApiResponse()->getContent()]);
+            return response()->json(['message' => $e->getMessage(), 'api_response' => $e->getApiResponse()->getContent()], 400);
         }
 
         if ($payment->status === 'approved') {
