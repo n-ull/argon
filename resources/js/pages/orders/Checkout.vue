@@ -129,32 +129,56 @@ const quickRegister = () => {
                 <p class="font-bold">Referral Code: {{ order.referral_code }}</p>
             </div>
 
-            <div class="p-4 border border-moovin-lime rounded-lg">
-                <table class="min-w-full divide-y divide-moovin-lime">
-                    <thead>
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Product</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Selected</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Quantity</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Unit Price</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-moovin-lime">
-                        <tr v-for="item in order.items_snapshot" :key="item.id">
-                            <td class="px-6 py-4 whitespace-nowrap">{{ item.product_name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ item.product_price_label }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${{ item.unit_price }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">${{ item.subtotal }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Mobile Layout -->
+            <div class="md:hidden space-y-3 p-4 border border-moovin-lime rounded-lg">
+                <div v-for="item in order.items_snapshot" :key="item.id"
+                    class="flex justify-between items-start border-b border-moovin-lime/30 last:border-0 pb-3 last:pb-0">
+                    <div class="flex-1 pr-4">
+                        <p class="font-medium text-neutral-200">{{ item.product_name }}</p>
+                        <p class="text-xs text-neutral-300">{{ item.product_price_label }}</p>
+                    </div>
+                    <div class="text-right whitespace-nowrap">
+                        <span class="text-neutral-600 text-sm">x{{ item.quantity }}</span>
+                        <span class="font-bold text-neutral-200 ml-2">${{ item.subtotal }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Layout -->
+            <div class="hidden md:block border border-moovin-lime rounded-lg overflow-hidden w-full">
+                <div class="overflow-x-auto w-full block">
+                    <table class="min-w-full divide-y divide-moovin-lime">
+                        <thead>
+                            <tr>
+                                <th
+                                    class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    Product</th>
+                                <th
+                                    class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    Selected</th>
+                                <th
+                                    class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                                    Quantity</th>
+                                <th
+                                    class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Unit Price</th>
+                                <th
+                                    class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-moovin-lime">
+                            <tr v-for="item in order.items_snapshot" :key="item.id">
+                                <td class="px-4 md:px-6 py-4 whitespace-normal min-w-[150px]">{{ item.product_name }}
+                                </td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">{{ item.product_price_label }}</td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">${{ item.unit_price }}</td>
+                                <td class="px-4 md:px-6 py-4 whitespace-nowrap">${{ item.subtotal }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div class="flex flex-col gap-2 p-4 border border-moovin-lime rounded-lg"

@@ -77,7 +77,7 @@ const items = computed<NavItem[]>(() => {
 
 <template>
     <n-config-provider :theme="dark" :theme-overrides="themeOverrides">
-        <div class="min-h-screen">
+        <div class="min-h-screen overflow-x-hidden">
             <!-- Horizontal Navbar -->
             <HorizontalNavbar :items="items" />
 
