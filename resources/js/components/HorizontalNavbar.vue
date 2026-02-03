@@ -2,9 +2,17 @@
 import { Link } from '@inertiajs/vue3';
 import AppLogo from '@/components/AppLogo.vue';
 import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { NavItem } from '@/types';
 import { urlIsActive } from '@/lib/utils';
+import { Menu } from 'lucide-vue-next';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -14,6 +22,8 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const isOpen = ref(false);
 </script>
 
 <template>
@@ -24,7 +34,7 @@ const props = defineProps<Props>();
                     <!-- Logo/Brand -->
                     <div class="flex items-center gap-8">
                         <Link href="/" class="text-xl font-bold text-gray-900">
-                        <AppLogo class="h-6 fill-moovin-lime" />
+                            <AppLogo class="h-6 fill-moovin-lime" />
                         </Link>
 
                         <!-- Navigation Links -->
@@ -33,33 +43,98 @@ const props = defineProps<Props>();
                                 'rounded-md px-3 py-2 flex items-center gap-2 transition hover:bg-gray-100 hover:text-gray-900',
                                 urlIsActive(item.href, page.url) ? 'bg-gray-100 text-gray-900' : 'text-white'
                             ]">
-                            <component :is="item.icon" />
-                            {{ item.title }}
+                                <component :is="item.icon" />
+                                {{ item.title }}
                             </Link>
                         </div>
                     </div>
 
-                    <!-- Right side - Auth links -->
-                    <div class="flex items-center gap-2">
+                    <!-- Desktop Right side - Auth links -->
+                    <div class="hidden md:flex items-center gap-2">
                         <template v-if="user">
                             <span class="text-sm text-primary">
                                 {{ user.name }}
                             </span>
                             <Link href="/logout" method="post" as="button"
                                 class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/80">
-                            Logout
+                                Logout
                             </Link>
                         </template>
                         <template v-else>
                             <Link href="/login"
                                 class="rounded-md px-4 py-2 text-sm font-medium text-primary transition hover:bg-gray-100">
-                            Login
+                                Login
                             </Link>
                             <Link href="/register"
                                 class="rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition hover:bg-secondary/80">
-                            Register
+                                Register
                             </Link>
                         </template>
+                    </div>
+
+                    <!-- Mobile Menu Trigger -->
+                    <div class="md:hidden">
+                        <Sheet v-model:open="isOpen">
+                            <SheetTrigger as-child>
+                                <button class="p-2 text-white hover:bg-neutral-800 rounded-md transition-colors">
+                                    <Menu class="h-6 w-6" />
+                                </button>
+                            </SheetTrigger>
+                            <SheetContent side="right"
+                                class="bg-black border-neutral-900 text-white w-[300px] sm:w-[400px]">
+                                <SheetHeader>
+                                    <SheetTitle class="text-left text-white flex items-center gap-2">
+                                        <AppLogo class="h-6 fill-moovin-lime" />
+                                    </SheetTitle>
+                                </SheetHeader>
+
+                                <div class="flex flex-col gap-6 mt-8">
+                                    <!-- Mobile Navigation Links -->
+                                    <div class="flex flex-col gap-2 uppercase font-black text-lg">
+                                        <Link v-for="item in items" :key="item.title" :href="item.href"
+                                            @click="isOpen = false" :class="[
+                                                'rounded-md px-4 py-3 flex items-center gap-3 transition-colors',
+                                                urlIsActive(item.href, page.url)
+                                                    ? 'bg-neutral-800 text-white'
+                                                    : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
+                                            ]">
+                                            <component :is="item.icon" v-if="item.icon" class="h-5 w-5" />
+                                            {{ item.title }}
+                                        </Link>
+                                    </div>
+
+                                    <!-- Mobile Auth Links -->
+                                    <div class="flex flex-col gap-4 border-t border-neutral-800 pt-6">
+                                        <template v-if="user">
+                                            <div class="flex items-center gap-3 px-4">
+                                                <div
+                                                    class="h-10 w-10 rounded-full bg-neutral-800 flex items-center justify-center text-primary font-bold">
+                                                    {{ user.name.charAt(0).toUpperCase() }}
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <span class="text-sm font-medium text-white">{{ user.name }}</span>
+                                                    <span class="text-xs text-neutral-500">{{ user.email }}</span>
+                                                </div>
+                                            </div>
+                                            <Link href="/logout" method="post" as="button" @click="isOpen = false"
+                                                class="w-full rounded-md bg-primary/10 px-4 py-3 text-sm font-bold text-primary transition hover:bg-primary/20 text-center">
+                                                Logout
+                                            </Link>
+                                        </template>
+                                        <template v-else>
+                                            <Link href="/login" @click="isOpen = false"
+                                                class="w-full rounded-md bg-neutral-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-neutral-800 text-center">
+                                                Login
+                                            </Link>
+                                            <Link href="/register" @click="isOpen = false"
+                                                class="w-full rounded-md bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 text-center">
+                                                Register
+                                            </Link>
+                                        </template>
+                                    </div>
+                                </div>
+                            </SheetContent>
+                        </Sheet>
                     </div>
                 </div>
             </div>
