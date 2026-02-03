@@ -232,7 +232,7 @@ const quickRegister = () => {
                         <div v-if="tax.display_mode !== 'integrated'" class="flex justify-between">
                             <span>{{ tax.name }} ({{ tax.calculation_type === 'percentage' ? tax.value + '%' : '$' +
                                 tax.value }})</span>
-                            <span>${{ tax.calculated_amount }}</span>
+                            <span>${{ tax.calculated_amount.toFixed(2) }}</span>
                         </div>
                     </template>
                     <template v-for="fee in order.fees_snapshot" :key="fee.name">
@@ -240,8 +240,8 @@ const quickRegister = () => {
                             <span :class="{ 'font-medium': fee.is_service_fee }">{{ fee.name }} {{ fee.is_service_fee ?
                                 '' :
                                 `(${fee.calculation_type === 'percentage' ? fee.value + '%' : '$' + fee.value})`
-                                }}</span>
-                            <span>${{ fee.calculated_amount }}</span>
+                            }}</span>
+                            <span>${{ fee.calculated_amount.toFixed(2) }}</span>
                         </div>
                     </template>
                 </div>
