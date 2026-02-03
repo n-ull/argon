@@ -55,7 +55,7 @@ const columns = [
                             openDetails(row);
                         } else {
                             const url = window.location.origin + show(row.slug).url;
-                            navigator.clipboard.writeText(url + '?referral=' + props.referral_code);
+                            navigator.clipboard.writeText(url + '?referr=' + props.referral_code);
                             toast.success('Link copied to clipboard')
                         }
                     }

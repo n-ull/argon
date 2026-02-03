@@ -5,7 +5,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import type { AppPageProps, Organizer } from '@/types';
 import invitations from '@/routes/promoters/invitations';
 import { register, login } from '@/routes';
-import { dashboard } from '@/routes/promoters';
+import promoters, { dashboard } from '@/routes/promoters';
 
 interface Invitation {
     id: number;
@@ -58,7 +58,7 @@ const decline = () => {
                             <p class="text-sm text-gray-400">Your Commission</p>
                             <p class="text-3xl font-bold text-green-500">
                                 <span v-if="invitation.commission_type === 'percentage'">{{ invitation.commission_value
-                                    }}%</span>
+                                }}%</span>
                                 <span v-else>${{ invitation.commission_value }}</span>
                             </p>
                             <p class="text-xs text-gray-500 mt-1">per ticket sold</p>
@@ -81,7 +81,7 @@ const decline = () => {
                                 class="p-6 bg-green-900/20 text-green-500 rounded-lg text-center">
                                 <h3 class="text-xl font-bold mb-2">Invitation Accepted</h3>
                                 <p>You have accepted this invitation. You can now access your promoter dashboard.</p>
-                                <NButton class="mt-4" type="primary" tag="a" :href="dashboard()">
+                                <NButton class="mt-4" type="primary" tag="a" :href="promoters.dashboard().url">
                                     Go to Dashboard
                                 </NButton>
                             </div>
@@ -109,7 +109,7 @@ const decline = () => {
                                 class="p-6 bg-green-900/20 text-green-500 rounded-lg text-center">
                                 <h3 class="text-xl font-bold mb-2">Invitation Accepted</h3>
                                 <p>You have accepted this invitation. You can now access your promoter dashboard.</p>
-                                <NButton class="mt-4" type="primary" tag="a" href="/promoter">
+                                <NButton class="mt-4" type="primary" tag="a" :href="promoters.dashboard().url">
                                     Go to Dashboard
                                 </NButton>
                             </div>

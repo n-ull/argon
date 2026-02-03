@@ -2,7 +2,7 @@
 import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { Event, Product, ProductPrice } from '@/types';
+import { Event, Product, ProductPrice, Promoter } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { Calendar, LucideShoppingCart, MapPin, Minus, Pencil, Plus, X } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
@@ -18,10 +18,11 @@ interface Props {
     event: Event,
     products: Product[],
     userIsOrganizer: boolean,
-    referralCode?: string
+    referralCode?: string,
+    promoter?: Promoter
 }
 
-const { event, products, userIsOrganizer, referralCode } = defineProps<Props>();
+const { event, products, userIsOrganizer, referralCode, promoter } = defineProps<Props>();
 
 interface CartItem {
     productId: number;
@@ -157,6 +158,14 @@ const filterProductWithPrices = products.filter(product => product.product_price
                         <X :size="16" />
                     </button>
                     <span>Referral code applied: {{ referralCode }}</span>
+                </div>
+                <div v-if="promoter" class="bg-neutral-900 rounded p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold">Promoter: {{ promoter.name }}</h3>
+                            <p class="text-sm text-gray-400">{{ promoter.email }}</p>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <img v-if="!isPhone && event.cover_image_path" :src="`/storage/${event.cover_image_path}`"
