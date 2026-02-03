@@ -26,8 +26,6 @@ interface Props {
 
 const { order, settings } = defineProps<Props>();
 
-console.log(order);
-
 const paymentMethod = ref('');
 const guestEmail = ref('');
 const timeLeft = ref(Math.max(0, Math.floor((new Date(order.expires_at!).getTime() - new Date().getTime()) / 1000)));
@@ -95,7 +93,7 @@ const createIntent = async () => {
             if (isFree.value) {
                 router.visit(data.url);
             } else {
-                window.open(data.url, '_blank');
+                window.location.href = data.url;
             }
         }
     } catch (error) {
