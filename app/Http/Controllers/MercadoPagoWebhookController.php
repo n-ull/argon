@@ -37,7 +37,7 @@ class MercadoPagoWebhookController extends Controller
 
             if ($order) {
                 try {
-                    $this->orderService->completePendingOrder($order);
+                    $this->orderService->completePendingOrder($order->id);
                     $order->update([
                         'used_payment_gateway_snapshot' => 'MercadoPago',
                     ]);
