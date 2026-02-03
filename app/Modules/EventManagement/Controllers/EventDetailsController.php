@@ -70,7 +70,7 @@ class EventDetailsController extends Controller
             'products' => ProductResource::collection($products)->resolve(),
             'userIsOrganizer' => auth()->check() && $event->organizer->users->contains(auth()->user()->id),
             'referralCode' => session('referral_code_'.$event->id),
-            'promoter' => $promoter,
+            'promoter' => $promoter ?? null,
         ]);
     }
 }
