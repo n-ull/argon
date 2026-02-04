@@ -4,6 +4,7 @@ namespace Domain\Ticketing\Jobs;
 
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
+use Domain\ProductCatalog\Enums\ProductType;
 use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Bus\Queueable;
@@ -30,13 +31,13 @@ class GenerateTickets implements ShouldQueue
     {
         $order = Order::with(['orderItems', 'orderItems.product'])->findOrFail($this->orderId);
 
-        if (!$order) {
+        if (! $order) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} not found");
 
             return;
         }
 
-        if (!$order->isPaid) {
+        if (! $order->isPaid) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} is not paid");
 
             return;
@@ -44,7 +45,9 @@ class GenerateTickets implements ShouldQueue
 
         \DB::transaction(function () use ($order) {
             foreach ($order->orderItems as $item) {
-                $this->generateTicket($item);
+                if ($item->product->product_type === ProductType::TICKET) {
+                    $this->generateTicket($item);
+                }
             }
         });
     }
