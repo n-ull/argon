@@ -15,7 +15,7 @@ const { events } = defineProps<Props>();
 
 <template>
 
-    <Head title="Welcome" />
+    <Head :title="t('argon.welcome.title')" />
 
     <SimpleLayout>
         <!-- Main Content -->
