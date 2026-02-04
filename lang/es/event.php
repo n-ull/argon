@@ -24,4 +24,5 @@ return [
     'status' => 'Estado',
     'end_date' => 'Fecha de finalización',
     'actions' => 'Acciones',
+    'combos' => 'Lotes',
 ];
