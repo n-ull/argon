@@ -250,7 +250,7 @@ const { events } = defineProps<Props>();
 
 <style scoped>
 .animate-marquee {
-    animation: marquee 45s linear infinite;
+    animation: marquee 120s linear infinite;
 }
 
 @keyframes marquee {

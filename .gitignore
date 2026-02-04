@@ -31,3 +31,4 @@ artisan
 .phpstorm.meta.php
 lang/php_en.json
 .gitignore
+lang/php_es.json
