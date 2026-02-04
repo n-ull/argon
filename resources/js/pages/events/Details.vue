@@ -13,6 +13,7 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import { formatDate, formatDateDiff } from '@/lib/utils';
 import { dashboard } from '@/routes/manage/event';
 import referral from '@/routes/events/referral';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     event: Event,
@@ -98,10 +99,10 @@ const handleCheckout = () => {
                 openDialog({
                     component: ConfirmDialog,
                     props: {
-                        title: 'Pending Order',
-                        description: 'You have a pending order. Would you like to view it?',
-                        confirmText: 'View Order',
-                        cancelText: 'Cancel Order',
+                        title: t('order.pending_order'),
+                        description: t('order.pending_order_description'),
+                        confirmText: t('order.view_order'),
+                        cancelText: t('order.cancel_order'),
                         onConfirm: () => {
                             window.location.href = checkout(parseInt(orderId)).url;
                         },
@@ -147,7 +148,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                     <template #icon>
                         <Pencil />
                     </template>
-                    Edit Event
+                    {{ t('event.edit_event') }}
                 </NButton>
             </Link>
             <div class="flex flex-col gap-4">
@@ -157,24 +158,24 @@ const filterProductWithPrices = products.filter(product => product.product_price
                         class="hover:bg-black/10 bg-black/20 p-1 rounded transition-colors">
                         <X :size="16" />
                     </button>
-                    <span>Referral code applied: {{ referralCode }}</span>
+                    <span>{{ t('event.referral_code_applied') }}: {{ referralCode }}</span>
                 </div>
                 <div v-if="promoter" class="bg-neutral-900 rounded p-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="text-lg font-bold">Promoter: {{ promoter.name }}</h3>
+                            <h3 class="text-lg font-bold">{{ t('event.promoter') }}: {{ promoter.name }}</h3>
                             <p class="text-sm text-gray-400">{{ promoter.email }}</p>
                         </div>
                     </div>
                 </div>
                 <div>
                     <img v-if="!isPhone && event.cover_image_path" :src="`/storage/${event.cover_image_path}`"
-                        class="w-full object-cover rounded" alt="Event Cover Image" />
+                        class="w-full object-cover rounded" :alt="t('event.alt_event_cover')" />
                     <img v-else-if="!isPhone" src="https://placehold.co/1480x600/png"
-                        class="w-full object-cover rounded" alt="Event Cover Placeholder" />
+                        class="w-full object-cover rounded" :alt="t('event.alt_event_cover')" />
 
                     <img v-if="isPhone && event.poster_image_path" :src="`/storage/${event.poster_image_path}`"
-                        class="w-full object-cover rounded" alt="Event Poster Image" />
+                        class="w-full object-cover rounded" :alt="t('event.alt_event_poster')" />
                     <img v-else-if="isPhone" src="https://placehold.co/800x1024/png" class="w-full object-cover rounded"
                         alt="Event Poster Placeholder" />
                 </div>
@@ -186,7 +187,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                     ]" />
                     <div class="flex flex-col p-4 gap-2">
                         <span v-if="event.description" v-html="event.description.replace(/\n/g, '<br>')"></span>
-                        <span v-else class="text-neutral-500">Description not provided.</span>
+                        <span v-else class="text-neutral-500">{{ t('event.description_not_available') }}</span>
                         <span v-if="event.location_info" class="flex mt-4 items-center gap-2 text-sm text-neutral-400">
                             <MapPin />
                             <a :href="mapUrl" target="_blank">
@@ -207,7 +208,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                 </div>
 
                 <div class="bg-moovin-green p-4 rounded space-y-2">
-                    <h2 class="font-bold">Organized by</h2>
+                    <h2 class="font-bold">{{ t('event.organized_by') }}</h2>
                     <div class="flex items-center gap-2">
                         <img v-if="event.organizer.logo" :src="`/storage/${event.organizer.logo}`"
                             class="w-12 h-12 rounded-full" alt="Organizer Logo" />
@@ -216,7 +217,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                 </div>
 
                 <div class="bg-neutral-900 rounded">
-                    <TicketShapedCardHeader color="gray" title="Products" />
+                    <TicketShapedCardHeader color="gray" :title="t('event.products')" />
                     <ul class="space-y-4 p-4">
                         <li v-if="filterProductWithPrices.length > 0" v-for="product in filterProductWithPrices"
                             :key="product.id" class="border p-4 rounded">
@@ -224,7 +225,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                 <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
                                 <span v-if="product.description" class="text-sm text-neutral-400">{{
                                     product.description
-                                }}</span>
+                                    }}</span>
                             </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id">
@@ -243,17 +244,18 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                             </div>
                                             <span class="text-moovin-lime text-lg font-black" v-if="price.price > 0">${{
                                                 price.price
-                                            }}</span>
+                                                }}</span>
                                             <span class="text-moovin-lime text-lg font-bold" v-else>Free</span>
                                         </div>
                                         <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
                                             class="text-sm text-neutral-400">
-                                            Sales start in {{ formatDateDiff(price.sales_start_date) }} {{
+                                            {{ t('event.sales_start_in') }} {{ formatDateDiff(price.sales_start_date) }}
+                                            {{
                                                 formatDateDiff(price.sales_start_date) === 1 ? 'day' : 'days' }}
                                         </div>
                                         <div v-else-if="price.sales_end_date && new Date(price.sales_end_date) < new Date()"
                                             class="text-sm text-neutral-400">
-                                            Sales ended
+                                            {{ t('event.sales_ended') }}
                                         </div>
                                         <div v-else class="flex flex-row gap-2">
                                             <div v-if="price.is_sold_out" class="text-lg text-moovin-lila font-bold">
@@ -266,7 +268,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                                 </Button>
                                                 <Button size="icon" variant="default">{{
                                                     getQuantity(price.id)
-                                                }}</Button>
+                                                    }}</Button>
                                                 <Button size="icon" variant="default"
                                                     :disabled="getQuantity(price.id) >= (price.limit_max_per_order ?? product.max_per_order ?? Infinity)"
                                                     @click="addToCart(product, price)">
@@ -290,7 +292,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                             <n-button :loading="isLoading" attr-type="submit" v-if="filterProductWithPrices.length > 0"
                                 :disabled="form.items.length === 0 || event.status !== 'published'"
                                 color="hsl(264, 100%, 84%)" size="large" text-color="hsl(242, 32%, 15%)"
-                                :block="true">Checkout</n-button>
+                                :block="true">{{ t('event.checkout') }}</n-button>
                         </form>
 
                         <!-- <n-button @click="dialogTest" color="hsl(264, 100%, 84%)" size="large"

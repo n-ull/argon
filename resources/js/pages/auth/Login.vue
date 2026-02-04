@@ -8,11 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
 import { register } from '@/routes';
-import login, { store } from '@/routes/login';
+import login from '@/routes/login';
 import { request } from '@/routes/password';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { trans as t } from 'laravel-vue-i18n';
 
 defineProps<{
     status?: string;
@@ -27,9 +28,9 @@ const showPassword = ref(false);
 </script>
 
 <template>
-    <AuthBase title="Log in to your account" description="Enter your email and password below to log in">
+    <AuthBase :title="t('user.login')" :description="t('user.login_description')">
 
-        <Head title="Log in" />
+        <Head :title="t('user.login')" />
 
         <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
             {{ status }}
@@ -39,7 +40,7 @@ const showPassword = ref(false);
             class="flex flex-col gap-6">
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="email">{{ t('user.email') }}</Label>
                     <Input id="email" type="email" name="email" required autofocus :tabindex="1" autocomplete="email"
                         placeholder="email@example.com" />
                     <InputError :message="errors.email" />
@@ -47,14 +48,14 @@ const showPassword = ref(false);
 
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
-                        <Label for="password">Password</Label>
+                        <Label for="password">{{ t('user.password') }}</Label>
                         <TextLink v-if="canResetPassword" :href="request()" class="text-sm" :tabindex="5">
-                            Forgot password?
+                            {{ t('user.forgot_password') }}
                         </TextLink>
                     </div>
                     <div class="relative">
                         <Input id="password" :type="showPassword ? 'text' : 'password'" name="password" required
-                            :tabindex="2" autocomplete="current-password" placeholder="Password" />
+                            :tabindex="2" autocomplete="current-password" :placeholder="t('user.password')" />
                         <button type="button" @click="showPassword = !showPassword"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 focus:outline-none"
                             tabindex="-1">
@@ -68,20 +69,20 @@ const showPassword = ref(false);
                 <div class="flex items-center justify-between">
                     <Label for="remember" class="flex items-center space-x-3">
                         <Checkbox id="remember" name="remember" :tabindex="3" />
-                        <span>Remember me</span>
+                        <span>{{ t('user.remember_me') }}</span>
                     </Label>
                 </div>
 
                 <Button type="submit" class="mt-4 w-full" :tabindex="4" :disabled="processing" data-test="login-button">
                     <Spinner v-if="processing" />
-                    Log in
+                    {{ t('user.login') }}
                 </Button>
                 <input type="hidden" name="return_url" v-model="returnUrl" />
             </div>
 
             <div class="text-center text-sm text-muted-foreground" v-if="canRegister">
-                Don't have an account?
-                <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
+                {{ t('user.dont_have_account') }}
+                <TextLink :href="register()" :tabindex="5">{{ t('user.sign_up') }}</TextLink>
             </div>
         </Form>
     </AuthBase>

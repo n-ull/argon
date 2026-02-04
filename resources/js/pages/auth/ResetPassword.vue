@@ -8,6 +8,7 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import { update } from '@/routes/password';
 import { Form, Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { trans as t } from 'laravel-vue-i18n';
 
 const props = defineProps<{
     token: string;
@@ -18,70 +19,40 @@ const inputEmail = ref(props.email);
 </script>
 
 <template>
-    <AuthLayout
-        title="Reset password"
-        description="Please enter your new password below"
-    >
-        <Head title="Reset password" />
+    <AuthLayout :title="t('user.reset_pw.reset_password')" :description="t('user.reset_pw.description')">
 
-        <Form
-            v-bind="update.form()"
-            :transform="(data) => ({ ...data, token, email })"
-            :reset-on-success="['password', 'password_confirmation']"
-            v-slot="{ errors, processing }"
-        >
+        <Head :title="t('user.reset_pw.reset_password')" />
+
+        <Form v-bind="update.form()" :transform="(data) => ({ ...data, token, email })"
+            :reset-on-success="['password', 'password_confirmation']" v-slot="{ errors, processing }">
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">Email</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        name="email"
-                        autocomplete="email"
-                        v-model="inputEmail"
-                        class="mt-1 block w-full"
-                        readonly
-                    />
+                    <Label for="email">{{ t('user.reset_pw.email') }}</Label>
+                    <Input id="email" type="email" name="email" autocomplete="email" v-model="inputEmail"
+                        class="mt-1 block w-full" readonly />
                     <InputError :message="errors.email" class="mt-2" />
                 </div>
 
                 <div class="grid gap-2">
-                    <Label for="password">Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        name="password"
-                        autocomplete="new-password"
-                        class="mt-1 block w-full"
-                        autofocus
-                        placeholder="Password"
-                    />
+                    <Label for="password">{{ t('user.reset_pw.password') }}</Label>
+                    <Input id="password" type="password" name="password" autocomplete="new-password"
+                        class="mt-1 block w-full" autofocus :placeholder="t('user.reset_pw.password')" />
                     <InputError :message="errors.password" />
                 </div>
 
                 <div class="grid gap-2">
                     <Label for="password_confirmation">
-                        Confirm Password
+                        {{ t('user.reset_pw.confirm_password') }}
                     </Label>
-                    <Input
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        autocomplete="new-password"
-                        class="mt-1 block w-full"
-                        placeholder="Confirm password"
-                    />
+                    <Input id="password_confirmation" type="password" name="password_confirmation"
+                        autocomplete="new-password" class="mt-1 block w-full"
+                        :placeholder="t('user.reset_pw.confirm_password')" />
                     <InputError :message="errors.password_confirmation" />
                 </div>
 
-                <Button
-                    type="submit"
-                    class="mt-4 w-full"
-                    :disabled="processing"
-                    data-test="reset-password-button"
-                >
+                <Button type="submit" class="mt-4 w-full" :disabled="processing" data-test="reset-password-button">
                     <Spinner v-if="processing" />
-                    Reset password
+                    {{ t('user.reset_pw.reset_password') }}
                 </Button>
             </div>
         </Form>

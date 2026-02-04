@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Section from '@/components/argon/layout/Section.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { formatDate } from '@/lib/utils';
 import { show } from '@/routes/events';
 import orders, { cancel, paymentIntent } from '@/routes/orders';
 import { Order, OrganizerSettings } from '@/types';
@@ -10,7 +9,8 @@ import { Clock } from 'lucide-vue-next';
 import { NButton, NInput } from 'naive-ui';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import { login, register } from '@/routes';
+import { login } from '@/routes';
+import { trans as t } from 'laravel-vue-i18n';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
@@ -55,7 +55,7 @@ onUnmounted(() => {
 });
 
 const cancelOrder = () => {
-    confirm('Are you sure you want to cancel?') && router.post(cancel(order.id));
+    confirm(t('order.confirm_cancelation')) && router.post(cancel(order.id));
 };
 
 
@@ -121,12 +121,12 @@ const quickRegister = () => {
                 </div>
                 <p class="text-neutral-900 font-bold flex items-center gap-2">
                     <Clock :size="16" />
-                    Time Remaining: {{ formattedTime }}
+                    {{ $t('order.time_left') }}: {{ formattedTime }}
                 </p>
             </div>
 
             <div v-if="order.referral_code" class="p-4 border border-moovin-lime rounded-lg">
-                <p class="font-bold">Referral Code: {{ order.referral_code }}</p>
+                <p class="font-bold">{{ $t('order.referral_code') }}: {{ order.referral_code }}</p>
             </div>
 
             <!-- Mobile Layout -->
@@ -152,19 +152,19 @@ const quickRegister = () => {
                             <tr>
                                 <th
                                     class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                                    Product</th>
+                                    {{ $t('order.products') }}</th>
                                 <th
                                     class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                                    Selected</th>
+                                    {{ $t('order.selected') }}</th>
                                 <th
                                     class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                                    Quantity</th>
+                                    {{ $t('order.quantity') }}</th>
                                 <th
                                     class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Unit Price</th>
+                                    {{ $t('order.unit_price') }}</th>
                                 <th
                                     class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Subtotal</th>
+                                    {{ $t('order.subtotal') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-moovin-lime">
@@ -195,29 +195,31 @@ const quickRegister = () => {
                         <label for="modo">MODO</label>
                     </div>
                 </div>
-                <p v-if="!settings.is_mercadopago_active" class="text-red-500">MercadoPago is not active for this event
+                <p v-if="!settings.is_mercadopago_active" class="text-red-500">{{ $t('order.mercadopago_is_not_enabled')
+                    }}
                 </p>
                 <p v-if="settings.is_mercadopago_active && settings.raise_money_method === 'split' && !settings.is_account_linked"
                     class="text-orange-500">
-                    MercadoPago is temporarily unavailable (Configuration Pending)
+                    {{ $t('order.mercadopago_is_not_configured') }}
                 </p>
-                <p v-if="!settings.is_modo_active" class="text-red-500">MODO is not active for this event</p>
+                <p v-if="!settings.is_modo_active" class="text-red-500">{{ $t('order.modo_is_not_enabled') }}</p>
             </div>
 
             <div v-if="!user" class="p-4 border border-blue-200 bg-blue-50/10 rounded-lg space-y-4">
-                <h3 class="font-bold text-lg">Account</h3>
-                <p class="text-sm">You are checking out as a guest. You can create an account to save your order.</p>
+                <h3 class="font-bold text-lg">{{ $t('order.account') }}</h3>
+                <p class="text-sm">{{ $t('order.checking_as_guest') }}</p>
 
                 <div class="flex flex-col gap-2">
                     <div class="flex gap-2">
                         <NInput v-model:value="guestEmail" placeholder="Enter your email" />
                         <NButton type="info" ghost @click="quickRegister" :disabled="!guestEmail">
-                            Create Account
+                            {{ $t('order.quick_register') }}
                         </NButton>
                     </div>
                     <div class="flex gap-2">
                         <NButton class="flex-1" tag="a"
-                            :href="login().url + '?return_url=' + encodeURIComponent(page.url)">I have an account
+                            :href="login().url + '?return_url=' + encodeURIComponent(page.url)">{{
+                                $t('order.i_have_an_account') }}
                         </NButton>
                     </div>
                 </div>
@@ -226,7 +228,7 @@ const quickRegister = () => {
             <!-- Taxes and Fees Breakdown Card -->
             <div class="p-4 border border-moovin-lime rounded-lg"
                 v-if="(order.taxes_snapshot?.filter(t => t.display_mode !== 'integrated').length ?? 0) || (order.fees_snapshot?.filter(f => f.display_mode !== 'integrated').length ?? 0)">
-                <p class="font-bold mb-2">Taxes and Fees</p>
+                <p class="font-bold mb-2">{{ $t('order.taxes_and_fees') }}</p>
                 <div class="space-y-2 text-sm text-neutral-700">
                     <template v-for="tax in order.taxes_snapshot" :key="tax.name">
                         <div v-if="tax.display_mode !== 'integrated'" class="flex justify-between">
@@ -254,18 +256,19 @@ const quickRegister = () => {
 
             <div class="flex justify-between items-center" v-if="user">
                 <NButton type="error" ghost @click="cancelOrder">
-                    Cancel Order
+                    {{ $t('order.cancel_order') }}
                 </NButton>
                 <NButton @click="createIntent" type="primary" size="large" :disabled="!isFree && !paymentMethod">
-                    {{ parseFloat(order.total_gross.toString()) > 0 ? 'Pay' : 'Confirm' }}
+                    {{ parseFloat(order.total_gross.toString()) > 0 ? $t('order.pay') : $t('order.confirm') }}
                 </NButton>
             </div>
         </Section>
 
         <Section v-else class="space-y-4">
-            <h1 class="text-2xl font-bold">Your order has expired!</h1>
-            <p>Order expired at {{ formatDate(order.expires_at!) }}, back to event and try again.</p>
-            <NButton type="primary" @click="router.visit(show(order.event?.slug!))">Back to event</NButton>
+            <h1 class="text-2xl font-bold">{{ $t('order.expired_order') }}</h1>
+            <p>{{ $t('order.expired_order.description') }}</p>
+            <NButton type="primary" @click="router.visit(show(order.event?.slug!))">{{ $t('order.back_to_event') }}
+            </NButton>
         </Section>
     </SimpleLayout>
 </template>

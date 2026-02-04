@@ -9,6 +9,7 @@ import { computed, watch } from 'vue';
 import GlobalDialog from '@/components/GlobalDialog.vue';
 import { toast, Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css'
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     organizer: Organizer;
@@ -53,31 +54,31 @@ watch(() => page.props.flash?.message, (message) => {
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: t('argon.dashboard'),
         href: show({
             organizer: props.organizer.id,
         }),
         icon: LayoutGrid,
     },
     {
-        title: 'Events',
+        title: t('argon.events'),
         href: events(props.organizer.id),
         icon: Calendar,
     },
     {
-        title: 'Cooperators',
+        title: t('argon.cooperators'),
         href: cooperators(props.organizer.id),
         icon: UsersRound,
     },
     {
-        title: 'Promoters',
+        title: t('argon.promoters'),
         href: promoters(props.organizer.id),
         icon: Megaphone,
     },
     ...(userIsOwner.value
         ? [
             {
-                title: 'Settings',
+                title: t('argon.settings'),
                 href: settings(props.organizer.id),
                 icon: Settings,
             },
@@ -87,7 +88,7 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'How to make an event',
+        title: t('argon.how_to_make_an_event'),
         icon: LucideMessageCircleQuestion,
         href: '#',
     }

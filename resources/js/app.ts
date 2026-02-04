@@ -5,6 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { NMessageProvider } from 'naive-ui';
+import { i18nVue } from 'laravel-vue-i18n';
 
 // import { initializeTheme } from './composables/useAppearance';
 
@@ -20,6 +21,12 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(NMessageProvider, null, { default: () => h(App, props) }) })
             .use(plugin)
+            .use(i18nVue, {
+                resolve: async (lang: string) => {
+                    const langs = import.meta.glob('../../lang/*.json', { eager: true });
+                    return langs[`../../lang/${lang}.json`];
+                }
+            })
             .mount(el);
     },
     progress: {

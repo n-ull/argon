@@ -3,6 +3,7 @@ import EventHorizontalCard from '@/components/EventHorizontalCard.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event, PaginatedResponse } from '@/types';
 import { Head, InfiniteScroll } from '@inertiajs/vue3';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     events: PaginatedResponse<Event>;
@@ -19,10 +20,10 @@ const { events } = defineProps<Props>();
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <div class="mb-8">
                 <h1 class="text-3xl font-bold text-white">
-                    Events
+                    {{ t('event.title') }}
                 </h1>
                 <p class="mt-2 text-sm text-gray-400">
-                    Browse upcoming events
+                    {{ t('event.description') }}
                 </p>
             </div>
 
@@ -38,10 +39,9 @@ const { events } = defineProps<Props>();
                     </template> -->
                 </InfiniteScroll>
 
-                <div v-if="events.data.length === 0"
-                    class="rounded-lg border p-12 text-center border-gray-700 bg-gray-800">
+                <div v-if="events.data.length === 0" class="rounded-lg border p-12 text-center">
                     <p class="text-gray-400">
-                        No events found
+                        {{ t('event.not_found') }}
                     </p>
                 </div>
             </div>

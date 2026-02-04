@@ -9,6 +9,7 @@ import { Link } from '@inertiajs/vue3';
 import { Calendar, Gift, Printer } from 'lucide-vue-next';
 import { NQrCode } from 'naive-ui';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { trans as t } from 'laravel-vue-i18n';
 
 const { ticket } = defineProps<{ ticket: Ticket }>();
 
@@ -69,13 +70,14 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                         <div class="flex flex-col items-end gap-2">
                             <span
                                 class="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold uppercase tracking-wider">
-                                {{ ticket.type }}
+                                {{ $t('tickets.' + ticket.type) }}
                             </span>
                             <button v-if="ticket.type === 'static'" @click="printTicket"
                                 class="no-print p-2 bg-white/20 hover:bg-white/40 rounded-lg transition-colors flex items-center gap-2 px-3 border border-white/30"
-                                title="Print Ticket">
+                                :title="t('tickets.print')">
                                 <Printer :size="16" />
-                                <span class="text-[10px] font-bold uppercase tracking-wider">Print</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider">{{ $t('tickets.print')
+                                    }}</span>
                             </button>
                         </div>
                     </div>
@@ -84,19 +86,22 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                 <div id="ticket-card" class="p-6 space-y-6">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="text-xs font-bold text-zinc-500 uppercase tracking-wider">Venue</label>
+                            <label class="text-xs font-bold text-zinc-500 uppercase tracking-wider">{{
+                                $t('tickets.venue') }}</label>
                             <p class="text-zinc-100 font-medium">{{ ticket.event.location_info.address }}</p>
                         </div>
                         <div class="text-right">
-                            <label class="text-xs font-bold text-zinc-500 uppercase tracking-wider">Seat /
-                                Section</label>
+                            <label class="text-xs font-bold text-zinc-500 uppercase tracking-wider">{{ t('tickets.seat')
+                                }} /
+                                {{ $t('tickets.section') }}</label>
                             <p class="text-zinc-100 font-medium">{{ ticket.product.name }}</p>
                         </div>
                     </div>
 
                     <div class="flex justify-between items-center py-4 border-y border-dashed border-zinc-800">
                         <div v-if="ticket.order">
-                            <label class="text-xs font-bold text-zinc-500 uppercase tracking-wider">Order ID</label>
+                            <label class="text-xs font-bold text-zinc-500 uppercase tracking-wider">{{
+                                $t('order.reference') }}</label>
                             <Link :href="show(ticket.order.id)">
                                 <p class="text-zinc-300 font-mono underline">#{{ ticket.order.reference_id }}</p>
                             </Link>
@@ -105,16 +110,14 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                         <div class="flex gap-2 items-center mx-auto" v-if="ticket.is_courtesy">
                             <Gift />
                             <span>
-                                This is a Courtesy Ticket.
+                                {{ $t('tickets.this_is_courtesy_ticket') }}
                             </span>
                         </div>
                     </div>
 
                     <div v-if="ticket.type === 'dynamic'" class="flex flex-col items-center pt-2">
                         <p class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] mb-4 text-center font-bold">
-                            This ticket is
-                            dynamic
-                            and cannot be printed, show the app to the doorman</p>
+                            {{ $t('tickets.dynamic_ticket_info') }}</p>
 
                         <div class="qr-wrapper p-4 bg-white rounded-xl border border-zinc-700 mb-3">
                             <n-qr-code :value="qrCode" :size="256" type="svg" :padding="0" color="hsl(165, 40%, 30%)" />
@@ -130,7 +133,8 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                                 <div class="h-full bg-moovin-lime transition-all duration-1000 ease-linear"
                                     :style="{ width: `${(timeLeft / 30) * 100}%` }"></div>
                             </div>
-                            <p class="text-[9px] text-zinc-600 mt-2 uppercase tracking-widest">Refresh in {{ timeLeft
+                            <p class="text-[9px] text-zinc-600 mt-2 uppercase tracking-widest">{{
+                                $t('tickets.refresh_in') }} {{ timeLeft
                                 }}s</p>
                         </div>
                     </div>
@@ -142,7 +146,8 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                             <n-qr-code :value="ticket.token" :size="256" type="svg" :padding="0"
                                 color="hsl(242, 32%, 15%)" />
                         </div>
-                        <p class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-bold">Scan for Entry</p>
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-bold">{{
+                            $t('tickets.scan_for_entry') }}</p>
                     </div>
                 </div>
             </div>

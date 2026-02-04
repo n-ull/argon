@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'my_tickets' => 'Mis Entradas',
+    'manage_your_tickets_and_access_your_events' => 'Administra tus entradas y accede a los eventos',
+    'status.active' => 'Activo',
+    'status.used' => 'Usado',
+    'status.expired' => 'Vencido',
+    'status.inactive' => 'Inactivo',
+    'status.cancelled' => 'Cancelado',
+    'status.courtesy' => 'Cortesía',
+    'all_events' => 'Todos los eventos',
+    'you_dont_have_any_active_tickets' => 'No tienes entradas activas',
+    'you_dont_have_any_inactive_tickets' => 'No tienes entradas inactivas',
+    'view_details' => 'Ver detalles',
+    'print' => 'Imprimir',
+    'venue' => 'Lugar',
+    'seat' => 'Asiento',
+    'section' => 'Sección',
+    'dynamic' => 'Dinámico',
+    'static' => 'Estatico',
+    'this_is_courtesy_ticket' => 'Esta es una entrada de cortesía',
+    'dynamic_ticket_info' => 'Esta es una entrada dinámica, no puede ser imprimida, muestrale la aplicación al portero.',
+    'scan_for_entry' => 'Escanea para entrar',
+    'refresh_in' => 'Nuevo QR en',
+];

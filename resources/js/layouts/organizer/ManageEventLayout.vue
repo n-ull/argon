@@ -9,15 +9,15 @@ import type { GlobalTheme } from 'naive-ui'
 import { Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css'
 import { usePage } from '@inertiajs/vue3';
-import { computed, watch } from 'vue';
+import { watch } from 'vue';
 import { toast } from 'vue-sonner';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     event: Event;
     breadcrumbs?: BreadcrumbItemType[];
 }
 const page = usePage();
-const user = computed(() => page.props.auth?.user);
 
 watch(() => page.props.flash?.message, (message) => {
     if (message) {
@@ -50,76 +50,76 @@ const props = withDefaults(defineProps<Props>(), {
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: t('argon.dashboard'),
         href: dashboard(props.event.id),
         icon: LayoutGrid,
-        group: 'General',
+        group: t('argon.general'),
     },
     {
-        title: 'Analytics',
+        title: t('argon.analytics'),
         href: analytics(props.event.id).url,
         icon: ChartLine,
-        group: 'General',
+        group: t('argon.general'),
     },
     {
-        title: 'Settings',
+        title: t('argon.settings'),
         href: settings(props.event.id).url,
         icon: Settings,
-        group: 'Manage',
+        group: t('argon.manage'),
     },
     {
-        title: 'Products and Tickets',
+        title: t('argon.products_and_tickets'),
         href: products(props.event.id).url,
         icon: Tickets,
-        group: 'Manage',
+        group: t('argon.manage'),
     },
     {
-        title: 'Orders',
+        title: t('argon.orders'),
         href: orders(props.event.id).url,
         icon: BookA,
-        group: 'Clients',
+        group: t('argon.clients'),
     },
     {
-        title: 'Attendees',
+        title: t('argon.attendees'),
         href: attendees(props.event.id).url,
         icon: Users,
-        group: 'Clients',
+        group: t('argon.clients'),
     },
     {
-        title: 'Doormen',
+        title: t('argon.doormen'),
         href: doormen(props.event.id).url,
         icon: ShieldAlert,
-        group: 'Manage',
+        group: t('argon.manage'),
     },
     {
-        title: 'Vouchers',
+        title: t('argon.vouchers'),
         href: vouchers(props.event.id).url,
         icon: DiamondPercent,
-        group: 'Manage',
+        group: t('argon.manage'),
     },
     {
-        title: 'Courtesies',
+        title: t('argon.courtesies'),
         href: courtesies(props.event.id).url,
         icon: Gift,
-        group: 'Manage',
+        group: t('argon.manage'),
     },
     {
-        title: 'Messages',
+        title: t('argon.messages'),
         href: '#',
         icon: MessageSquareHeart,
-        group: 'Clients',
+        group: t('argon.clients'),
     },
     {
-        title: 'Questions',
+        title: t('argon.questions'),
         href: '#',
         icon: LucideMessageCircleQuestion,
-        group: 'Manage',
+        group: t('argon.manage'),
     }
 ];
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'How to make an event',
+        title: t('argon.how_to_make_an_event'),
         icon: LucideMessageCircleQuestion,
         href: '#',
     }

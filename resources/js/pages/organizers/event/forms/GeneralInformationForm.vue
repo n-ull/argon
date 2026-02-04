@@ -83,15 +83,15 @@ watch(visualSlug, (newSlug) => {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
                 <label>Cover Image (Horizontal)</label>
-                <div class="text-xs text-gray-500 mb-2">Recommended size: 1920x1080px</div>
+                <div class="text-xs text-gray-500 mb-2">Recommended size: 1480x600px</div>
                 <n-upload list-type="image-card" :max="1" directory-dnd :default-file-list="event.cover_image_path ? [{
                     id: 'cover',
                     name: 'Cover Image',
                     status: 'finished',
                     url: `/storage/${event.cover_image_path}`
                 }] : []" @change="(options) => {
-                        event.cover_image = options.fileList[0]?.file || null;
-                    }">
+                    event.cover_image = options.fileList[0]?.file || null;
+                }">
                     <n-upload-dragger>
                         <div class="flex flex-col items-center justify-center gap-2 p-4">
                             <n-icon size="24" :component="ImageIcon" />
@@ -111,8 +111,8 @@ watch(visualSlug, (newSlug) => {
                     status: 'finished',
                     url: `/storage/${event.poster_image_path}`
                 }] : []" @change="(options) => {
-                        event.poster_image = options.fileList[0]?.file || null;
-                    }">
+                    event.poster_image = options.fileList[0]?.file || null;
+                }">
                     <n-upload-dragger>
                         <div class="flex flex-col items-center justify-center gap-2 p-4">
                             <n-icon size="24" :component="ImageIcon" />

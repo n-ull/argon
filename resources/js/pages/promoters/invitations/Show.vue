@@ -4,8 +4,8 @@ import { NButton, NCard, NSpace, NText } from 'naive-ui';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import type { AppPageProps, Organizer } from '@/types';
 import invitations from '@/routes/promoters/invitations';
-import { register, login } from '@/routes';
-import promoters, { dashboard } from '@/routes/promoters';
+import { login } from '@/routes';
+import promoters from '@/routes/promoters';
 
 interface Invitation {
     id: number;
@@ -40,64 +40,64 @@ const decline = () => {
 <template>
     <AuthLayout>
 
-        <Head title="Promoter Invitation" />
+        <Head :title="$t('promoter.invitation_title')" />
 
         <div class="flex flex-col items-center justify-center min-h-[60vh]">
             <NCard class="max-w-md w-full" :bordered="false" size="huge">
                 <template #header>
                     <div class="text-center">
                         <h2 class="text-2xl font-bold">{{ organizer.name }}</h2>
-                        <p class="text-gray-400 mt-2">invited you to join their team</p>
+                        <p class="text-gray-400 mt-2">{{ $t('promoter.invitation_description') }}</p>
                     </div>
                 </template>
 
                 <div class="text-center space-y-6">
                     <div>
-                        <p class="text-lg">You have been invited to become a promoter!</p>
+                        <p class="text-lg">{{ $t('promoter.invitation_description_h2') }}</p>
                         <div class="mt-4 p-4 bg-neutral-900 rounded-lg">
-                            <p class="text-sm text-gray-400">Your Commission</p>
+                            <p class="text-sm text-gray-400">{{ $t('promoter.your_commission') }}</p>
                             <p class="text-3xl font-bold text-green-500">
                                 <span v-if="invitation.commission_type === 'percentage'">{{ invitation.commission_value
-                                }}%</span>
+                                    }}%</span>
                                 <span v-else>${{ invitation.commission_value }}</span>
                             </p>
-                            <p class="text-xs text-gray-500 mt-1">per ticket sold</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $t('promoter.per_ticket_sold') }}</p>
                         </div>
                     </div>
 
                     <div v-if="user">
                         <div class="space-y-3">
-                            <NText class="block mb-2">Logged in as <span class="font-bold">{{ user.name }}</span> ({{
-                                user.email }})
+                            <NText class="block mb-2">{{ $t('promoter.logged_in_as') }} <span class="font-bold">{{
+                                user.name }}</span> ({{ user.email }})
                             </NText>
 
                             <div v-if="user.email !== invitation.email"
                                 class="p-4 bg-red-900/20 text-red-500 rounded-lg text-sm">
-                                This invitation is intended for <strong>{{ invitation.email }}</strong>.
-                                Please log out and sign in with the correct account.
+                                Esta invitación es para <strong>{{ invitation.email }}</strong>.
+                                Por favor cierra sesión y inicia sesión con la cuenta correcta.
                             </div>
 
                             <div v-else-if="invitation.status === 'accepted'"
                                 class="p-6 bg-green-900/20 text-green-500 rounded-lg text-center">
-                                <h3 class="text-xl font-bold mb-2">Invitation Accepted</h3>
-                                <p>You have accepted this invitation. You can now access your promoter dashboard.</p>
+                                <h3 class="text-xl font-bold mb-2">{{ $t('promoter.invite_accepted') }}</h3>
+                                <p>{{ $t('promoter.invite_accepted.description') }}</p>
                                 <NButton class="mt-4" type="primary" tag="a" :href="promoters.dashboard().url">
-                                    Go to Dashboard
+                                    {{ $t('promoter.go_to_dashboard') }}
                                 </NButton>
                             </div>
 
                             <div v-else-if="invitation.status === 'declined'"
                                 class="p-6 bg-red-900/20 text-red-500 rounded-lg text-center">
-                                <h3 class="text-xl font-bold mb-2">Invitation Declined</h3>
-                                <p>You have declined this invitation.</p>
+                                <h3 class="text-xl font-bold mb-2">{{ $t('promoter.invite_declined') }}</h3>
+                                <p>{{ $t('promoter.invite_declined.description') }}</p>
                             </div>
 
                             <NSpace vertical v-else>
                                 <NButton type="primary" size="large" block @click="accept" :loading="form.processing">
-                                    Accept Invitation
+                                    {{ $t('promoter.accept') }}
                                 </NButton>
                                 <NButton size="large" block @click="decline" :loading="form.processing" secondary>
-                                    Decline
+                                    {{ $t('promoter.decline') }}
                                 </NButton>
                             </NSpace>
                         </div>
@@ -107,32 +107,32 @@ const decline = () => {
                         <div class="space-y-4">
                             <div v-if="invitation.status === 'accepted'"
                                 class="p-6 bg-green-900/20 text-green-500 rounded-lg text-center">
-                                <h3 class="text-xl font-bold mb-2">Invitation Accepted</h3>
-                                <p>You have accepted this invitation. You can now access your promoter dashboard.</p>
+                                <h3 class="text-xl font-bold mb-2">{{ $t('promoter.invite_accepted') }}</h3>
+                                <p>{{ $t('promoter.invite_accepted.description') }}</p>
                                 <NButton class="mt-4" type="primary" tag="a" :href="promoters.dashboard().url">
-                                    Go to Dashboard
+                                    {{ $t('promoter.go_to_dashboard') }}
                                 </NButton>
                             </div>
 
                             <div v-else-if="invitation.status === 'declined'"
                                 class="p-6 bg-red-900/20 text-red-500 rounded-lg text-center">
-                                <h3 class="text-xl font-bold mb-2">Invitation Declined</h3>
-                                <p>You have declined this invitation.</p>
+                                <h3 class="text-xl font-bold mb-2">{{ $t('promoter.invite_declined') }}</h3>
+                                <p>{{ $t('promoter.invite_declined.description') }}</p>
                             </div>
 
                             <div v-else>
                                 <div v-if="isEmailRegistered">
-                                    <p>Please log in to accept this invitation.</p>
+                                    <p>{{ $t('promoter.please_login') }}</p>
                                     <NButton type="primary" size="large" block tag="a"
                                         :href="login().url + '?return_url=' + encodeURIComponent(page.url)">
-                                        Log In
+                                        {{ $t('promoter.login') }}
                                     </NButton>
                                 </div>
                                 <div v-else>
-                                    <p>Accept this invitation to create your account and start prompting!</p>
+                                    <p>{{ $t('promoter.accept_and_register.description') }}</p>
                                     <NButton type="primary" size="large" block @click="accept"
                                         :loading="form.processing">
-                                        Accept & Register
+                                        {{ $t('promoter.accept_and_register.button') }}
                                     </NButton>
                                 </div>
                             </div>

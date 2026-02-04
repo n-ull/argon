@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'title' => 'Eventos',
+    'description' => 'Encuentra los mejores eventos para ti',
+    'not_found' => 'No se encontraron eventos disponibles',
+    'edit_event' => 'Editar evento',
+    'edit_event_description' => 'Edita la información de tu evento',
+    'referral_code_applied' => 'Código de referido aplicado',
+    'promoter' => 'Promotor',
+    'alt_event_cover' => 'Portada del evento',
+    'alt_event_poster' => 'Póster del evento',
+    'description_not_available' => 'Descripción no disponible',
+    'organized_by' => 'Organizado por',
+    'sales_start_in' => 'Ventas inician en',
+    'sales_end_in' => 'Ventas finalizan en',
+    'sales_ended' => 'Ventas finalizadas',
+    'sales_not_started' => 'Ventas no iniciadas',
+    'sales_ended_description' => 'Las ventas han finalizado',
+    'sales_not_started_description' => 'Las ventas no han iniciado',
+    'checkout' => 'Checkout',
+    'products' => 'Productos',
+    'start_date' => 'Fecha de inicio',
+    'status' => 'Estado',
+    'end_date' => 'Fecha de finalización',
+    'actions' => 'Acciones',
+];

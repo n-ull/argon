@@ -4,6 +4,7 @@ import { Ticket } from '@/types';
 import TicketCard from './partials/TicketCard.vue';
 import { ref, computed } from 'vue';
 import { Filter, Ticket as TicketIcon, Inbox } from 'lucide-vue-next';
+import { trans as t } from 'laravel-vue-i18n';
 
 const { tickets } = defineProps<{ tickets: Ticket[] }>();
 
@@ -31,7 +32,6 @@ const filteredTickets = computed(() => {
     });
 });
 
-console.log(tickets);
 </script>
 
 <template>
@@ -41,9 +41,9 @@ console.log(tickets);
                 <!-- Header Section -->
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 class="text-3xl font-bold tracking-tight text-foreground">My Tickets</h1>
+                        <h1 class="text-3xl font-bold tracking-tight text-foreground">{{ $t('tickets.my_tickets') }}</h1>
                         <p class="mt-1 text-sm text-muted-foreground">
-                            Manage your tickets and access your events.
+                            {{ $t('tickets.manage_your_tickets_and_access_your_events') }}
                         </p>
                     </div>
                 </div>
@@ -57,7 +57,7 @@ console.log(tickets);
                             class="flex items-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
                             :class="activeTab === 'active' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'">
                             <TicketIcon class="mr-2 h-4 w-4" />
-                            Active
+                            {{ $t('tickets.status.active') }}
                             <span class="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">
                                 {{tickets.filter(t => !['used', 'expired', 'cancelled'].includes(t.status)).length}}
                             </span>
@@ -66,7 +66,7 @@ console.log(tickets);
                             class="flex items-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
                             :class="activeTab === 'inactive' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'">
                             <Inbox class="mr-2 h-4 w-4" />
-                            Inactive
+                            {{ $t('tickets.status.inactive') }}
                             <span class="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs">
                                 {{tickets.filter(t => ['used', 'expired', 'cancelled'].includes(t.status)).length}}
                             </span>
@@ -81,7 +81,7 @@ console.log(tickets);
                             </div>
                             <select v-model="selectedEventId"
                                 class="block w-full rounded-xl border border-border bg-card py-2 pl-10 pr-4 text-sm text-foreground focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500">
-                                <option value="all">All events</option>
+                                <option value="all">{{ $t('tickets.all_events') }}</option>
                                 <option v-for="event in uniqueEvents" :key="event.id" :value="event.id">
                                     {{ event.title }}
                                 </option>
@@ -103,11 +103,11 @@ console.log(tickets);
                         <div class="flex h-16 w-16 items-center justify-center rounded-full bg-card">
                             <TicketIcon class="h-8 w-8 text-muted-foreground" />
                         </div>
-                        <h3 class="mt-4 text-lg font-medium text-foreground">You don't have any tickets.
+                        <h3 class="mt-4 text-lg font-medium text-foreground">{{ $t('tickets.you_dont_have_any_tickets') }}
                         </h3>
                         <p class="mt-1 text-sm text-muted-foreground">
-                            {{ activeTab === 'active' ? "You don't have active tickets" :
-                                "You don't have inactive tickets" }}
+                            {{ activeTab === 'active' ? $t('tickets.you_dont_have_active_tickets') :
+                                $t('tickets.you_dont_have_inactive_tickets') }}
                         </p>
                     </div>
                 </div>

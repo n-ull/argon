@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { Calendar, MapPin, CheckCircle2, QrCode } from 'lucide-vue-next';
@@ -53,8 +52,8 @@ const { order } = defineProps<Props>();
             <div class="bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800 shadow-2xl">
                 <div class="p-8 text-center bg-moovin-green/10">
                     <CheckCircle2 class="w-16 h-16 text-moovin-green mx-auto mb-4" />
-                    <h1 class="text-3xl font-black text-white mb-2">Order Confirmed!</h1>
-                    <p class="text-neutral-400">Order Reference: <span class="text-moovin-lime font-mono">{{
+                    <h1 class="text-3xl font-black text-white mb-2">{{ $t('order.confirmed_order') }}</h1>
+                    <p class="text-neutral-400">{{ $t('order.reference') }}: <span class="text-moovin-lime font-mono">{{
                         order.reference_id }}</span></p>
                 </div>
 
@@ -80,7 +79,7 @@ const { order } = defineProps<Props>();
 
                     <!-- Order Items -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-bold text-white">Order Summary</h3>
+                        <h3 class="text-lg font-bold text-white">{{ $t('order.summary') }}</h3>
                         <div v-for="(item, index) in order.order_items" :key="index"
                             class="flex justify-between items-center">
                             <div>
@@ -93,23 +92,23 @@ const { order } = defineProps<Props>();
 
                         <div
                             class="pt-2 border-t border-neutral-800 flex justify-between items-center text-md font-black">
-                            <span class="text-white">Subtotal</span>
+                            <span class="text-white">{{ $t('order.subtotal') }}</span>
                             <span class="text-moovin-lime">${{ order.subtotal }}</span>
                         </div>
 
                         <div class="pt-2 flex justify-between items-center text-md font-black">
-                            <span class="text-white">Fees</span>
+                            <span class="text-white">{{ $t('order.fees') }}</span>
                             <span class="text-moovin-lime">${{ order.fees_total }}</span>
                         </div>
 
                         <div class="pt-2 flex justify-between items-center text-md font-black">
-                            <span class="text-white">Taxes</span>
+                            <span class="text-white">{{ $t('order.taxes') }}</span>
                             <span class="text-moovin-lime">${{ order.taxes_total }}</span>
                         </div>
 
                         <div
                             class="pt-4 border-t border-neutral-800 flex justify-between items-center text-xl font-black">
-                            <span class="text-white">Total</span>
+                            <span class="text-white">{{ $t('order.total') }}</span>
                             <span class="text-moovin-lime">${{ order.total }}</span>
                         </div>
                     </div>
@@ -118,17 +117,17 @@ const { order } = defineProps<Props>();
                         class="bg-neutral-800/50 p-6 rounded-lg flex flex-col items-center gap-4 border border-neutral-700">
                         <QrCode class="w-12 h-12 text-moovin-lime" />
                         <div class="text-center">
-                            <p class="text-white font-bold">Your tickets are ready!</p>
-                            <p class="text-sm text-neutral-400">We've sent an email with your tickets. You can also view
-                                them in your account.</p>
+                            <p class="text-white font-bold">{{ $t('order.tickets_ready') }}</p>
+                            <p class="text-sm text-neutral-400">{{ $t('order.tickets_ready_description') }}</p>
                         </div>
                         <div class="flex gap-4 justify-center">
                             <Link :href="show(order.event.slug)" class="flex-1">
-                                <NButton block secondary>Go back to Event</NButton>
+                                <NButton block secondary>{{ $t('order.back_to_event') }}</NButton>
                             </Link>
                             <!-- TODO: Link to tickets page when implemented -->
                             <Link :href="index()">
-                                <NButton block type="primary" color="#ccff00" text-color="#000">View Tickets</NButton>
+                                <NButton block type="primary" color="#ccff00" text-color="#000">{{
+                                    $t('order.view_tickets') }}</NButton>
                             </Link>
                         </div>
                     </div>

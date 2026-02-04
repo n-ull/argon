@@ -7,6 +7,7 @@ import { computed, watch } from 'vue';
 import { Toaster, toast } from 'vue-sonner';
 import { darkTheme, GlobalTheme, NConfigProvider } from 'naive-ui';
 import 'vue-sonner/style.css'
+import { trans as t } from 'laravel-vue-i18n';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -45,7 +46,7 @@ const themeOverrides = {
 const items = computed<NavItem[]>(() => {
     const navItems: NavItem[] = [
         {
-            title: 'Events',
+            title: t('argon.events'),
             href: '/events',
         },
     ];
@@ -53,18 +54,18 @@ const items = computed<NavItem[]>(() => {
     if (user.value) {
         navItems.push(
             {
-                title: 'Dashboard',
+                title: t('argon.dashboard'),
                 href: '/dashboard',
             },
             {
-                title: 'Tickets',
+                title: t('argon.tickets'),
                 href: '/tickets',
             },
         );
 
         if (user.value.promoter) {
             navItems.push({
-                title: 'Promoter',
+                title: t('argon.promoter'),
                 href: '/promoters/dashboard',
             });
         }

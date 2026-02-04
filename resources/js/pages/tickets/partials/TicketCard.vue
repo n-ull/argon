@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { show } from '@/routes/tickets';
 import { computed } from 'vue';
+import { trans as t } from 'laravel-vue-i18n';
 
 const { ticket } = defineProps<{ ticket: Ticket }>();
 
@@ -16,22 +17,22 @@ const statusConfig = computed(() => {
     switch (ticket.status) {
         case 'expired':
             return {
-                label: 'Expired',
+                label: t('tickets.status.expired'),
                 badgeClass: 'bg-red-900/30 text-red-400',
             };
         case 'cancelled':
             return {
-                label: 'Cancelled',
+                label: t('tickets.status.cancelled'),
                 badgeClass: 'bg-red-900/30 text-red-400',
             };
         case 'used':
             return {
-                label: 'Used',
+                label: t('tickets.status.used'),
                 badgeClass: 'bg-zinc-800 text-zinc-300',
             };
         default:
             return {
-                label: 'Active',
+                label: t('tickets.status.active'),
                 badgeClass: 'bg-green-900/30 text-green-400',
             };
     }
@@ -96,7 +97,7 @@ const eventDate = ticket.event?.start_date ? format(new Date(ticket.event.start_
 
                 <Link :href="show(ticket.id)"
                     class="inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-zinc-900 transition-colors hover:bg-zinc-100">
-                    View details
+                    {{ t('tickets.view_details') }}
                     <ChevronRight class="ml-1 h-3 w-3" />
                 </Link>
             </div>

@@ -10,6 +10,7 @@ import DataTableRowActions from '@/components/DataTableRowActions.vue';
 import { CopyIcon, InfoIcon } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 import { show } from '@/routes/events';
+import { trans as t } from 'laravel-vue-i18n';
 
 const props = defineProps<{
     events: Array<Event>;
@@ -19,19 +20,19 @@ const props = defineProps<{
 
 const columns = [
     {
-        title: 'Event',
+        title: t('argon.events'),
         key: 'title',
     },
     {
-        title: 'Date',
+        title: t('event.start_date'),
         key: 'start_date',
     },
     {
-        title: 'Status',
+        title: t('event.status'),
         key: 'status',
     },
     {
-        title: 'Actions',
+        title: t('argon.actions'),
         key: 'actions',
         render(row: Event) {
             return h(
@@ -40,12 +41,12 @@ const columns = [
                     onClick: (e: MouseEvent) => e.stopPropagation(),
                     options: [
                         {
-                            label: 'Details',
+                            label: t('promoter.details'),
                             key: 'details',
                             icon: () => h(NIcon, null, { default: () => h(InfoIcon) }),
                         },
                         {
-                            label: 'Copy Link',
+                            label: t('promoter.copy_link'),
                             key: 'copy-link',
                             icon: () => h(NIcon, null, { default: () => h(CopyIcon) }),
                         }
@@ -56,7 +57,7 @@ const columns = [
                         } else {
                             const url = window.location.origin + show(row.slug).url;
                             navigator.clipboard.writeText(url + '?referr=' + props.referral_code);
-                            toast.success('Link copied to clipboard')
+                            toast.success(t('promoter.link_copied_to_clipboard'));
                         }
                     }
                 }
@@ -89,22 +90,22 @@ const openDetails = async (event: Event) => {
 
 const commissionColumns = [
     {
-        title: 'Amount',
+        title: t('promoter.commission.amount'),
         key: 'amount',
         render(row: any) {
             return `$${row.amount}`;
         }
     },
     {
-        title: 'Date',
+        title: t('promoter.commission.date'),
         key: 'created_at',
     },
     {
-        title: 'Payment Status',
+        title: t('promoter.commission.payment_status'),
         key: 'status',
     },
     {
-        title: 'Order Status',
+        title: t('promoter.commission.order_status'),
         key: 'order_status',
     }
 ];
@@ -112,35 +113,35 @@ const commissionColumns = [
 
 <template>
 
-    <Head title="Promoter Dashboard" />
+    <Head :title="t('promoter.dashboard_title')" />
 
     <SimpleLayout>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-                <h1 class="text-2xl font-bold text-white mb-6">Promoter Dashboard</h1>
+                <h1 class="text-2xl font-bold text-white mb-6">{{ t('promoter.dashboard_title') }}</h1>
 
                 <!-- Summary Stats -->
                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <NCard>
-                        <NStatistic label="Total Events">
+                        <NStatistic :label="t('promoter.total_events')">
                             <NNumberAnimation :from="0" :to="events.length" />
                         </NStatistic>
                     </NCard>
                     <NCard>
-                        <NStatistic label="Total Completed Commissions">
+                        <NStatistic :label="t('promoter.total_commissions')">
                             <NNumberAnimation :from="0" :to="commissions.length" />
                         </NStatistic>
                     </NCard>
                 </div>
 
                 <!-- Events Table -->
-                <NCard title="My Events" class="mt-6">
+                <NCard :title="t('promoter.my_events')" class="mt-6">
                     <NDataTable :columns="columns" :data="events" :pagination="{ pageSize: 10 }" />
                 </NCard>
 
                 <!-- Commissions Table -->
-                <NCard title="Recent Completed Commissions" class="mt-6">
+                <NCard :title="t('promoter.recent_completed_commissions')" class="mt-6">
                     <NDataTable :columns="commissionColumns" :data="commissions" :pagination="{ pageSize: 10 }" />
                 </NCard>
             </div>
@@ -157,13 +158,13 @@ const commissionColumns = [
                         <div class="flex justify-between items-center w-full">
                             <span class="font-medium">{{ stat.product_name }}</span>
                             <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold">
-                                {{ stat.quantity }} sold
+                                {{ stat.quantity }} vendidas
                             </span>
                         </div>
                     </NListItem>
                 </NList>
                 <div v-else class="text-center text-gray-400 py-8">
-                    No sales recorded for this event yet.
+                    {{ t('promoter.no_sales') }}
                 </div>
             </div>
         </NModal>

@@ -9,22 +9,23 @@ import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
+import { trans as t } from 'laravel-vue-i18n';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
+        title: t('user.profile'),
         href: editProfile(),
     },
     {
-        title: 'Password',
+        title: t('user.password'),
         href: editPassword(),
     },
     {
-        title: 'Two-Factor Auth',
+        title: t('user.two_factor_auth'),
         href: show(),
     },
     {
-        title: 'Appearance',
+        title: t('user.appearance'),
         href: editAppearance(),
     },
 ];
@@ -34,7 +35,7 @@ const currentPath = typeof window !== undefined ? window.location.pathname : '';
 
 <template>
     <div class="px-4 py-6">
-        <Heading title="Settings" description="Manage your profile and account settings" />
+        <Heading :title="t('user.settings')" :description="t('user.settings_description')" />
 
         <div class="flex flex-col lg:flex-row lg:space-x-12">
             <aside class="w-full max-w-xl lg:w-48">
