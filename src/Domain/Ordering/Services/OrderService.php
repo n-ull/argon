@@ -83,15 +83,32 @@ class OrderService
 
             // Create order items and increment quantity_sold
             foreach ($priceBreakdown->itemsSnapshot as $itemSnapshot) {
-                $order->orderItems()->create([
-                    'product_id' => $itemSnapshot['product_id'],
-                    'product_price_id' => $itemSnapshot['product_price_id'],
+                $orderItemData = [
                     'quantity' => $itemSnapshot['quantity'],
                     'unit_price' => $itemSnapshot['unit_price'],
-                ]);
+                ];
 
-                ProductPrice::where('id', $itemSnapshot['product_price_id'])
-                    ->increment('quantity_sold', $itemSnapshot['quantity']);
+                if (isset($itemSnapshot['combo_id']) && $itemSnapshot['combo_id']) {
+                    $orderItemData['combo_id'] = $itemSnapshot['combo_id'];
+                    // Logic for Combo Stock Deduction
+                    $combo = \Domain\ProductCatalog\Models\Combo::with('items')->find($itemSnapshot['combo_id']);
+                    if ($combo) {
+                        $combo->increment('quantity_sold', $itemSnapshot['quantity']);
+                        foreach ($combo->items as $comboItem) {
+                            $qtyToDeduct = $comboItem->quantity * $itemSnapshot['quantity'];
+                            ProductPrice::where('id', $comboItem->product_price_id)
+                                ->increment('quantity_sold', $qtyToDeduct);
+                        }
+                    }
+                } else {
+                    $orderItemData['product_id'] = $itemSnapshot['product_id'];
+                    $orderItemData['product_price_id'] = $itemSnapshot['product_price_id'];
+
+                    ProductPrice::where('id', $itemSnapshot['product_price_id'])
+                        ->increment('quantity_sold', $itemSnapshot['quantity']);
+                }
+
+                $order->orderItems()->create($orderItemData);
             }
 
             event(new OrderCreated($order, $orderData->referral_code));
@@ -116,6 +133,19 @@ class OrderService
     private function prepareOrderItems(array $items): array
     {
         return array_map(function ($item) {
+            if (isset($item['comboId'])) {
+                $combo = \Domain\ProductCatalog\Models\Combo::findOrFail($item['comboId']);
+                return new OrderItemData(
+                    productId: null,
+                    productPriceId: null,
+                    quantity: $item['quantity'],
+                    unitPrice: $combo->price,
+                    productName: $combo->name,
+                    productPriceLabel: 'Combo',
+                    comboId: $combo->id
+                );
+            }
+
             $productPrice = ProductPrice::findOrFail($item['productPriceId']);
 
             return new OrderItemData(

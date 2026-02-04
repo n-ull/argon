@@ -5,13 +5,15 @@ namespace Domain\Ordering\Data;
 class OrderItemData
 {
     public function __construct(
-        public readonly int $productId,
-        public readonly int $productPriceId,
+        public readonly ?int $productId,
+        public readonly ?int $productPriceId,
         public readonly int $quantity,
         public readonly float $unitPrice,
         public readonly string $productPriceLabel,
-        public readonly string $productName
-    ) {}
+        public readonly string $productName,
+        public readonly ?int $comboId = null,
+    ) {
+    }
 
     public function getSubtotal(): float
     {
@@ -28,6 +30,7 @@ class OrderItemData
             'subtotal' => $this->getSubtotal(),
             'product_price_label' => $this->productPriceLabel,
             'product_name' => $this->productName,
+            'combo_id' => $this->comboId,
         ];
     }
 }

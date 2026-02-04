@@ -1,17 +1,13 @@
 <?php
 
-use App\Mail\OrderCompleted;
 use Domain\Ordering\Enums\OrderStatus;
-use Domain\Ordering\Listeners\SendOrderCompletedEmail;
 use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
 use Domain\Ordering\Services\OrderService;
 use Domain\Ticketing\Jobs\GenerateTickets;
-use Domain\Ticketing\Listeners\GenerateTicketsForOrder;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
-use PragmaRX\Google2FA\Google2FA;
 
 uses(RefreshDatabase::class);
 

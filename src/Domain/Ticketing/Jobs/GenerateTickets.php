@@ -29,7 +29,7 @@ class GenerateTickets implements ShouldQueue
      */
     public function handle(): void
     {
-        $order = Order::with(['orderItems', 'orderItems.product'])->findOrFail($this->orderId);
+        $order = Order::with(['orderItems.product', 'orderItems.combo.items.productPrice.product'])->findOrFail($this->orderId);
 
         if (! $order) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} not found");
@@ -45,7 +45,13 @@ class GenerateTickets implements ShouldQueue
 
         \DB::transaction(function () use ($order) {
             foreach ($order->orderItems as $item) {
-                if ($item->product->product_type === ProductType::TICKET) {
+                if ($item->combo_id && $item->combo) {
+                    foreach ($item->combo->items as $comboItem) {
+                        if ($comboItem->productPrice->product->product_type === ProductType::TICKET) {
+                            $this->generateTicketFromCombo($item, $comboItem);
+                        }
+                    }
+                } elseif ($item->product && $item->product->product_type === ProductType::TICKET) {
                     $this->generateTicket($item);
                 }
             }
@@ -62,6 +68,28 @@ class GenerateTickets implements ShouldQueue
                 'order_id' => $orderItem->order_id,
                 'user_id' => $orderItem->order->user_id,
                 'type' => $orderItem->product->ticket_type,
+                'status' => TicketStatus::ACTIVE,
+                'transfers_left' => 0,
+                'is_courtesy' => false,
+                'used_at' => null,
+                'expired_at' => null,
+            ]);
+        }
+    }
+
+    public function generateTicketFromCombo(OrderItem $orderItem, \Domain\ProductCatalog\Models\ComboItem $comboItem)
+    {
+        $totalQuantity = $orderItem->quantity * $comboItem->quantity;
+        $product = $comboItem->productPrice->product;
+
+        for ($i = 0; $i < $totalQuantity; $i++) {
+            Ticket::create([
+                'token' => \Domain\Ticketing\Facades\TokenGenerator::generate($product->ticket_type),
+                'event_id' => $orderItem->order->event_id,
+                'product_id' => $product->id,
+                'order_id' => $orderItem->order_id,
+                'user_id' => $orderItem->order->user_id,
+                'type' => $product->ticket_type,
                 'status' => TicketStatus::ACTIVE,
                 'transfers_left' => 0,
                 'is_courtesy' => false,

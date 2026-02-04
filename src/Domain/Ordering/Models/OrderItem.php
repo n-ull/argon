@@ -43,6 +43,7 @@ class OrderItem extends Model
         'quantity',
         'unit_price',
         'product_price_id',
+        'combo_id',
     ];
 
     public function order(): BelongsTo
@@ -58,6 +59,11 @@ class OrderItem extends Model
     public function productPrice(): BelongsTo
     {
         return $this->belongsTo(\Domain\ProductCatalog\Models\ProductPrice::class);
+    }
+
+    public function combo(): BelongsTo
+    {
+        return $this->belongsTo(\Domain\ProductCatalog\Models\Combo::class);
     }
 
     protected static function newFactory()
