@@ -163,6 +163,12 @@ Route::group([
         Route::post('{event}/products/{product}/duplicate', \Domain\EventManagement\Actions\DuplicateEventProduct::class)
             ->name('products.duplicate');
 
+        Route::post('{event}/combos', \Domain\EventManagement\Actions\CreateEventCombo::class)
+            ->name('combos.store');
+
+        Route::put('{event}/combos/{combo}', \Domain\EventManagement\Actions\UpdateEventCombo::class)
+            ->name('combos.update');
+
         Route::get('{event}/orders', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'orders'])
             ->name('orders');
 

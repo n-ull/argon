@@ -140,6 +140,11 @@ class Event extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function combos(): HasMany
+    {
+        return $this->hasMany(\Domain\ProductCatalog\Models\Combo::class);
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(EventCategory::class);

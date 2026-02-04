@@ -2,7 +2,7 @@
 import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { Event, Product, ProductPrice, Promoter } from '@/types';
+import { Event, Product, ProductPrice, Promoter, Combo } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { Calendar, LucideShoppingCart, MapPin, Minus, Pencil, Plus, X } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
@@ -18,16 +18,18 @@ import { trans as t } from 'laravel-vue-i18n';
 interface Props {
     event: Event,
     products: Product[],
+    combos: Combo[],
     userIsOrganizer: boolean,
     referralCode?: string,
     promoter?: Promoter
 }
 
-const { event, products, userIsOrganizer, referralCode, promoter } = defineProps<Props>();
+const { event, products, combos, userIsOrganizer, referralCode, promoter } = defineProps<Props>();
 
 interface CartItem {
-    productId: number;
-    productPriceId: number;
+    productId?: number;
+    productPriceId?: number;
+    comboId?: number;
     quantity: number;
 }
 
@@ -76,6 +78,36 @@ const removeFromCart = (product: Product, price: ProductPrice) => {
 
 const getQuantity = (priceId: number) => {
     const item = form.items.find(item => item.productPriceId === priceId);
+    return item ? item.quantity : 0;
+}
+
+const addComboToCart = (combo: Combo) => {
+    const existingItem = form.items.find(item => item.comboId === combo.id);
+    if (existingItem) {
+        existingItem.quantity++;
+    } else {
+        form.items.push({
+            comboId: combo.id,
+            quantity: 1,
+        });
+    }
+}
+
+const removeComboFromCart = (combo: Combo) => {
+    const existingItemIndex = form.items.findIndex(item => item.comboId === combo.id);
+
+    if (existingItemIndex !== -1) {
+        const item = form.items[existingItemIndex];
+        item.quantity--;
+
+        if (item.quantity === 0) {
+            form.items.splice(existingItemIndex, 1);
+        }
+    }
+}
+
+const getComboQuantity = (comboId: number) => {
+    const item = form.items.find(item => item.comboId === comboId);
     return item ? item.quantity : 0;
 }
 
@@ -216,6 +248,44 @@ const filterProductWithPrices = products.filter(product => product.product_price
                     </div>
                 </div>
 
+                <div class="bg-neutral-900 rounded" v-if="combos && combos.length > 0">
+                    <TicketShapedCardHeader color="gray" :title="t('event.combos')" />
+                    <ul class="space-y-4 p-4">
+                        <li v-for="combo in combos" :key="combo.id" class="border p-4 rounded">
+                            <div class="flex flex-col mb-2">
+                                <span class="font-bold text-moovin-lime text-2xl">{{ combo.name }}</span>
+                                <span v-if="combo.description" class="text-sm text-neutral-400">
+                                    {{ combo.description }}
+                                </span>
+                                <div class="mt-2 text-sm text-neutral-500">
+                                    <ul class="list-disc list-inside">
+                                        <li v-for="item in combo.items" :key="item.id">
+                                            {{ item.quantity }}x {{ item.product_price?.product?.name ?? 'Item' }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-row justify-between items-center py-4 px-4 bg-neutral-800 rounded-b mt-2">
+                                <div class="flex flex-row gap-2">
+                                    <span class="text-moovin-lime text-lg font-black">${{ combo.price }}</span>
+                                </div>
+                                <div class="flex flex-row gap-2">
+                                    <Button size="icon" variant="default" @click="removeComboFromCart(combo)">
+                                        <Minus />
+                                    </Button>
+                                    <Button size="icon" variant="default">
+                                        {{ getComboQuantity(combo.id) }}
+                                    </Button>
+                                    <Button size="icon" variant="default" @click="addComboToCart(combo)">
+                                        <Plus />
+                                    </Button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
                 <div class="bg-neutral-900 rounded">
                     <TicketShapedCardHeader color="gray" :title="t('event.products')" />
                     <ul class="space-y-4 p-4">
@@ -225,7 +295,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                 <span class="font-bold text-moovin-lime text-2xl">{{ product.name }}</span>
                                 <span v-if="product.description" class="text-sm text-neutral-400">{{
                                     product.description
-                                    }}</span>
+                                }}</span>
                             </div>
                             <ul class="space-y-2">
                                 <li v-for="price in product.product_prices" :key="price.id">
@@ -244,7 +314,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                             </div>
                                             <span class="text-moovin-lime text-lg font-black" v-if="price.price > 0">${{
                                                 price.price
-                                                }}</span>
+                                            }}</span>
                                             <span class="text-moovin-lime text-lg font-bold" v-else>Free</span>
                                         </div>
                                         <div v-if="price.sales_start_date && new Date(price.sales_start_date) > new Date()"
@@ -268,7 +338,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                                 </Button>
                                                 <Button size="icon" variant="default">{{
                                                     getQuantity(price.id)
-                                                    }}</Button>
+                                                }}</Button>
                                                 <Button size="icon" variant="default"
                                                     :disabled="getQuantity(price.id) >= (price.limit_max_per_order ?? product.max_per_order ?? Infinity)"
                                                     @click="addToCart(product, price)">

@@ -65,9 +65,15 @@ class EventDetailsController extends Controller
             }
         }
 
+        $combos = $event->combos()
+            ->where('is_active', true)
+            ->with(['items.productPrice.product'])
+            ->get();
+
         return Inertia::render('events/Details', [
             'event' => EventResource::make($event)->resolve(),
             'products' => ProductResource::collection($products)->resolve(),
+            'combos' => $combos,
             'userIsOrganizer' => auth()->check() && $event->organizer->users->contains(auth()->user()->id),
             'referralCode' => session('referral_code_'.$event->id),
             'promoter' => $promoter ?? null,

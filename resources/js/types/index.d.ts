@@ -171,6 +171,7 @@ export interface ProductPrice {
     deleted_at?: string | null;
     is_sold_out?: boolean;
     limit_max_per_order?: number;
+    product?: Product;
 }
 
 export interface Organizer {
@@ -276,6 +277,27 @@ export type Cooperator = {
     id: number;
     name: string;
     email: string;
+    created_at?: string | null;
+    updated_at?: string | null;
+    deleted_at?: string | null;
+}
+
+export interface ComboItem {
+    id: number;
+    combo_id: number;
+    product_price_id: number;
+    quantity: number;
+    product_price?: ProductPrice;
+}
+
+export interface Combo {
+    id: number;
+    event_id: number;
+    name: string;
+    description: string | null;
+    price: number;
+    is_active: boolean;
+    items: ComboItem[];
     created_at?: string | null;
     updated_at?: string | null;
     deleted_at?: string | null;

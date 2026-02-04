@@ -15,8 +15,8 @@ class CheckoutOrderItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'name' => $this->product->name,
-            'price_name' => $this->productPrice->label,
+            'name' => $this->whenNotNull($this->product?->name, $this->combo?->name),
+            'price_name' => $this->whenNotNull($this->productPrice?->label, $this->combo?->name),
             'quantity' => $this->quantity,
             'unit_price' => $this->unit_price,
             'subtotal' => $this->unit_price * $this->quantity,

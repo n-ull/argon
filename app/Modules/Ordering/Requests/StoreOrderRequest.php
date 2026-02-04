@@ -24,8 +24,9 @@ class StoreOrderRequest extends FormRequest
         return [
             'eventId' => ['required', 'exists:events,id'],
             'items' => ['required', 'array'],
-            'items.*.productId' => ['required', 'exists:products,id'],
-            'items.*.productPriceId' => ['required', 'exists:product_prices,id'],
+            'items.*.comboId' => ['nullable', 'exists:combos,id'],
+            'items.*.productId' => ['nullable', 'required_without:items.*.comboId', 'exists:products,id'],
+            'items.*.productPriceId' => ['nullable', 'required_without:items.*.comboId', 'exists:product_prices,id'],
             'items.*.quantity' => ['required', 'min:1', 'integer'],
             'referral_code' => ['nullable', 'string', 'exists:promoters,referral_code'],
         ];
