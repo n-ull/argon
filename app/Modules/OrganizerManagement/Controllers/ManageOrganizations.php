@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Models\Order;
 use Domain\OrganizerManagement\Models\Organizer;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class ManageOrganizations extends Controller
 {
     public function show(Organizer $organizer)
     {
+        Gate::authorize('view', $organizer);
         $last_orders = Order::whereHas('event', function ($query) use ($organizer) {
             $query->where('organizer_id', $organizer->id);
         })->orderBy('updated_at', 'desc')->limit(5)->with('event:id,title')->get();
@@ -30,6 +32,7 @@ class ManageOrganizations extends Controller
 
     public function settings(Organizer $organizer)
     {
+        Gate::authorize('update_owner_settings', $organizer);
         return Inertia::render('organizers/Settings', [
             'organizer' => $organizer->load(['settings', 'taxesAndFees', 'owner.mercadoPagoAccount']),
         ]);
@@ -37,6 +40,7 @@ class ManageOrganizations extends Controller
 
     public function events(\Illuminate\Http\Request $request, Organizer $organizer)
     {
+        Gate::authorize('view', $organizer);
         $query = $organizer->events();
 
         if ($request->filled('search')) {
@@ -72,6 +76,7 @@ class ManageOrganizations extends Controller
 
     public function cooperators(Organizer $organizer)
     {
+        Gate::authorize('view', $organizer);
         $cooperators = $organizer->users()->get()->except($organizer->owner_id);
 
         return Inertia::render('organizers/Cooperators', [
@@ -83,6 +88,7 @@ class ManageOrganizations extends Controller
 
     public function promoters(Organizer $organizer)
     {
+        Gate::authorize('view', $organizer);
         $organizer->load(['promoters' => function ($query) {
             $query->withCount('commissions');
         }]);

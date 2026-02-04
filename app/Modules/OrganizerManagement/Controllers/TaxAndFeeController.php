@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use Domain\EventManagement\Models\TaxAndFee;
 use Domain\OrganizerManagement\Models\Organizer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TaxAndFeeController extends Controller
 {
     public function store(Request $request, Organizer $organizer)
     {
+        Gate::authorize('update_owner_settings', $organizer);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'type' => 'required|in:tax,fee',
@@ -28,6 +30,7 @@ class TaxAndFeeController extends Controller
 
     public function update(Request $request, Organizer $organizer, TaxAndFee $taxAndFee)
     {
+        Gate::authorize('update_owner_settings', $organizer);
         // Ensure the tax belongs to the organizer
         if ($taxAndFee->organizer_id !== $organizer->id) {
             abort(403);
@@ -50,6 +53,7 @@ class TaxAndFeeController extends Controller
 
     public function destroy(Organizer $organizer, TaxAndFee $taxAndFee)
     {
+        Gate::authorize('update_owner_settings', $organizer);
         // Ensure the tax belongs to the organizer
         if ($taxAndFee->organizer_id !== $organizer->id) {
             abort(403);
