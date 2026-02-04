@@ -24,5 +24,7 @@ return [
     'how_to_make_an_event' => 'Cómo crear un evento',
     'actions' => 'Acciones',
     'marquee' => 'COMPRA TUS ENTRADAS EN MOOVIN.AR',
-    'welcome.title' => 'Bienvenid@'
+    'welcome.title' => 'Bienvenid@',
+    'og_event_description' => 'Compra tus entradas para :event en moovin.ar',
+    'og_description' => 'En moovin.ar compra y vende entradas para eventos de forma rápida y segura.'
 ];

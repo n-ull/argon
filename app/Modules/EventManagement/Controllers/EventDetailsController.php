@@ -70,6 +70,18 @@ class EventDetailsController extends Controller
             ->with(['items.productPrice.product'])
             ->get();
 
+        $ogData = [
+            'title' => $event->title,
+            'description' => __('argon.og_event_description', ['event' => $event->title]),
+            'image' => $event->poster_image_path,
+            'url' => route('events.show', $event->slug),
+            'type' => 'website',
+        ];
+
+        if ($this->isBot()) {
+            return response()->view('app', $ogData);
+        }
+
         return Inertia::render('events/Details', [
             'event' => EventResource::make($event)->resolve(),
             'products' => ProductResource::collection($products)->resolve(),
