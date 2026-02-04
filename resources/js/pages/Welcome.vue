@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EventHorizontalCard from '@/components/EventHorizontalCard.vue';
+import EventCard from '@/components/EventCard.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
 import { Event } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
@@ -40,8 +40,11 @@ const { events } = defineProps<Props>();
 
                 <!-- Events Grid -->
                 <div v-if="events.length > 0"
-                    class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    <EventHorizontalCard v-for="event in events" :key="event.id" :event="event" />
+                    class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6 md:grid md:gap-6 md:pb-0 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:overflow-visible no-scrollbar">
+                    <div v-for="event in events" :key="event.id"
+                        class="w-[85vw] sm:w-[350px] shrink-0 snap-center md:w-auto pl-4 first:pl-0 last:pr-4 md:pl-0 md:last:pr-0">
+                        <EventCard :event="event" />
+                    </div>
                 </div>
 
                 <div v-else class="flex flex-col items-center justify-center py-24 text-center">
@@ -55,29 +58,21 @@ const { events } = defineProps<Props>();
                     <p class="mt-1 text-gray-400">{{ t('event.sales_not_started_description') }}</p>
                 </div>
             </div>
+
             <!-- Marquee Section -->
-            <div class="relative w-full overflow-hidden bg-moovin-lime py-4">
+            <div class="relative w-full overflow-hidden bg-moovin-lime py-2">
                 <div class="flex whitespace-nowrap">
                     <div class="animate-marquee inline-block py-2">
                         <span v-for="i in 10" :key="i"
-                            class="mx-4 text-4xl font-black uppercase text-moovin-dark-green">
-                            {{ t('argon.marquee') }}
-                        </span>
-                    </div>
-                    <div class="animate-marquee inline-block py-2">
-                        <span v-for="i in 10" :key="i"
-                            class="mx-4 text-4xl font-black uppercase text-moovin-dark-green">
+                            class="mx-4 text-2xl font-black uppercase text-moovin-dark-green">
                             {{ t('argon.marquee') }}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Bento Section with Information -->
-
-
             <!-- Bento Grid Section -->
-            <section class="py-24 bg-neutral-950">
+            <section class="py-20 bg-neutral-950">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="mb-16 md:text-center max-w-3xl mx-auto">
                         <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
