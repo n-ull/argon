@@ -11,6 +11,11 @@ use Laravel\Fortify\Features;
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
+        'events' => \Domain\EventManagement\Models\Event::query()
+            ->where('status', \Domain\EventManagement\Enums\EventStatus::PUBLISHED)
+            ->latest()
+            ->take(4)
+            ->get(),
     ]);
 })->name('home');
 
