@@ -29,3 +29,5 @@ yarn-error.log
 laradumps.yaml
 artisan
 .phpstorm.meta.php
+lang/php_en.json
+.gitignore
