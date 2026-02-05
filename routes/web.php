@@ -221,8 +221,8 @@ Route::group([
     Route::get('invitations/{token}', [\App\Modules\Promoters\Controllers\PromoterInvitationController::class, 'show'])->name('invitations.show');
     Route::post('invitations/{token}/accept', \Domain\Promoters\Actions\AcceptPromoterInvitation::class)->name('invitations.accept');
     Route::post('invitations/{token}/decline', \Domain\Promoters\Actions\DeclinePromoterInvitation::class)->name('invitations.decline');
-    Route::get('dashboard', \App\Modules\Promoters\Controllers\PromoterDashboardController::class)->name('dashboard');
-    Route::get('events/{event}/stats', \App\Modules\Promoters\Controllers\PromoterStatsController::class)->name('events.stats');
+    Route::get('dashboard', \App\Modules\Promoters\Controllers\PromoterDashboardController::class)->name('dashboard')->middleware('auth');
+    Route::get('events/{event}/stats', \App\Modules\Promoters\Controllers\PromoterStatsController::class)->name('events.stats')->middleware('auth');
 });
 
 Route::group([
