@@ -62,9 +62,9 @@ class OrderValidatorService
                     }
 
                     // Stock check
-                    if ($productPrice->stock !== null && ($productPrice->stock - $productPrice->quantity_sold) < $requiredQuantity) {
-                        throw new \DomainException("Not enough stock for product '{$product->name}' in combo.");
-                    }
+                    // if ($productPrice->stock !== null && ($productPrice->stock - $productPrice->quantity_sold) < $requiredQuantity) {
+                    //     throw new \DomainException("Not enough stock for product '{$product->name}' in combo.");
+                    // }
                 }
 
                 continue;
