@@ -18,7 +18,7 @@ class SetLocaleMiddleware
         if ($request->user() && $request->user()->lang) {
             app()->setLocale($request->user()->lang);
         } else {
-            app()->setLocale($request->getPreferredLanguage());
+            app()->setLocale('es');
         }
         return $next($request);
     }
