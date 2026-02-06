@@ -12,6 +12,7 @@ use Domain\OrganizerManagement\Models\Organizer;
 use Domain\ProductCatalog\Models\Product;
 use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Models\Ticket;
+use Domain\Ticketing\Models\Doormen;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +44,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read Organizer $organizer
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Ticket> $tickets
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Product> $products
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Doormen> $doormen
  * @property-read int|null $products_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newModelQuery()
@@ -151,6 +153,11 @@ class Event extends Model
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function doormen(): HasMany
+    {
+        return $this->hasMany(Doormen::class);
     }
 
     public function courtesies()
