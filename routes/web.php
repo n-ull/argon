@@ -4,6 +4,7 @@ use App\Http\Controllers\MercadoPagoWebhookController;
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
 use App\Modules\Ticketing\Controllers\TicketIndexController;
+use Domain\Ticketing\Actions\ScanTicket;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -210,6 +211,8 @@ Route::group([
 
         Route::delete('{event}/courtesies/{courtesy}', \Domain\Ticketing\Actions\DeleteCourtesyTicket::class)
             ->name('courtesies.delete');
+
+        Route::post('{event}/scan', ScanTicket::class)->name('scan');
     });
 
 });
