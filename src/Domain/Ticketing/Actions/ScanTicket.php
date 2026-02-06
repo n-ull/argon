@@ -3,6 +3,8 @@
 namespace Domain\Ticketing\Actions;
 
 use Domain\EventManagement\Models\Event;
+use Domain\Ticketing\Events\TicketScanned;
+use Domain\Ticketing\Resources\ScannedTicketResource;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
 use PragmaRX\Google2FA\Google2FA;
@@ -22,11 +24,11 @@ class ScanTicket
         }
 
         if ($type === 'static') {
-            $response = [
-                'status' => $ticket->status,
-            ];
+            $response = ScannedTicketResource::make($ticket)->resolve();
 
             $ticket->markAsUsed();
+
+            event(new TicketScanned($ticket, auth()->user()));
 
             return response()->json($response);
         }
@@ -42,17 +44,17 @@ class ScanTicket
                 ]);
             }
 
-            $response = [
-                'status' => $ticket->status,
-            ];
+            $response = ScannedTicketResource::make($ticket)->resolve();
 
             $ticket->markAsUsed();
+
+            event(new TicketScanned($ticket, auth()->user()));
 
             return response()->json($response);
         }
     }
 
-    public function asController(Request $request, int $eventId)
+    public function asController(Request $request, Event $event)
     {
         $request->validate([
             'type' => ['in:static,dynamic', 'required', 'string'],
@@ -60,7 +62,6 @@ class ScanTicket
             'totp' => ['nullable', 'string']
         ]);
 
-        $event = Event::findOrFail($eventId);
         $userIsDoormen = $event->doormen()->where('user_id', auth()->user()->id)->where('is_active', true)->exists();
 
         if (! $userIsDoormen) {

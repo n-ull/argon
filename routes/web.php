@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MercadoPagoWebhookController;
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
+use App\Modules\Ticketing\Controllers\ScannerController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
 use App\Modules\Ticketing\Controllers\TicketIndexController;
 use Domain\Ticketing\Actions\ScanTicket;
@@ -25,6 +26,7 @@ Route::get('dashboard', DashboardController::class)->name('dashboard')->middlewa
 Route::group([
     'prefix' => 'tickets',
     'as' => 'tickets.',
+    'middleware' => ['auth'],
 ], function () {
     Route::get('/', [TicketIndexController::class, 'index'])
         ->name('index');
@@ -77,7 +79,7 @@ Route::group([
 Route::group([
     'prefix' => 'manage',
     'as' => 'manage.',
-    'middleware' => ['auth', 'verified'],
+    'middleware' => ['auth'],
 ], function () {
     // manage organizer
     Route::group([
@@ -229,16 +231,11 @@ Route::group([
 });
 
 Route::group([
-    'prefix' => 'user',
-    'as' => 'user.',
-    'middleware' => ['auth', 'verified'],
-], function () { });
-
-Route::group([
-    'prefix' => 'promoters',
-    'as' => 'promoters.',
-    'middleware' => ['auth', 'verified'],
+    'prefix' => 'doormen',
+    'as' => 'doormen.',
+    'middleware' => ['auth']
 ], function () {
+    Route::get('{event}/scanner', ScannerController::class)->name('scanner');
 });
 
 Route::get('mercado-pago/callback', \App\Modules\OrganizerManagement\Controllers\MercadoPagoOAuthController::class)->middleware(['auth'])->name('mp.oauth');
