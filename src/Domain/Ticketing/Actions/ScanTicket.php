@@ -3,41 +3,52 @@
 namespace Domain\Ticketing\Actions;
 
 use Domain\EventManagement\Models\Event;
-use Domain\Ticketing\Enums\TicketStatus;
 use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
+use PragmaRX\Google2FA\Google2FA;
 
 class ScanTicket
 {
     use AsAction;
 
-    public function handle(string $type, string $token, Event $event)
+    public function handle(string $type, string $token, Event $event, ?string $totp)
     {
+        $ticket = $event->tickets->where('token', $token)->first();
+
+        if (! $ticket) {
+            return response()->json([
+                'message' => __('tickets.ticket_not_available')
+            ]);
+        }
+
         if ($type === 'static') {
-            $ticket = $event->tickets->where('token', $token)->first();
-
-            if (! $ticket) {
-                return response()->json([
-                    'message' => __('tickets.ticket_not_available')
-                ]);
-            }
-
-            $usedAt = now();
             $response = [
                 'status' => $ticket->status,
-                'used_at' => $usedAt->toIso8601String()
             ];
 
-            $ticket->status = TicketStatus::USED;
-            $ticket->used_at = $usedAt;
-
-            $ticket->save();
+            $ticket->markAsUsed();
 
             return response()->json($response);
         }
 
         if ($type === 'dynamic') {
+            $google2FA = app(Google2FA::class);
 
+            $tokenValidation = $google2FA->verifyKey($token, $totp);
+
+            if (! $tokenValidation) {
+                return response()->json([
+                    'message' => __('tickets.invalid_totp')
+                ]);
+            }
+
+            $response = [
+                'status' => $ticket->status,
+            ];
+
+            $ticket->markAsUsed();
+
+            return response()->json($response);
         }
     }
 
@@ -45,7 +56,8 @@ class ScanTicket
     {
         $request->validate([
             'type' => ['in:static,dynamic', 'required', 'string'],
-            'token' => ['exists:tickets,token', 'required']
+            'token' => ['exists:tickets,token', 'required'],
+            'totp' => ['nullable', 'string']
         ]);
 
         $event = Event::findOrFail($eventId);
@@ -58,6 +70,6 @@ class ScanTicket
         }
 
 
-        return $this->handle($request['type'], $request['token'], $event);
+        return $this->handle($request['type'], $request['token'], $event, $request['totp']);
     }
 }

@@ -65,4 +65,11 @@ class Ticket extends Model
     {
         return $this->belongsTo(User::class, 'given_by');
     }
+
+    public function markAsUsed()
+    {
+        $this->status = TicketStatus::USED;
+        $this->used_at = now();
+        $this->save();
+    }
 }

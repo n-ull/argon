@@ -24,5 +24,6 @@ return [
     'scan_for_entry' => 'Escanea para entrar',
     'refresh_in' => 'Nuevo QR en',
     'doormen_not_registered' => 'El portero no está registrado o activado',
+    'invalid_totp' => 'Código inválido',
     'ticket_not_available' => 'La entrada no está disponible',
 ];
