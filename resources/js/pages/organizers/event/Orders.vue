@@ -5,11 +5,12 @@ import { orders, dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event, Order, PaginatedResponse } from '@/types';
 import { router } from '@inertiajs/vue3';
-import { NDataTable, NTag, PaginationProps, NDrawer, NDrawerContent, DrawerPlacement, NInput, NSelect, NSpace, NIcon } from 'naive-ui';
+import { NDataTable, NTag, PaginationProps, NDrawer, NDrawerContent, DrawerPlacement, NInput, NSelect, NSpace, NIcon, NButton } from 'naive-ui';
 import { computed, h, ref } from 'vue';
 import { Search } from 'lucide-vue-next';
 
 import OrderStatusBadge from '@/pages/orders/partials/OrderStatusBadge.vue';
+import { retryTickets } from '@/routes/manage/event/orders';
 
 interface Props {
     event: Event;
@@ -76,6 +77,10 @@ const createColumns = () => {
             key: 'order_items_count',
         },
         {
+            title: 'Tickets',
+            key: 'tickets_count'
+        },
+        {
             title: 'Date',
             key: 'created_at',
             minWidth: 80,
@@ -114,9 +119,36 @@ const createColumns = () => {
                     }
                 );
             }
+        },
+        {
+            title: 'Retry Ticket Generation',
+            key: 'retry_ticket_generation',
+            onClick: (e: MouseEvent) => e.stopPropagation(),
+            render(row: Order) {
+                if (!row.tickets_count && row.status === 'completed') {
+                    return h('div', {}, [
+                        h(NButton, {
+                            onClick: () => handleRetryTicketGeneration(row.id),
+                            type: 'warning',
+                            size: 'small',
+                            secondary: true
+                        }, { default: () => 'Retry' }),
+                    ]);
+                }
+                return null;
+            }
         }
     ];
 };
+
+const handleRetryTicketGeneration = (orderId: number) => {
+    router.post(retryTickets({ event: props.event.id, order: orderId }).url, {}, {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Optional: You might want to refresh the data or show a notification
+        }
+    });
+}
 
 const columns = createColumns();
 

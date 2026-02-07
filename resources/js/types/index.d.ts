@@ -243,6 +243,7 @@ export interface Order {
     total: number;
     referral_code?: string | null;
     promoter?: Promoter | null;
+    tickets_count?: number;
 }
 
 export interface Client {

@@ -46,12 +46,14 @@ class GenerateTickets implements ShouldQueue
         \DB::transaction(function () use ($order) {
             foreach ($order->orderItems as $item) {
                 if ($item->combo_id && $item->combo) {
+                    Log::info('Generating tickets for combo item: '.$item->combo->id);
                     foreach ($item->combo->items as $comboItem) {
                         if ($comboItem->productPrice->product->product_type === ProductType::TICKET) {
                             $this->generateTicketFromCombo($item, $comboItem);
                         }
                     }
                 } elseif ($item->product && $item->product->product_type === ProductType::TICKET) {
+                    Log::info('Generating tickets for product: '.$item->product->id);
                     $this->generateTicket($item);
                 }
             }

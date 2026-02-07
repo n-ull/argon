@@ -7,6 +7,7 @@ use Domain\EventManagement\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
+use Domain\Ordering\Models\Order;
 use Domain\Promoters\Models\Promoter;
 
 class ManageEventController extends Controller
@@ -74,7 +75,7 @@ class ManageEventController extends Controller
     {
         $event = Event::where('id', $eventId)->first()->load('organizer');
 
-        $query = $event->orders()->with(['client:id,name,email', 'promoter'])->withCount('orderItems');
+        $query = $event->orders()->with(['client:id,name,email', 'promoter'])->withCount(['orderItems', 'tickets']);
 
         // Search by client name, email, or reference ID
         if ($request->filled('search')) {
@@ -117,21 +118,6 @@ class ManageEventController extends Controller
             'orders' => $query->paginate(10),
         ]);
     }
-
-    // public function promoters(int $eventId)
-    // {
-    //     $event = Event::where('id', $eventId)->first()->load(['organizer', 'promoters' => function ($query) use ($eventId) {
-    //         $query->withCount(['commissions' => function ($query) use ($eventId) {
-    //             $query->where('event_id', $eventId)->completed();
-    //         }]);
-    //     }, 'promoterInvitations']);
-
-    //     return Inertia::render('organizers/event/Promoters', [
-    //         'event' => $event,
-    //         'promoters' => \Domain\Promoters\Resources\PromoterResource::collection($event->promoters)->resolve(),
-    //         'invitations' => $event->promoterInvitations,
-    //     ]);
-    // }
 
     public function settings(int $eventId)
     {
@@ -257,6 +243,35 @@ class ManageEventController extends Controller
             'message' => [
                 'summary' => 'Status updated',
                 'detail' => 'Doorman status has been updated.',
+                'type' => 'success'
+            ]
+        ]);
+    }
+    public function retryTicketGeneration(int $eventId, Order $order)
+    {
+        $event = Event::findOrFail($eventId);
+        Gate::authorize('update', $event);
+
+        if ($order->event_id !== $event->id) {
+            abort(404);
+        }
+
+        if ($order->tickets()->count() > 0) {
+            return back()->with('flash', [
+                'message' => [
+                    'summary' => 'Tickets already exist',
+                    'detail' => 'Tickets have already been generated for this order.',
+                    'type' => 'warning'
+                ]
+            ]);
+        }
+
+        \Domain\Ticketing\Jobs\GenerateTickets::dispatch($order->id);
+
+        return back()->with('flash', [
+            'message' => [
+                'summary' => 'Tickets generation queued',
+                'detail' => 'The ticket generation process has been started.',
                 'type' => 'success'
             ]
         ]);

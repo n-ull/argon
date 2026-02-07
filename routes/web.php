@@ -180,6 +180,9 @@ Route::group([
         Route::get('{event}/orders', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'orders'])
             ->name('orders');
 
+        Route::post('{event}/orders/{order}/retry-tickets', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'retryTicketGeneration'])
+            ->name('orders.retry-tickets');
+
         Route::get('{event}/settings', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'settings'])
             ->name('settings');
 

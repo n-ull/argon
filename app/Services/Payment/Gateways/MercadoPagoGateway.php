@@ -49,7 +49,7 @@ class MercadoPagoGateway implements PaymentGateway
             $items[] = $item;
 
             $payer = new \MercadoPago\Resources\Preference\Payer;
-            $payer->email = $order->client->email;
+            $payer->email = $order->client->email ?? 'No Email';
             $payer->name = $order->client->name ?? 'No Name';
             $payer->surname = $order->client->last_name ?? 'No Last Name';
 
@@ -107,7 +107,7 @@ class MercadoPagoGateway implements PaymentGateway
             $items[] = $item;
 
             $payer = new \MercadoPago\Resources\Preference\Payer;
-            $payer->email = $order->client->email;
+            $payer->email = $order->client->email ?? 'No Email';
             $payer->name = $order->client->name ?? 'No Name';
             $payer->surname = $order->client->last_name ?? 'No Last Name';
 
