@@ -9,7 +9,7 @@ import { show as eventShow } from '@/routes/events';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { BookA, Copy, DollarSign, Download, Eye, Gift, Globe, MapIcon, Plus, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
+import { BookA, Copy, DollarSign, Download, Eye, Gift, Globe, MapIcon, Plus, ScanQrCode, ShoppingCart, Ticket } from 'lucide-vue-next';
 import { NButton, NIcon, NInput } from 'naive-ui';
 import { toast } from 'vue-sonner';
 
@@ -82,6 +82,8 @@ const publishEvent = () => {
                     :info="event.widget_stats!.unique_visitors.toString()" />
                 <InfoWidget title="Total Revenue" :icon="DollarSign"
                     :info="'$ ' + event.widget_stats!.total_revenue.toString()" />
+                <InfoWidget title="Generated Tickets" :icon="Ticket"
+                    :info="event.widget_stats!.generated_tickets_count.toString()" />
                 <InfoWidget title="Courtesy Tickets" :icon="Gift"
                     :info="event.widget_stats!.courtesy_tickets_count?.toString() ?? '0'" />
                 <InfoWidget title="Scanned Tickets" :icon="ScanQrCode"

@@ -115,6 +115,7 @@ class Event extends Model
             })->sum('quantity'),
             'scanned_tickets_count' => $this->tickets()->where('status', TicketStatus::USED)->count(),
             'courtesy_tickets_count' => $this->tickets()->where('is_courtesy', true)->count(),
+            'generated_tickets_count' => $this->tickets()->count(),
         ];
     }
 

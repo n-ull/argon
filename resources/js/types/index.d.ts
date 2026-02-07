@@ -125,6 +125,7 @@ export interface WidgetStats {
     products_sold_count: number;
     courtesy_tickets_count: number;
     unique_visitors: number;
+    generated_tickets_count: number;
 }
 
 export interface Location {
