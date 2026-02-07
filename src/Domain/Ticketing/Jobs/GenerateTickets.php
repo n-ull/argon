@@ -68,12 +68,12 @@ class GenerateTickets implements ShouldQueue
 
         for ($i = 0; $i < $orderItem->quantity; $i++) {
             Ticket::create([
-                'token' => \Domain\Ticketing\Facades\TokenGenerator::generate($orderItem->product->ticket_type),
+                'token' => \Domain\Ticketing\Facades\TokenGenerator::generate($orderItem->product->ticket_type ?? TicketType::STATIC),
                 'event_id' => $orderItem->order->event_id,
                 'product_id' => $orderItem->product_id,
                 'order_id' => $orderItem->order_id,
                 'user_id' => $orderItem->order->user_id,
-                'type' => $orderItem->product->ticket_type,
+                'type' => $orderItem->product->ticket_type ?? TicketType::STATIC ,
                 'status' => TicketStatus::ACTIVE,
                 'transfers_left' => 0,
                 'is_courtesy' => false,
@@ -90,12 +90,12 @@ class GenerateTickets implements ShouldQueue
 
         for ($i = 0; $i < $totalQuantity; $i++) {
             Ticket::create([
-                'token' => \Domain\Ticketing\Facades\TokenGenerator::generate($product->ticket_type),
+                'token' => \Domain\Ticketing\Facades\TokenGenerator::generate($product->ticket_type ?? TicketType::STATIC),
                 'event_id' => $orderItem->order->event_id,
                 'product_id' => $product->id,
                 'order_id' => $orderItem->order_id,
                 'user_id' => $orderItem->order->user_id,
-                'type' => $product->ticket_type,
+                'type' => $product->ticket_type ?? TicketType::STATIC ,
                 'status' => TicketStatus::ACTIVE,
                 'transfers_left' => 0,
                 'is_courtesy' => false,
