@@ -15,14 +15,22 @@ class CheckoutController extends Controller
         $settings = $order->event->organizer->settings;
 
         if ($order->status === OrderStatus::COMPLETED) {
-            return redirect(route('orders.show', $order->id));
+            return redirect()->route('orders.show', $order->id);
         }
 
         if ($order->status === OrderStatus::EXPIRED || $order->status === OrderStatus::CANCELLED) {
-            return redirect(route('events.show', $order->event->slug))
+            return redirect()->route('events.show', $order->event->slug)
                 ->with('message', flash_error(
-                    'Order unavailable.',
-                    'This order has expired or been cancelled.'
+                    __('order.order_unavailable'),
+                    __('order.order_unavailable.description')
+                ));
+        }
+
+        if ($order->user_id !== auth()->id()) {
+            return redirect()->route('events.show', $order->event->slug)
+                ->with('message', flash_error(
+                    __('order.order_unavailable'),
+                    __('order.order_unavailable.description')
                 ));
         }
 
@@ -41,8 +49,8 @@ class CheckoutController extends Controller
     {
         if ($order->status !== OrderStatus::PENDING) {
             return back()->with('message', flash_error(
-                'Order cannot be cancelled.',
-                'Order is not in pending state.'
+                __('order.cannot_be_cancelled'),
+                __('order.not_in_pending_state')
             ));
         }
 
@@ -50,8 +58,8 @@ class CheckoutController extends Controller
 
         return redirect()->route('events.show', $order->event->slug)
             ->with('message', flash_success(
-                'Order cancelled.',
-                'Your order has been cancelled successfully.'
+                __('order.cancelled_order'),
+                __('order.cancelled_order.description')
             ));
     }
 }

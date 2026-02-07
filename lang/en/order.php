@@ -38,5 +38,9 @@ return [
     'expired_order' => 'El pedido ha expirado',
     'expired_order.description' => 'Tu pedido ha expirado, vuelve a intentarlo más tarde.',
     'cancelled_order' => 'El pedido ha sido cancelado',
-    'cancelled_order.description' => 'Tu pedido ha sido cancelado, vuelve a intentarlo más tarde.',
+    'cancelled_order.description' => 'Tu pedido ha sido cancelado correctamente.',
+    'cannot_be_cancelled' => 'El pedido no puede ser cancelado',
+    'not_in_pending_state' => 'El pedido no está en estado pendiente',
+    'order_unavailable' => 'El pedido no está disponible',
+    'order_unavailable.description' => 'Este pedido ha expirado o ha sido cancelado.',
 ];
