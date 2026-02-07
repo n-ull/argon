@@ -6,6 +6,7 @@ use Domain\Ordering\Models\Order;
 use Domain\Ordering\Models\OrderItem;
 use Domain\ProductCatalog\Enums\ProductType;
 use Domain\Ticketing\Enums\TicketStatus;
+use Domain\Ticketing\Enums\TicketType;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -46,14 +47,12 @@ class GenerateTickets implements ShouldQueue
         \DB::transaction(function () use ($order) {
             foreach ($order->orderItems as $item) {
                 if ($item->combo_id && $item->combo) {
-                    Log::info('Generating tickets for combo item: '.$item->combo->id);
                     foreach ($item->combo->items as $comboItem) {
                         if ($comboItem->productPrice->product->product_type === ProductType::TICKET) {
                             $this->generateTicketFromCombo($item, $comboItem);
                         }
                     }
                 } elseif ($item->product_id && $item->product->product_type === ProductType::TICKET) {
-                    Log::info('Generating tickets for product: '.$item->product->id);
                     $this->generateTicket($item);
                 }
             }
@@ -69,7 +68,7 @@ class GenerateTickets implements ShouldQueue
                 'product_id' => $orderItem->product_id,
                 'order_id' => $orderItem->order_id,
                 'user_id' => $orderItem->order->user_id,
-                'type' => $orderItem->product->ticket_type,
+                'type' => $orderItem->product->ticket_type ?? TicketType::STATIC ,
                 'status' => TicketStatus::ACTIVE,
                 'transfers_left' => 0,
                 'is_courtesy' => false,
