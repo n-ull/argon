@@ -41,7 +41,8 @@ const filteredTickets = computed(() => {
                 <!-- Header Section -->
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 class="text-3xl font-bold tracking-tight text-foreground">{{ $t('tickets.my_tickets') }}</h1>
+                        <h1 class="text-3xl font-bold tracking-tight text-foreground">{{ $t('tickets.my_tickets') }}
+                        </h1>
                         <p class="mt-1 text-sm text-muted-foreground">
                             {{ $t('tickets.manage_your_tickets_and_access_your_events') }}
                         </p>
@@ -103,11 +104,12 @@ const filteredTickets = computed(() => {
                         <div class="flex h-16 w-16 items-center justify-center rounded-full bg-card">
                             <TicketIcon class="h-8 w-8 text-muted-foreground" />
                         </div>
-                        <h3 class="mt-4 text-lg font-medium text-foreground">{{ $t('tickets.you_dont_have_any_tickets') }}
+                        <h3 class="mt-4 text-lg font-medium text-foreground">{{
+                            $t('tickets.you_dont_have_any_inactive_tickets') }}
                         </h3>
                         <p class="mt-1 text-sm text-muted-foreground">
-                            {{ activeTab === 'active' ? $t('tickets.you_dont_have_active_tickets') :
-                                $t('tickets.you_dont_have_inactive_tickets') }}
+                            {{ activeTab === 'active' ? $t('you_dont_have_any_active_tickets') :
+                                $t('tickets.you_dont_have_any_inactive_tickets') }}
                         </p>
                     </div>
                 </div>

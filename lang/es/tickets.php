@@ -23,4 +23,7 @@ return [
     'dynamic_ticket_info' => 'Esta es una entrada dinámica, no puede ser imprimida, muestrale la aplicación al portero.',
     'scan_for_entry' => 'Escanea para entrar',
     'refresh_in' => 'Nuevo QR en',
+    'doormen_not_registered' => 'El portero no está registrado o activado',
+    'invalid_totp' => 'Código inválido',
+    'ticket_not_available' => 'La entrada no está disponible',
 ];

@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\MercadoPagoWebhookController;
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
+use App\Modules\Ticketing\Controllers\ScannerController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
 use App\Modules\Ticketing\Controllers\TicketIndexController;
+use Domain\Ticketing\Actions\ScanTicket;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -24,6 +26,7 @@ Route::get('dashboard', DashboardController::class)->name('dashboard')->middlewa
 Route::group([
     'prefix' => 'tickets',
     'as' => 'tickets.',
+    'middleware' => ['auth'],
 ], function () {
     Route::get('/', [TicketIndexController::class, 'index'])
         ->name('index');
@@ -76,7 +79,7 @@ Route::group([
 Route::group([
     'prefix' => 'manage',
     'as' => 'manage.',
-    'middleware' => ['auth', 'verified'],
+    'middleware' => ['auth'],
 ], function () {
     // manage organizer
     Route::group([
@@ -189,6 +192,15 @@ Route::group([
         Route::get('{event}/doormen', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'doormen'])
             ->name('doormen');
 
+        Route::post('{event}/doormen', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'addDoormen'])
+            ->name('doormen.store');
+
+        Route::put('{event}/doormen/{doorman}/status', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'switchDoormanStatus'])
+            ->name('doormen.status.update');
+
+        Route::delete('{event}/doormen/{doorman}', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'removeDoorman'])
+            ->name('doormen.delete');
+
         Route::get('{event}/vouchers', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'vouchers'])
             ->name('vouchers');
 
@@ -210,6 +222,8 @@ Route::group([
 
         Route::delete('{event}/courtesies/{courtesy}', \Domain\Ticketing\Actions\DeleteCourtesyTicket::class)
             ->name('courtesies.delete');
+
+        Route::post('{event}/scan', ScanTicket::class)->name('scan');
     });
 
 });
@@ -226,16 +240,11 @@ Route::group([
 });
 
 Route::group([
-    'prefix' => 'user',
-    'as' => 'user.',
-    'middleware' => ['auth', 'verified'],
-], function () { });
-
-Route::group([
-    'prefix' => 'promoters',
-    'as' => 'promoters.',
-    'middleware' => ['auth', 'verified'],
+    'prefix' => 'doormen',
+    'as' => 'doormen.',
+    'middleware' => ['auth']
 ], function () {
+    Route::get('{event}/scanner', ScannerController::class)->name('scanner');
 });
 
 Route::get('mercado-pago/callback', \App\Modules\OrganizerManagement\Controllers\MercadoPagoOAuthController::class)->middleware(['auth'])->name('mp.oauth');

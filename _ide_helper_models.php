@@ -11,7 +11,7 @@
  */
 
 
-namespace App\Models {
+namespace App\Models{
 /**
  * @property int $id
  * @property string $name
@@ -42,15 +42,19 @@ namespace App\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorSecret($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $lang
+ * @property-read \Domain\OrganizerManagement\Models\MercadoPagoAccount|null $mercadoPagoAccount
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\OrganizerManagement\Models\Organizer> $organizers
  * @property-read int|null $organizers_count
+ * @property-read \Domain\Promoters\Models\Promoter|null $promoter
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ticketing\Models\Ticket> $tickets
+ * @property-read int|null $tickets_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLang($value)
  */
-	class User extends \Eloquent
-{
-}
+	class User extends \Eloquent {}
 }
 
-namespace Domain\EventManagement\Models {
+namespace Domain\EventManagement\Models{
 /**
  * Event Model
  * 
@@ -74,6 +78,7 @@ namespace Domain\EventManagement\Models {
  * @property-read Organizer $organizer
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Ticket> $tickets
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Product> $products
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Doormen> $doormen
  * @property-read int|null $products_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newQuery()
@@ -92,7 +97,12 @@ namespace Domain\EventManagement\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
  * @mixin \Eloquent
  * @property int|null $event_category_id
+ * @property string|null $cover_image_path
+ * @property string|null $poster_image_path
  * @property-read \Domain\EventManagement\Models\EventCategory|null $category
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\ProductCatalog\Models\Combo> $combos
+ * @property-read int|null $combos_count
+ * @property-read int|null $doormen_count
  * @property-read mixed $widget_stats
  * @property-read \Domain\EventManagement\Models\EventStatistics $statistics
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\EventManagement\Models\TaxAndFee> $taxesAndFees
@@ -100,17 +110,17 @@ namespace Domain\EventManagement\Models {
  * @property-read int|null $tickets_count
  * @method static \Database\Factories\Domain\EventManagement\Models\EventFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereCoverImagePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereEventCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Event wherePosterImagePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event withoutTrashed()
  */
-	class Event extends \Eloquent
-{
-}
+	class Event extends \Eloquent {}
 }
 
-namespace Domain\EventManagement\Models {
+namespace Domain\EventManagement\Models{
 /**
  * @property int $id
  * @property string $name
@@ -131,12 +141,10 @@ namespace Domain\EventManagement\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EventCategory whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EventCategory whereUpdatedAt($value)
  */
-	class EventCategory extends \Eloquent
-{
-}
+	class EventCategory extends \Eloquent {}
 }
 
-namespace Domain\EventManagement\Models {
+namespace Domain\EventManagement\Models{
 /**
  * @property int $id
  * @property int $event_id
@@ -153,12 +161,10 @@ namespace Domain\EventManagement\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EventStatistics whereUniqueVisitors($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EventStatistics whereUpdatedAt($value)
  */
-	class EventStatistics extends \Eloquent
-{
-}
+	class EventStatistics extends \Eloquent {}
 }
 
-namespace Domain\EventManagement\Models {
+namespace Domain\EventManagement\Models{
 /**
  * TaxAndFee Model
  *
@@ -175,8 +181,11 @@ namespace Domain\EventManagement\Models {
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read Event $event
+ * @property int $organizer_id
+ * @property bool $is_default
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\EventManagement\Models\Event> $events
  * @property-read int|null $events_count
+ * @property-read \Domain\OrganizerManagement\Models\Organizer $organizer
  * @method static \Domain\EventManagement\Database\Factories\TaxAndFeeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee newQuery()
@@ -187,17 +196,17 @@ namespace Domain\EventManagement\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereDisplayMode($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereIsDefault($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereOrganizerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TaxAndFee whereValue($value)
  */
-	class TaxAndFee extends \Eloquent
-{
-}
+	class TaxAndFee extends \Eloquent {}
 }
 
-namespace Domain\Ordering\Models {
+namespace Domain\Ordering\Models{
 /**
  * @property int $id
  * @property int $event_id
@@ -205,6 +214,7 @@ namespace Domain\Ordering\Models {
  * @property string $total_gross
  * @property string $status
  * @property string $expires_at
+ * @property float $service_fee_snapshot
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -222,6 +232,7 @@ namespace Domain\Ordering\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTotalGross($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $referral_code
  * @property string $reference_id Reference used to find the order through the payment gateway.
  * @property string|null $organizer_raise_method_snapshot The preferred raise money method used by the organization at the moment the order was paid.
  * @property string|null $used_payment_gateway_snapshot The payment gateway used at the moment the order was paid.
@@ -233,10 +244,12 @@ namespace Domain\Ordering\Models {
  * @property array<array-key, mixed>|null $fees_snapshot Applied fees snapshot
  * @property int|null $user_id
  * @property-read \App\Models\User|null $client
+ * @property-read \Domain\Promoters\Models\Commission|null $commission
  * @property-read \Domain\EventManagement\Models\Event $event
- * @property-read boolean $is_paid
- * @property-read numeric $total
+ * @property-read mixed $is_paid
+ * @property-read mixed $total
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ordering\Models\OrderItem> $orderItems
+ * @property-read \Domain\Promoters\Models\Promoter|null $promoter
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ticketing\Models\Ticket> $tickets
  * @property-read int|null $tickets_count
  * @method static \Database\Factories\Domain\Ordering\Models\OrderFactory factory($count = null, $state = [])
@@ -247,6 +260,8 @@ namespace Domain\Ordering\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereItemsSnapshot($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereOrganizerRaiseMethodSnapshot($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereReferenceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereReferralCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereServiceFeeSnapshot($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereSubtotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTaxesSnapshot($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTaxesTotal($value)
@@ -255,19 +270,17 @@ namespace Domain\Ordering\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order withoutTrashed()
  */
-	class Order extends \Eloquent
-{
-}
+	class Order extends \Eloquent {}
 }
 
-namespace Domain\Ordering\Models {
+namespace Domain\Ordering\Models{
 /**
  * @property int $id
  * @property int $order_id
  * @property int $product_id
- * @property int $product_price_id
+ * @property int|null $product_price_id
  * @property int|null $quantity
- * @property float $unit_price
+ * @property float|int|null $unit_price
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -283,21 +296,54 @@ namespace Domain\Ordering\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereQuantity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property int|null $combo_id
+ * @property-read \Domain\ProductCatalog\Models\Combo|null $combo
  * @property-read \Domain\ProductCatalog\Models\ProductPrice|null $productPrice
  * @method static \Database\Factories\Domain\Ordering\Models\OrderItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereComboId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereProductPriceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem withoutTrashed()
  */
-	class OrderItem extends \Eloquent
-{
-}
+	class OrderItem extends \Eloquent {}
 }
 
-namespace Domain\OrganizerManagement\Models {
+namespace Domain\OrganizerManagement\Models{
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string|null $access_token
+ * @property string|null $public_key
+ * @property string|null $code
+ * @property string|null $app_id
+ * @property string|null $refresh_token
+ * @property int|null $expires_in
+ * @property string|null $mp_user_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereAccessToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereAppId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereExpiresIn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereMpUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount wherePublicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereRefreshToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MercadoPagoAccount whereUserId($value)
+ */
+	class MercadoPagoAccount extends \Eloquent {}
+}
+
+namespace Domain\OrganizerManagement\Models{
 /**
  * @property int $id
  * @property string $name
@@ -324,6 +370,10 @@ namespace Domain\OrganizerManagement\Models {
  * @mixin \Eloquent
  * @property int $owner_id
  * @property-read \App\Models\User $owner
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Promoters\Models\Promoter> $promoters
+ * @property-read int|null $promoters_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\EventManagement\Models\TaxAndFee> $taxesAndFees
+ * @property-read int|null $taxes_and_fees_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer onlyTrashed()
@@ -332,12 +382,10 @@ namespace Domain\OrganizerManagement\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organizer withoutTrashed()
  */
-	class Organizer extends \Eloquent
-{
-}
+	class Organizer extends \Eloquent {}
 }
 
-namespace Domain\OrganizerManagement\Models {
+namespace Domain\OrganizerManagement\Models{
 /**
  * @property int $id
  * @property int $organizer_id
@@ -353,6 +401,7 @@ namespace Domain\OrganizerManagement\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings query()
  * @mixin \Eloquent
+ * @property int $service_fee
  * @method static \Database\Factories\Domain\OrganizerManagement\Models\OrganizerSettingsFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereCreatedAt($value)
@@ -363,16 +412,73 @@ namespace Domain\OrganizerManagement\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereOrganizerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereRaiseMoneyAccount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereRaiseMoneyMethod($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereServiceFee($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizerSettings withoutTrashed()
  */
-	class OrganizerSettings extends \Eloquent
-{
-}
+	class OrganizerSettings extends \Eloquent {}
 }
 
-namespace Domain\ProductCatalog\Models {
+namespace Domain\ProductCatalog\Models{
+/**
+ * @property int $id
+ * @property int $event_id
+ * @property string $name
+ * @property string|null $description
+ * @property float $price
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int $quantity_sold
+ * @property-read \Domain\EventManagement\Models\Event $event
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\ProductCatalog\Models\ComboItem> $items
+ * @property-read int|null $items_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereEventId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereQuantitySold($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Combo withoutTrashed()
+ */
+	class Combo extends \Eloquent {}
+}
+
+namespace Domain\ProductCatalog\Models{
+/**
+ * @property int $id
+ * @property int $combo_id
+ * @property int $product_price_id
+ * @property int $quantity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Domain\ProductCatalog\Models\Combo $combo
+ * @property-read \Domain\ProductCatalog\Models\ProductPrice $productPrice
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem whereComboId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem whereProductPriceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ComboItem whereUpdatedAt($value)
+ */
+	class ComboItem extends \Eloquent {}
+}
+
+namespace Domain\ProductCatalog\Models{
 /**
  * Product model representing items available for purchase
  *
@@ -414,24 +520,26 @@ namespace Domain\ProductCatalog\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereStartSaleDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property \Domain\Ticketing\Enums\TicketType|null $ticket_type
  * @property int $sort_order
  * @property bool $is_hidden
  * @property-read \Domain\EventManagement\Models\Event $event
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Ticketing\Models\Ticket> $tickets
+ * @property-read int|null $tickets_count
  * @method static \Database\Factories\Domain\ProductCatalog\Models\ProductFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereIsHidden($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProductPriceType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereTicketType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
  */
-	class Product extends \Eloquent
-{
-}
+	class Product extends \Eloquent {}
 }
 
-namespace Domain\ProductCatalog\Models {
+namespace Domain\ProductCatalog\Models{
 /**
  * ProductPrice model represents pricing information for products.
  * 
@@ -474,12 +582,139 @@ namespace Domain\ProductCatalog\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductPrice withoutTrashed()
  */
-	class ProductPrice extends \Eloquent
-{
-}
+	class ProductPrice extends \Eloquent {}
 }
 
-namespace Domain\Ticketing\Models {
+namespace Domain\Promoters\Models{
+/**
+ * @property int $id
+ * @property int $promoter_id
+ * @property int $order_id
+ * @property int $event_id
+ * @property numeric $amount
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Domain\EventManagement\Models\Event $event
+ * @property-read mixed $order_status
+ * @property-read \Domain\Ordering\Models\Order $order
+ * @property-read \Domain\Promoters\Models\Promoter $promoter
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission completed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission whereEventId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission whereOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission wherePromoterId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Commission whereUpdatedAt($value)
+ */
+	class Commission extends \Eloquent {}
+}
+
+namespace Domain\Promoters\Models{
+/**
+ * @property int $id
+ * @property int|null $user_id
+ * @property string $referral_code
+ * @property int $enabled
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Promoters\Models\Commission> $commissions
+ * @property-read int|null $commissions_count
+ * @property-read mixed $name
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\Promoters\Models\PromoterInvitation> $invitations
+ * @property-read int|null $invitations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Domain\OrganizerManagement\Models\Organizer> $organizers
+ * @property-read int|null $organizers_count
+ * @property-read \App\Models\User|null $user
+ * @method static \Database\Factories\Domain\Promoters\Models\PromoterFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter whereEnabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter whereReferralCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Promoter whereUserId($value)
+ */
+	class Promoter extends \Eloquent {}
+}
+
+namespace Domain\Promoters\Models{
+/**
+ * @property-read \Domain\EventManagement\Models\Event|null $event
+ * @property-read \Domain\Promoters\Models\Promoter|null $promoter
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterEvent newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterEvent newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterEvent query()
+ */
+	class PromoterEvent extends \Eloquent {}
+}
+
+namespace Domain\Promoters\Models{
+/**
+ * Summary of PromoterInvitation
+ *
+ * @property-read bool $hasActiveInvitation
+ * @property-read int $id
+ * @property-read int $promoter_id
+ * @property-read string $email
+ * @property-read string $status
+ * @property-read string $token
+ * @property-read \Illuminate\Support\Carbon $created_at
+ * @property-read \Illuminate\Support\Carbon $updated_at
+ * @property string $commission_type
+ * @property numeric $commission_value
+ * @property int|null $organizer_id
+ * @property-read mixed $has_active_invitation
+ * @property-read \Domain\OrganizerManagement\Models\Organizer|null $organizer
+ * @property-read \Domain\Promoters\Models\Promoter|null $promoter
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereCommissionType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereCommissionValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereOrganizerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation wherePromoterId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PromoterInvitation whereUpdatedAt($value)
+ */
+	class PromoterInvitation extends \Eloquent {}
+}
+
+namespace Domain\Ticketing\Models{
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property int $event_id
+ * @property int $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Domain\EventManagement\Models\Event $event
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen whereEventId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Doormen whereUserId($value)
+ */
+	class Doormen extends \Eloquent {}
+}
+
+namespace Domain\Ticketing\Models{
 /**
  * @property int $id
  * @property string $token
@@ -496,7 +731,9 @@ namespace Domain\Ticketing\Models {
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int|null $given_by
  * @property-read \Domain\EventManagement\Models\Event|null $event
+ * @property-read \App\Models\User|null $givenBy
  * @property-read \Domain\Ordering\Models\Order|null $order
  * @property-read \Domain\ProductCatalog\Models\Product|null $product
  * @property-read \App\Models\User|null $user
@@ -509,6 +746,7 @@ namespace Domain\Ticketing\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereEventId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereExpiredAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereGivenBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereIsCourtesy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereOrderId($value)
@@ -523,8 +761,6 @@ namespace Domain\Ticketing\Models {
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket withoutTrashed()
  */
-	class Ticket extends \Eloquent
-{
-}
+	class Ticket extends \Eloquent {}
 }
 

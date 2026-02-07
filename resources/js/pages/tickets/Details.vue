@@ -21,7 +21,7 @@ let timer: number | null = null;
 const updateTotp = async () => {
     const result = await TotpUtils.generate(ticket.token);
     totp.value = result.otp;
-    qrCode.value = `otpauth://totp/ShowTicket?secret=${ticket.token}&otp=${result.otp}`;
+    qrCode.value = `dyn-${ticket.token}-${result.otp}`;
 };
 
 onMounted(async () => {
@@ -143,7 +143,7 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                         <p class="text-md mb-4 text-zinc-500 uppercase tracking-[0.2em] font-bold">{{ ticket.token }}
                         </p>
                         <div class="qr-wrapper p-4 bg-white rounded-xl border border-zinc-700 mb-3">
-                            <n-qr-code :value="ticket.token" :size="256" type="svg" :padding="0"
+                            <n-qr-code :value="`st-${ticket.token}`" :size="256" type="svg" :padding="0"
                                 color="hsl(242, 32%, 15%)" />
                         </div>
                         <p class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-bold">{{
