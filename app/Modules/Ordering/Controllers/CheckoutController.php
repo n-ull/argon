@@ -56,6 +56,10 @@ class CheckoutController extends Controller
 
         $order->update(['status' => OrderStatus::CANCELLED]);
 
+        foreach ($order->orderItems as $orderItem) {
+            $orderItem->productPrice->decrement('quantity_sold', $orderItem->quantity);
+        }
+
         return redirect()->route('events.show', $order->event->slug)
             ->with('message', flash_success(
                 __('order.cancelled_order'),
