@@ -52,7 +52,7 @@ class GenerateTickets implements ShouldQueue
                             $this->generateTicketFromCombo($item, $comboItem);
                         }
                     }
-                } elseif ($item->product_id && $item->product->product_type === ProductType::TICKET) {
+                } elseif (! $item->combo_id && $item->product_id && $item->product->product_type === ProductType::TICKET) {
                     $this->generateTicket($item);
                 }
             }
@@ -68,7 +68,7 @@ class GenerateTickets implements ShouldQueue
                 'product_id' => $orderItem->product_id,
                 'order_id' => $orderItem->order_id,
                 'user_id' => $orderItem->order->user_id,
-                'type' => $orderItem->product->ticket_type ?? TicketType::STATIC ,
+                'type' => $orderItem->product->ticket_type,
                 'status' => TicketStatus::ACTIVE,
                 'transfers_left' => 0,
                 'is_courtesy' => false,
