@@ -30,7 +30,7 @@ class GenerateTickets implements ShouldQueue
      */
     public function handle(): void
     {
-        $order = Order::with(['orderItems.product', 'orderItems.combo.items.productPrice.product'])->findOrFail($this->orderId);
+        $order = Order::with(['orderItems'])->findOrFail($this->orderId);
 
         if (! $order) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} not found");
@@ -53,12 +53,8 @@ class GenerateTickets implements ShouldQueue
                                 $this->generateTicketFromCombo($item, $comboItem);
                             }
                         }
-                    }
-
-                    if ($item->product !== null) {
-                        if ($item->product->product_type === ProductType::TICKET) {
-                            $this->generateTicket($item);
-                        }
+                    } elseif ($item->product && $item->product->product_type === ProductType::TICKET) {
+                        $this->generateTicket($item);
                     }
                 }
             });
