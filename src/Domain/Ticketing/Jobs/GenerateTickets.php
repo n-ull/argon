@@ -52,7 +52,7 @@ class GenerateTickets implements ShouldQueue
                             $this->generateTicketFromCombo($item, $comboItem);
                         }
                     }
-                } elseif ($item->product && $item->product->product_type === ProductType::TICKET) {
+                } elseif ($item->product_id && $item->product->product_type === ProductType::TICKET) {
                     Log::info('Generating tickets for product: '.$item->product->id);
                     $this->generateTicket($item);
                 }
