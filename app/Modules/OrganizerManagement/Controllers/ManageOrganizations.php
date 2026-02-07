@@ -24,8 +24,7 @@ class ManageOrganizations extends Controller
             'organizer' => $organizer,
             'orders_count' => Order::whereHas('event', function ($query) use ($organizer) {
                 $query->where('organizer_id', $organizer->id);
-                $query->where('status', OrderStatus::COMPLETED);
-            })->count(),
+            })->where('status', OrderStatus::COMPLETED)->count(),
             'events_count' => $organizer->events()->count(),
             'last_orders' => $last_orders,
             'last_events' => $last_events,
