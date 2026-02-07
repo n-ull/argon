@@ -11,11 +11,13 @@ import { CopyIcon, InfoIcon } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 import { show } from '@/routes/events';
 import { trans as t } from 'laravel-vue-i18n';
+import { formatDate } from '@/lib/utils';
 
 const props = defineProps<{
     events: Array<Event>;
     commissions: Array<any>;
     referral_code: String;
+    completed_commissions_count: number;
 }>();
 
 const columns = [
@@ -26,6 +28,9 @@ const columns = [
     {
         title: t('event.start_date'),
         key: 'start_date',
+        render(row: Event) {
+            return formatDate(row.start_date);
+        }
     },
     {
         title: t('event.status'),
@@ -99,6 +104,9 @@ const commissionColumns = [
     {
         title: t('promoter.commission.date'),
         key: 'created_at',
+        render(row: any) {
+            return formatDate(row.created_at);
+        }
     },
     {
         title: t('promoter.commission.payment_status'),
@@ -130,7 +138,7 @@ const commissionColumns = [
                     </NCard>
                     <NCard>
                         <NStatistic :label="t('promoter.total_commissions')">
-                            <NNumberAnimation :from="0" :to="commissions.length" />
+                            <NNumberAnimation :from="0" :to="completed_commissions_count" />
                         </NStatistic>
                     </NCard>
                 </div>

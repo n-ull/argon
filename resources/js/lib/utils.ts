@@ -18,7 +18,7 @@ export function toUrl(href: NonNullable<InertiaLinkProps['href']>) {
 }
 
 export function formatDate(date: string) {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -26,7 +26,7 @@ export function formatDate(date: string) {
 }
 
 export function formatDateTime(date: string) {
-    return new Date(date).toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',

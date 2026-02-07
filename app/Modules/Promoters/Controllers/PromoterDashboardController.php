@@ -20,6 +20,7 @@ class PromoterDashboardController
             'events' => \Domain\EventManagement\Models\Event::whereIn('organizer_id', $promoter->organizers()->pluck('organizers.id'))->get(),
             'commissions' => $promoter->commissions()->get(),
             'referral_code' => $promoter->referral_code,
+            'completed_commissions_count' => $promoter->commissions()->completed()->count()
         ]);
     }
 }

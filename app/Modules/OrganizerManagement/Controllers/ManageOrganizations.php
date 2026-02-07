@@ -90,9 +90,7 @@ class ManageOrganizations extends Controller
     public function promoters(Organizer $organizer)
     {
         Gate::authorize('view', $organizer);
-        $organizer->load(['promoters' => function ($query) {
-            $query->withCount('commissions');
-        }]);
+        $organizer->load(['promoters']);
 
         // We also need invitations
         $invitations = \Domain\Promoters\Models\PromoterInvitation::where('organizer_id', $organizer->id)->get();

@@ -16,7 +16,7 @@ import { deleteMethod as deletePromoterInvitationRoute } from '@/routes/manage/o
 
 import type { BreadcrumbItem, Organizer, Promoter } from '@/types';
 import DataTableRowActions from '@/components/DataTableRowActions.vue';
-import { Copy, Trash2, RotateCcw } from 'lucide-vue-next';
+import { Copy, Trash2, RotateCcw, PowerOff, Power } from 'lucide-vue-next';
 import CreatePromoterDialog from './dialogs/CreatePromoterDialog.vue';
 import { useDialog } from '@/composables/useDialog';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
@@ -84,11 +84,6 @@ const columns: DataTableColumns<Promoter> = [
         }
     },
     {
-        title: 'Completed Commissions',
-        key: 'commissions_count',
-        minWidth: 100,
-    },
-    {
         title: 'Commission',
         key: 'commission_value',
         minWidth: 100,
@@ -108,12 +103,6 @@ const columns: DataTableColumns<Promoter> = [
                 onClick: (e: MouseEvent) => e.stopPropagation(),
                 options: [
                     {
-                        label: 'Copy URL',
-                        key: 'copy',
-                        icon: () => h(NIcon, null, { default: () => h(Copy, { class: 'text-neutral-500' }) }),
-                        props: { style: { color: 'rgb(115 115 115)' } } // green-500
-                    },
-                    {
                         label: 'Delete Promoter',
                         key: 'delete',
                         icon: () => h(NIcon, null, { default: () => h(Trash2, { class: 'text-red-500' }) }),
@@ -122,19 +111,17 @@ const columns: DataTableColumns<Promoter> = [
                     row.enabled ? {
                         label: 'Disable Promoter',
                         key: 'disable',
-                        icon: () => h(NIcon, null, { default: () => h(RotateCcw, { class: 'text-blue-500' }) }),
-                        props: { style: { color: 'rgb(59 130 246)' } } // blue-500
+                        icon: () => h(NIcon, null, { default: () => h(PowerOff, { class: 'text-neutral-500' }) }),
+                        props: { style: { color: 'rgb(115 115 115)' } } // neutral-500
                     } : {
                         label: 'Enable Promoter',
                         key: 'enable',
-                        icon: () => h(NIcon, null, { default: () => h(RotateCcw, { class: 'text-blue-500' }) }),
-                        props: { style: { color: 'rgb(59 130 246)' } } // blue-500
+                        icon: () => h(NIcon, null, { default: () => h(Power, { class: 'text-neutral-500' }) }),
+                        props: { style: { color: 'rgb(115 115 115)' } } // neutral-500
                     }
                 ],
                 onSelect: (key) => {
-                    if (key === 'copy') {
-                        // copy logic
-                    } else if (key === 'delete') {
+                    if (key === 'delete') {
                         deletePromoter(row);
                     } else if (key === 'enable' || key === 'disable') {
                         enablePromoter(row);

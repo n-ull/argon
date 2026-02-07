@@ -17,6 +17,10 @@ class Commission extends Model
         'status',
     ];
 
+    protected $appends = [
+        'order_status',
+    ];
+
     public function promoter()
     {
         return $this->belongsTo(Promoter::class);
@@ -39,10 +43,6 @@ class Commission extends Model
             $query->where('status', 'completed');
         });
     }
-
-    protected $appends = [
-        'order_status',
-    ];
 
     public function getOrderStatusAttribute()
     {

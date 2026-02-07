@@ -22,9 +22,8 @@ class PromoterResource extends JsonResource
             'phone' => $this->user->phone ?? 'N/A',
             'commission_type' => $this->pivot->commission_type ?? null,
             'commission_value' => $this->pivot->commission_value ?? null,
-            'enabled' => $this->pivot->enabled ?? $this->enabled, // Fallback to global enabled if pivot not present? Or just pivot.
-            // If the resource is used in a context where we strictly need the details for a specific organizer, pivot MUST be loaded.
-            'commissions_count' => $this->whenCounted('commissions'),
+            'enabled' => $this->pivot->enabled ?? $this->enabled,
+            'completed_commissions_count' => $this->pivot->completedCommissionsCount,
         ];
     }
 }
