@@ -44,19 +44,26 @@ class GenerateTickets implements ShouldQueue
             return;
         }
 
-        \DB::transaction(function () use ($order) {
-            foreach ($order->orderItems as $item) {
-                if ($item->combo) {
-                    foreach ($item->combo->items as $comboItem) {
-                        if ($comboItem->productPrice->product->product_type === ProductType::TICKET) {
-                            $this->generateTicketFromCombo($item, $comboItem);
+        try {
+            \DB::transaction(function () use ($order) {
+                foreach ($order->orderItems as $item) {
+                    if ($item->combo) {
+                        foreach ($item->combo->items as $comboItem) {
+                            if ($comboItem->productPrice->product->product_type === ProductType::TICKET) {
+                                $this->generateTicketFromCombo($item, $comboItem);
+                            }
                         }
+                    } elseif ($item->product && $item->product->product_type === ProductType::TICKET) {
+                        $this->generateTicket($item);
                     }
-                } elseif ($item->product && $item->product->product_type === ProductType::TICKET) {
-                    $this->generateTicket($item);
                 }
-            }
-        });
+            });
+        } catch (\Exception $e) {
+            Log::error("GenerateTickets job failed: {$e->getMessage()}", [
+                $order,
+                $order->orderItems,
+            ]);
+        }
     }
 
     public function generateTicket(OrderItem $orderItem)
