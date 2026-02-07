@@ -52,7 +52,7 @@ class GenerateTickets implements ShouldQueue
                             $this->generateTicketFromCombo($item, $comboItem);
                         }
                     }
-                } elseif (! $item->combo_id && $item->product_id && $item->product->product_type === ProductType::TICKET) {
+                } elseif (! $item->combo_id && $item->product_id && $item->product && $item->product->product_type === ProductType::TICKET) {
                     $this->generateTicket($item);
                 }
             }
@@ -61,6 +61,11 @@ class GenerateTickets implements ShouldQueue
 
     public function generateTicket(OrderItem $orderItem)
     {
+        if (! $orderItem->product) {
+            Log::warning("GenerateTickets: OrderItem {$orderItem->id} has no product. Skipper ticket generation.");
+            return;
+        }
+
         for ($i = 0; $i < $orderItem->quantity; $i++) {
             Ticket::create([
                 'token' => \Domain\Ticketing\Facades\TokenGenerator::generate($orderItem->product->ticket_type),
