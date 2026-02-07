@@ -192,6 +192,15 @@ Route::group([
         Route::get('{event}/doormen', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'doormen'])
             ->name('doormen');
 
+        Route::post('{event}/doormen', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'addDoormen'])
+            ->name('doormen.store');
+
+        Route::put('{event}/doormen/{doorman}/status', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'switchDoormanStatus'])
+            ->name('doormen.status.update');
+
+        Route::delete('{event}/doormen/{doorman}', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'removeDoorman'])
+            ->name('doormen.delete');
+
         Route::get('{event}/vouchers', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'vouchers'])
             ->name('vouchers');
 

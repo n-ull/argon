@@ -158,10 +158,11 @@ class ManageEventController extends Controller
 
     public function doormen(int $eventId)
     {
-        $event = Event::where('id', $eventId)->first()->load('organizer');
+        $event = Event::where('id', $eventId)->first()->load('organizer', 'doormen');
 
         return Inertia::render('organizers/event/Doormen', [
             'event' => $event,
+            'doormen' => $event->doormen()->with('user:id,name,email')->paginate(10)
         ]);
     }
 
@@ -202,5 +203,62 @@ class ManageEventController extends Controller
             ->values();
 
         return response()->json($stats);
+    }
+
+    public function addDoormen(Request $request, int $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        Gate::authorize('update', $event);
+
+        $request->validate([
+            'emails' => ['required', 'array'],
+            'emails.*' => ['required', 'email', 'exists:users,email'],
+        ]);
+
+        \Domain\EventManagement\Actions\AddDoormen::run($event, $request->input('emails'));
+
+        return back()->with('flash', [
+            'message' => [
+                'summary' => 'Doormen added',
+                'detail' => 'Doormen have been successfully added to the event.',
+                'type' => 'success'
+            ]
+        ]);
+    }
+
+    public function removeDoorman(int $eventId, int $doormanId)
+    {
+        $event = Event::findOrFail($eventId);
+        Gate::authorize('update', $event);
+
+        \Domain\EventManagement\Actions\RemoveDoorman::run($event, $doormanId);
+
+        return back()->with('flash', [
+            'message' => [
+                'summary' => 'Doorman removed',
+                'detail' => 'The doorman has been successfully removed.',
+                'type' => 'success'
+            ]
+        ]);
+    }
+
+    public function switchDoormanStatus(Request $request, int $eventId, int $doormanId)
+    {
+        $event = Event::findOrFail($eventId);
+        Gate::authorize('update', $event);
+
+        $request->validate([
+            'is_active' => ['required', 'boolean'],
+        ]);
+
+        \Domain\EventManagement\Actions\SwitchDoormanStatus::run($event, $doormanId, $request->boolean('is_active'));
+
+        return back()->with('flash', [
+            'message' => [
+                'summary' => 'Status updated',
+                'detail' => 'Doorman status has been updated.',
+                'type' => 'success'
+            ]
+        ]);
     }
 }
