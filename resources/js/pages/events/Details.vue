@@ -299,7 +299,8 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                     }}</span>
                             </div>
                             <ul class="space-y-2">
-                                <li v-for="price in product.product_prices" :key="price.id">
+                                <li v-for="price in product.product_prices" :class="price.is_sold_out && 'opacity-20'"
+                                    :key="price.id">
                                     <div v-if="product.show_stock && price.stock !== null && price.stock > 0"
                                         class="w-full bg-moovin-green text-xs font-black py-1 px-2 rounded-t">
                                         Stock: {{ price.stock }}
