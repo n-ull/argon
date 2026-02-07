@@ -30,7 +30,7 @@ class GenerateTickets implements ShouldQueue
      */
     public function handle(): void
     {
-        $order = Order::with(['orderItems', 'orderItems.product', 'orderItems.combo', 'orderItems.combo.items.productPrice.product'])->findOrFail($this->orderId);
+        $order = Order::with(['orderItems'])->findOrFail($this->orderId);
 
         if (! $order) {
             Log::warning("GenerateTickets job failed: Order {$this->orderId} not found");
@@ -44,23 +44,18 @@ class GenerateTickets implements ShouldQueue
             return;
         }
 
-        try {
-            \DB::transaction(function () use ($order) {
-                foreach ($order->orderItems as $item) {
-                    if ($item->combo) {
-                        foreach ($item->combo->items as $comboItem) {
-                            $this->generateTicketFromCombo($item, $comboItem);
-                        }
-                    } elseif ($item->product && $item->product->product_type === ProductType::TICKET) {
-                        $this->generateTicket($item);
-                    }
+        foreach ($order->orderItems as $orderItem) {
+            if ($orderItem->product_id !== null && $orderItem->combo_id === null) {
+                if ($orderItem->product->product_type === ProductType::TICKET) {
+                    $this->generateTicket($orderItem);
                 }
-            });
-        } catch (\Exception $e) {
-            Log::error("GenerateTickets job failed: {$e->getMessage()}", [
-                $order,
-                $order->orderItems,
-            ]);
+            }
+
+            if ($orderItem->combo_id !== null) {
+                foreach ($orderItem->combo->items as $comboItem) {
+                    $this->generateTicketFromCombo($orderItem, $comboItem);
+                }
+            }
         }
     }
 
@@ -90,6 +85,12 @@ class GenerateTickets implements ShouldQueue
 
     public function generateTicketFromCombo(OrderItem $orderItem, \Domain\ProductCatalog\Models\ComboItem $comboItem)
     {
+        if (! $comboItem->productPrice || ! $comboItem->productPrice->product) {
+            Log::warning("GenerateTickets: ComboItem {$comboItem->id} has no product. Skipper ticket generation.");
+
+            return;
+        }
+
         $totalQuantity = $orderItem->quantity * $comboItem->quantity;
         $product = $comboItem->productPrice->product;
 
