@@ -192,12 +192,20 @@ function switchCamera() {
                     <h3 class="text-2xl font-black text-green-600 mb-1">¡Entrada Válida!</h3>
                     <p class="text-gray-500 mb-4 font-medium">Puedes ingresar</p>
 
-                    <div class="text-black mb-6">
-                        <p>{{ scanResult.user.name }}</p>
-                        <p>{{ scanResult.user.email }}</p>
-                        <p>{{ scanResult.used_at }}</p>
-                        <p>{{ scanResult.doorman.name }}</p>
-                        <p>{{ scanResult.doorman.email }}</p>
+                    <div class="text-gray-800 bg-gray-100 w-full space-y-4 p-4 rounded-lg text-left mb-6">
+                        <div>
+                            <p class="font-bold">Usuario</p>
+                            <p>{{ scanResult.user.name }}</p>
+                            <p>{{ scanResult.user.email }}</p>
+                        </div>
+                        <div>
+                            <p class="font-bold">Fecha y hora</p>
+                            <p>{{ scanResult.used_at }}</p>
+                        </div>
+                        <div>
+                            <p class="font-bold">Portero</p>
+                            <p>{{ scanResult.doorman.name }}</p>
+                        </div>
                     </div>
                 </template>
 
