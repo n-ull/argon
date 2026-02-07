@@ -5,6 +5,7 @@ namespace App\Modules\OrganizerManagement\Controllers;
 use App\Http\Controllers\Controller;
 use Domain\EventManagement\Models\Event;
 use Domain\Ordering\Models\Order;
+use Domain\Ordering\Enums\OrderStatus;
 use Domain\OrganizerManagement\Models\Organizer;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -23,6 +24,7 @@ class ManageOrganizations extends Controller
             'organizer' => $organizer,
             'orders_count' => Order::whereHas('event', function ($query) use ($organizer) {
                 $query->where('organizer_id', $organizer->id);
+                $query->where('status', OrderStatus::COMPLETED);
             })->count(),
             'events_count' => $organizer->events()->count(),
             'last_orders' => $last_orders,
