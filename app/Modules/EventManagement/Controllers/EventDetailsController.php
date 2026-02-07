@@ -26,10 +26,9 @@ class EventDetailsController extends Controller
             ->with([
                 'product_prices' => function ($query) {
                     $query->withGlobalScope('available_prices', new \Domain\ProductCatalog\Scopes\AvailableProductPricesScope)
-                        ->orderBy('product_prices.sort_order');
+                        ->orderBy('product_prices.created_at', 'desc'); // todo: change to sort_order
                 },
             ])
-            ->orderBy('sort_order')
             ->orderBy('sort_order')
             ->get()
             ->each(function ($product) use ($event) {
