@@ -9,7 +9,7 @@ import { show as eventShow } from '@/routes/events';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { BookA, Copy, DollarSign, Download, Eye, EyeClosed, Gift, Globe, MapIcon, Plus, ScanQrCode, SettingsIcon, ShoppingCart } from 'lucide-vue-next';
+import { BookA, Copy, DollarSign, Download, Eye, Gift, Globe, MapIcon, Plus, ScanQrCode, ShoppingCart } from 'lucide-vue-next';
 import { NButton, NIcon, NInput } from 'naive-ui';
 import { toast } from 'vue-sonner';
 
@@ -36,7 +36,7 @@ const copyEventUrl = () => {
     navigator.clipboard.writeText(eventUrl);
 }
 
-const eventUrl = 'http://127.0.0.1:8000/events/' + event.slug;
+const eventUrl = window.location.origin + '/events/' + event.slug;
 
 const downloadQrCode = () => {
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${eventUrl}`;
@@ -46,7 +46,6 @@ const downloadQrCode = () => {
     link.click();
 }
 
-// handle publish event
 const publishEvent = () => {
     router.patch(updateStatusRoute(event.id).url, {
         status: 'published',
@@ -54,7 +53,6 @@ const publishEvent = () => {
         preserveScroll: true,
     });
 };
-
 
 </script>
 
