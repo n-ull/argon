@@ -28,4 +28,6 @@ return [
     'ticket_not_available' => 'Ticket not available',
     'no_transfers_left' => 'No transfers left',
     'transfer_success' => 'Ticket transfered successfully',
+    'not_your_ticket' => 'You can\'t transfer a ticket that is not yours',
+    'cant_transfer_to_yourself' => 'You can\'t transfer a ticket to yourself',
 ];

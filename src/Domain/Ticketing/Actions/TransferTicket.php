@@ -29,12 +29,23 @@ class TransferTicket
     public function asController(Request $request)
     {
         $validated = $request->validate([
-            'ticket_id' => ['required', 'exists:ticketing_tickets,id'],
             'user_email' => ['required', 'exists:users,email'],
         ]);
 
+        if (auth()->user()->tickets()->where('id', $request->ticket)->count() == 0) {
+            return response()->json([
+                'message' => __('tickets.not_your_ticket'),
+            ], 400);
+        }
+
+        if (auth()->user()->email == $validated['user_email']) {
+            return response()->json([
+                'message' => __('tickets.cant_transfer_to_yourself'),
+            ], 400);
+        }
+
         try {
-            $this->handle($validated['ticket_id'], $validated['user_email']);
+            $this->handle($request->ticket, $validated['user_email']);
 
             return response()->json([
                 'message' => __('tickets.transfer_success'),

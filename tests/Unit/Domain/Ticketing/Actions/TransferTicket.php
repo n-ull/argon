@@ -36,4 +36,40 @@ describe('TransferTicket', function () {
 
         TransferTicket::run($ticket->id, $user->email);
     });
+
+    it('you cant transfer a ticket that is not yours', function () {
+        $ticket = Ticket::factory()->create([
+            'transfers_left' => 1,
+            'token' => 'PLACEHOLDERTOKEN',
+        ]);
+
+        $notOwner = User::factory()->create([
+            'email' => 'user1@example.com',
+        ]);
+
+        $user = User::factory()->create([
+            'email' => 'user2@example.com',
+        ]);
+
+        $response = $this->actingAs($notOwner)->post(route('tickets.transfer', $ticket), [
+            'user_email' => $user->email,
+        ]);
+
+        $response->assertBadRequest();
+        $response->assertJsonPath('message', __('tickets.not_your_ticket'));
+    });
+
+    it('you cant transfer a ticket to yourself', function () {
+        $ticket = Ticket::factory()->create([
+            'transfers_left' => 1,
+            'token' => 'PLACEHOLDERTOKEN',
+        ]);
+
+        $response = $this->actingAs($ticket->user)->post(route('tickets.transfer', $ticket), [
+            'user_email' => $ticket->user->email,
+        ]);
+
+        $response->assertBadRequest();
+        $response->assertJsonPath('message', __('tickets.cant_transfer_to_yourself'));
+    });
 });

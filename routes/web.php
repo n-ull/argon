@@ -6,6 +6,7 @@ use App\Modules\Ticketing\Controllers\ScannerController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
 use App\Modules\Ticketing\Controllers\TicketIndexController;
 use Domain\Ticketing\Actions\ScanTicket;
+use Domain\Ticketing\Actions\TransferTicket;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -33,6 +34,9 @@ Route::group([
 
     Route::get('{ticket}', TicketDetailsController::class)
         ->name('show');
+
+    Route::post('{ticket}/transfer', TransferTicket::class)
+        ->name('transfer');
 });
 
 Route::group([

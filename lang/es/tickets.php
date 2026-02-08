@@ -28,4 +28,6 @@ return [
     'ticket_not_available' => 'La entrada no está disponible',
     'no_transfers_left' => 'No hay transferencias disponibles',
     'transfer_success' => 'Entrada transferida exitosamente',
+    'not_your_ticket' => 'No puedes transferir una entrada que no es tuya',
+    'cant_transfer_to_yourself' => 'No puedes transferirte una entrada a ti mismo',
 ];
