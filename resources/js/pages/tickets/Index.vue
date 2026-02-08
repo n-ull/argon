@@ -105,10 +105,10 @@ const filteredTickets = computed(() => {
                             <TicketIcon class="h-8 w-8 text-muted-foreground" />
                         </div>
                         <h3 class="mt-4 text-lg font-medium text-foreground">{{
-                            $t('tickets.you_dont_have_any_inactive_tickets') }}
+                            $t('tickets.you_dont_have_any_active_tickets') }}
                         </h3>
                         <p class="mt-1 text-sm text-muted-foreground">
-                            {{ activeTab === 'active' ? $t('you_dont_have_any_active_tickets') :
+                            {{ activeTab === 'active' ? $t('tickets.you_dont_have_any_active_tickets') :
                                 $t('tickets.you_dont_have_any_inactive_tickets') }}
                         </p>
                     </div>
