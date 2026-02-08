@@ -26,4 +26,6 @@ return [
     'doormen_not_registered' => 'Doormen not registered or not active',
     'invalid_totp' => 'Invalid TOTP',
     'ticket_not_available' => 'Ticket not available',
+    'no_transfers_left' => 'No transfers left',
+    'transfer_success' => 'Ticket transfered successfully',
 ];

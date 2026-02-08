@@ -26,4 +26,6 @@ return [
     'doormen_not_registered' => 'El portero no está registrado o activado',
     'invalid_totp' => 'Código inválido',
     'ticket_not_available' => 'La entrada no está disponible',
+    'no_transfers_left' => 'No hay transferencias disponibles',
+    'transfer_success' => 'Entrada transferida exitosamente',
 ];
