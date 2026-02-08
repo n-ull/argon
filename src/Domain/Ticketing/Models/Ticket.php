@@ -69,6 +69,7 @@ class Ticket extends Model
     public function markAsUsed()
     {
         $this->status = TicketStatus::USED;
+        $this->transfers_left = 0;
         $this->used_at = now();
         $this->save();
     }
