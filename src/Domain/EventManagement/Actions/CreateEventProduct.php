@@ -31,6 +31,7 @@ class CreateEventProduct
             'hide_after_sale_end_date' => $data['hide_after_sale_end_date'] ?? false,
             'show_stock' => $data['show_stock'] ?? false,
             'sort_order' => $event->products()->max('sort_order') + 1,
+            'transfers_left' => $data['transfers_left'] ?? 0,
         ]);
 
         if (! empty($data['prices']) && $data['product_price_type'] !== ProductPriceType::FREE) {
@@ -74,6 +75,7 @@ class CreateEventProduct
             'prices.*.has_limited_stock' => 'boolean',
             'prices.*.start_sale_date' => 'nullable|date',
             'prices.*.end_sale_date' => 'nullable|date',
+            'transfers_left' => 'nullable|integer|min:0|max:10',
         ]);
 
         $this->handle($event, $data);

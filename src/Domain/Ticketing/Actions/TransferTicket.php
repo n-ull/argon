@@ -5,6 +5,7 @@ namespace Domain\Ticketing\Actions;
 use App\Models\User;
 use Domain\Ticketing\Facades\TokenGenerator;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class TransferTicket
@@ -17,7 +18,9 @@ class TransferTicket
         $user = User::where('email', $userEmail)->firstOrFail();
 
         if ($ticket->transfers_left <= 0) {
-            throw new \Exception(__('tickets.no_transfers_left'));
+            throw ValidationException::withMessages([
+                'email' => __('tickets.no_transfers_left'),
+            ]);
         }
 
         $ticket->user_id = $user->id;
@@ -29,31 +32,29 @@ class TransferTicket
     public function asController(Request $request)
     {
         $validated = $request->validate([
-            'user_email' => ['required', 'exists:users,email'],
+            'email' => ['required', 'exists:users,email'],
         ]);
 
         if (auth()->user()->tickets()->where('id', $request->ticket)->count() == 0) {
-            return response()->json([
-                'message' => __('tickets.not_your_ticket'),
-            ], 400);
+            throw ValidationException::withMessages([
+                'email' => __('tickets.not_your_ticket'),
+            ]);
         }
 
-        if (auth()->user()->email == $validated['user_email']) {
-            return response()->json([
-                'message' => __('tickets.cant_transfer_to_yourself'),
-            ], 400);
+        if (auth()->user()->email == $validated['email']) {
+            throw ValidationException::withMessages([
+                'email' => __('tickets.cant_transfer_to_yourself'),
+            ]);
         }
 
         try {
-            $this->handle($request->ticket, $validated['user_email']);
+            $this->handle($request->ticket, $validated['email']);
 
-            return response()->json([
-                'message' => __('tickets.transfer_success'),
-            ]);
+            return redirect()->route('tickets.index')->with('message', flash_success(__('tickets.transfer_success'), __('tickets.transfer_success_description')));
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 400);
+            throw ValidationException::withMessages([
+                'email' => $e->getMessage(),
+            ]);
         }
     }
 }

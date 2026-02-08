@@ -40,6 +40,7 @@ const form = useForm({
     emails: [] as string[],
     product_id: null as number | null,
     quantity: 1,
+    transfersLeft: 0
 });
 
 const selectedRowKeys = ref<number[]>([]);
@@ -316,14 +317,22 @@ const manageErrors = watch(() => form.errors, () => {
                                 <NInputNumber v-model:value="form.quantity" :min="1" :max="10" class="w-full" />
                             </NFormItem>
 
-                            <NFormItem label="User Emails"
-                                :validation-status="form.errors.emails || Object.keys(form.errors).some(k => k.startsWith('emails.')) ? 'error' : undefined"
-                                :feedback="form.errors.emails">
-                                <NDynamicTags v-model:value="form.emails" :render-tag="renderTag" />
+                            <NFormItem label="Transfers"
+                                :validation-status="form.errors.transfersLeft ? 'error' : undefined"
+                                :feedback="form.errors.transfersLeft">
+                                <NInputNumber v-model:value="form.transfersLeft" :min="0" :max="10" class="w-full" />
                             </NFormItem>
-                            <p class="text-xs text-gray-500 mb-2">Type or paste multiple emails separated by commas,
-                                spaces, or new lines.
-                            </p>
+
+                            <div>
+                                <NFormItem label="User Emails"
+                                    :validation-status="form.errors.emails || Object.keys(form.errors).some(k => k.startsWith('emails.')) ? 'error' : undefined"
+                                    :feedback="form.errors.emails">
+                                    <NDynamicTags v-model:value="form.emails" :render-tag="renderTag" />
+                                </NFormItem>
+                                <p class="text-xs text-gray-500 mb-2">Type or paste multiple emails separated by commas,
+                                    spaces, or new lines.
+                                </p>
+                            </div>
 
                             <div class="flex justify-end">
                                 <NButton type="primary" attr-type="submit" :loading="form.processing"

@@ -26,5 +26,8 @@ return [
     'marquee' => 'COMPRA TUS ENTRADAS EN MOOVIN.AR',
     'welcome.title' => 'Bienvenid@',
     'og_event_description' => 'Compra tus entradas para :event en moovin.ar',
-    'og_description' => 'En moovin.ar compra y vende entradas para eventos de forma rápida y segura.'
+    'og_description' => 'En moovin.ar compra y vende entradas para eventos de forma rápida y segura.',
+    'cancel' => 'Cancelar',
+    'add' => 'Agregar',
+    'create' => 'Crear',
 ];

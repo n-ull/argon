@@ -22,7 +22,8 @@ class GenerateCourtesyTickets implements ShouldQueue
         public int $quantity,
         public array $userIds,
         public int $givenBy,
-        public string $ticketType
+        public string $ticketType,
+        public ?int $transfersLeft = 0
     ) {
     }
 
@@ -40,7 +41,7 @@ class GenerateCourtesyTickets implements ShouldQueue
                         'type' => $this->ticketType,
                         'token' => TokenGenerator::generate(\Domain\Ticketing\Enums\TicketType::from($this->ticketType)),
                         'status' => TicketStatus::ACTIVE,
-                        'transfers_left' => 0,
+                        'transfers_left' => $this->transfersLeft,
                         'used_at' => null,
                         'expired_at' => null,
                     ]);

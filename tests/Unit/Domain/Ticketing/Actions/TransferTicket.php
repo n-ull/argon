@@ -52,11 +52,11 @@ describe('TransferTicket', function () {
         ]);
 
         $response = $this->actingAs($notOwner)->post(route('tickets.transfer', $ticket), [
-            'user_email' => $user->email,
+            'email' => $user->email,
         ]);
 
-        $response->assertBadRequest();
-        $response->assertJsonPath('message', __('tickets.not_your_ticket'));
+        $response->assertFound();
+        $response->assertSessionHasErrors('email', __('tickets.not_your_ticket'));
     });
 
     it('you cant transfer a ticket to yourself', function () {
@@ -66,10 +66,10 @@ describe('TransferTicket', function () {
         ]);
 
         $response = $this->actingAs($ticket->user)->post(route('tickets.transfer', $ticket), [
-            'user_email' => $ticket->user->email,
+            'email' => $ticket->user->email,
         ]);
 
-        $response->assertBadRequest();
-        $response->assertJsonPath('message', __('tickets.cant_transfer_to_yourself'));
+        $response->assertFound();
+        $response->assertSessionHasErrors('email', __('tickets.cant_transfer_to_yourself'));
     });
 });

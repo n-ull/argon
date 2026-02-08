@@ -30,4 +30,7 @@ return [
     'transfer_success' => 'Ticket transfered successfully',
     'not_your_ticket' => 'You can\'t transfer a ticket that is not yours',
     'cant_transfer_to_yourself' => 'You can\'t transfer a ticket to yourself',
+    'transfer' => 'Transfer',
+    'cannot_transfer' => 'Cannot transfer',
+    'transfers_left' => 'Transfers left: :count',
 ];

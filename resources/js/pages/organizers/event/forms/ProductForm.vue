@@ -7,10 +7,10 @@ import {
     DialogTitle,
     DialogFooter,
 } from '@/components/ui/dialog';
-import { NInput, NSelect, NButton, NInputNumber, NSwitch, NCollapse, NCollapseItem, NDatePicker, NCard, NIcon } from 'naive-ui';
+import { NInput, NSelect, NButton, NInputNumber, NSwitch, NCollapse, NCollapseItem, NDatePicker, NCard, NIcon, NTooltip } from 'naive-ui';
 import { computed, h, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import { CalendarDaysIcon, Gift, Shirt, Tag, Ticket, TrashIcon, PlusIcon, QrCode, Barcode } from 'lucide-vue-next';
+import { CalendarDaysIcon, Gift, Shirt, Tag, Ticket, TrashIcon, PlusIcon, QrCode, Barcode, InfoIcon } from 'lucide-vue-next';
 import { store, update } from '@/routes/manage/event/products';
 import { formatDateForPicker } from '@/lib/utils';
 
@@ -133,6 +133,7 @@ const form = useForm({
     hide_before_sale_start_date: props.product?.hide_before_sale_start_date ?? false,
     hide_after_sale_end_date: props.product?.hide_after_sale_end_date ?? false,
     show_stock: props.product?.show_stock ?? false,
+    transfers_left: props.product?.transfers_left ?? 0,
 });
 
 watch(() => form.product_price_type, (newType, oldType) => {
@@ -440,6 +441,24 @@ const ticketTypeDescription = computed(() => {
                                 <div class="flex items-center justify-between">
                                     <span>Show Stock</span>
                                     <NSwitch v-model:value="form.show_stock" />
+                                </div>
+                                <div v-if="form.product_type === 'ticket'"
+                                    class="flex justify-between items-center gap-2">
+                                    <span>Transfers</span>
+                                    <div class="flex items-center gap-2">
+                                        <NInputNumber v-model:value="form.transfers_left" :min="0" :max="100" />
+                                        <NTooltip>
+                                            <template #trigger>
+                                                <NButton>
+                                                    <NIcon>
+                                                        <InfoIcon />
+                                                    </NIcon>
+                                                </NButton>
+                                            </template>
+                                            <span>How many times can this ticket be transferred? 0 means not
+                                                transferable</span>
+                                        </NTooltip>
+                                    </div>
                                 </div>
                             </div>
                         </div>

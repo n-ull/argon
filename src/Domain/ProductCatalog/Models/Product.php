@@ -75,6 +75,7 @@ class Product extends Model
         'end_sale_date',
         'event_id',
         'sort_order',
+        'transfers_left',
     ];
 
     protected $casts = [
@@ -88,6 +89,7 @@ class Product extends Model
         'hide_when_sold_out' => 'boolean',
         'show_stock' => 'boolean',
         'is_hidden' => 'boolean',
+        'transfers_left' => 'integer',
     ];
 
     public function product_prices(): HasMany

@@ -28,9 +28,6 @@ const form = useForm({
     commission_value: 0,
 });
 
-// @ts-ignore
-const route = window.route;
-
 const submit = () => {
     form.post(store({ organizer: props.organizerId }).url, {
         onSuccess: () => {
@@ -71,7 +68,7 @@ const submit = () => {
                 </NInputNumber>
 
                 <span v-if="form.errors.commission_value" class="text-red-500 text-xs">{{ form.errors.commission_value
-                    }}</span>
+                }}</span>
                 <span class="text-xs text-gray-400">Commission for the promoter</span>
 
                 <div v-if="commissionType === 'fixed'" class="text-xs text-gray-400">

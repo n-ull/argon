@@ -30,4 +30,13 @@ return [
     'transfer_success' => 'Entrada transferida exitosamente',
     'not_your_ticket' => 'No puedes transferir una entrada que no es tuya',
     'cant_transfer_to_yourself' => 'No puedes transferirte una entrada a ti mismo',
+    'transfer' => 'Transferir',
+    'cannot_transfer' => 'No se puede transferir',
+    'transfer_ticket' => 'Transferir Entrada',
+    'transfer_ticket_description' => 'Transferir esta entrada a otro usuario.',
+    'email' => 'Correo electrónico',
+    'email_description' => 'Le enviaremos un correo al usuario para confirmar la transferencia.',
+    'transfer_ticket_success' => 'Entrada transferida exitosamente',
+    'transfer_ticket_error' => 'Error al transferir la entrada',
+    'transfers_left' => 'Transferencias restantes: :count',
 ];

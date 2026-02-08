@@ -9,7 +9,9 @@ import { Link } from '@inertiajs/vue3';
 import { Calendar, Gift, Printer } from 'lucide-vue-next';
 import { NQrCode } from 'naive-ui';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { trans as t } from 'laravel-vue-i18n';
+import { trans as t, trans, wTrans } from 'laravel-vue-i18n';
+import { useDialog } from '@/composables/useDialog';
+import TransferTicketDialog from './dialogs/TransferTicketDialog.vue';
 
 const { ticket } = defineProps<{ ticket: Ticket }>();
 
@@ -49,6 +51,23 @@ const printTicket = () => {
 
 const isInactive = computed(() => ticket.status === 'used' || ticket.status === 'expired' || ticket.status === 'cancelled');
 
+const canTransfer = computed(() => {
+    return ticket.transfers_left > 0 && !isInactive.value;
+});
+
+const { open } = useDialog();
+
+const transferTicket = () => {
+    open({
+        component: TransferTicketDialog,
+        props: {
+            ticket: ticket,
+        },
+    });
+}
+
+
+
 </script>
 
 <template>
@@ -77,7 +96,7 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                                 :title="t('tickets.print')">
                                 <Printer :size="16" />
                                 <span class="text-[10px] font-bold uppercase tracking-wider">{{ $t('tickets.print')
-                                    }}</span>
+                                }}</span>
                             </button>
                         </div>
                     </div>
@@ -92,7 +111,7 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                         </div>
                         <div class="text-right">
                             <label class="text-xs font-bold text-zinc-500 uppercase tracking-wider">{{ t('tickets.seat')
-                                }} /
+                            }} /
                                 {{ $t('tickets.section') }}</label>
                             <p class="text-zinc-100 font-medium">{{ ticket.product.name }}</p>
                         </div>
@@ -125,7 +144,7 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                         <p class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-bold">Scan for Entry</p>
 
                         <p class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-bold mt-2 font-mono">{{ totp
-                        }}</p>
+                            }}</p>
 
                         <!-- Refresh Indicator -->
                         <div class="mt-4 flex flex-col items-center w-full">
@@ -148,6 +167,22 @@ const isInactive = computed(() => ticket.status === 'used' || ticket.status === 
                         </div>
                         <p class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-bold">{{
                             $t('tickets.scan_for_entry') }}</p>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <button @click="transferTicket" :disabled="!canTransfer"
+                        class="w-full font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        :class="ticket.type === 'static' ? 'bg-moovin-lila text-moovin-dark-purple hover:bg-moovin-lila/80' : 'bg-moovin-lime text-moovin-dark-green hover:bg-moovin-lime/80'">
+                        <span v-if="canTransfer">{{ $t('tickets.transfer') }}</span>
+                        <span v-else>{{ $t('tickets.cannot_transfer') }}</span>
+                    </button>
+                    <div v-if="canTransfer" class="mt-2 text-center">
+                        <span class="text-xs text-gray-400">{{ trans('tickets.transfers_left', {
+                            count:
+                                ticket.transfers_left.toString()
+                        })
+                        }}</span>
                     </div>
                 </div>
             </div>

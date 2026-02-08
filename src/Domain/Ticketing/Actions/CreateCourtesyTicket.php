@@ -15,7 +15,7 @@ class CreateCourtesyTicket
 {
     use AsAction;
 
-    public function handle(Event $event, Product $product, int $quantity, array $userIds, int $givenBy)
+    public function handle(Event $event, Product $product, int $quantity, array $userIds, int $givenBy, int $transfersLeft)
     {
         \Domain\Ticketing\Jobs\GenerateCourtesyTickets::dispatch(
             $event->id,
@@ -23,7 +23,8 @@ class CreateCourtesyTicket
             $quantity,
             $userIds,
             $givenBy,
-            $product->ticket_type->value
+            $product->ticket_type->value,
+            $transfersLeft
         );
     }
 
@@ -34,6 +35,7 @@ class CreateCourtesyTicket
             'emails.*' => 'required|email|exists:users,email',
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|numeric|min:1|max:10',
+            'transfersLeft' => 'required|numeric|min:0|max:10',
         ]);
 
         $event = Event::findOrFail($eventId);
@@ -55,7 +57,7 @@ class CreateCourtesyTicket
             $userIds[] = $user->id;
         }
 
-        $this->handle($event, $product, $validated['quantity'], $userIds, auth()->id());
+        $this->handle($event, $product, $validated['quantity'], $userIds, auth()->id(), $validated['transfersLeft']);
 
         $totalTickets = count($userIds) * $validated['quantity'];
         return back();

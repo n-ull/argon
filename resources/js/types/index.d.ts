@@ -156,6 +156,7 @@ export interface Product {
     hide_before_sale_start_date?: boolean;
     hide_after_sale_end_date?: boolean;
     show_stock?: boolean;
+    transfers_left?: number | null;
 }
 
 export interface ProductPrice {
