@@ -21,7 +21,7 @@ class TransferTicket
         }
 
         $ticket->user_id = $user->id;
-        $ticket->token = TokenGenerator::generateToken($ticket->type);
+        $ticket->token = TokenGenerator::generate($ticket->type);
         $ticket->transfers_left -= 1;
         $ticket->save();
     }
