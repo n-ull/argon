@@ -2,7 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import AppLogo from '@/components/AppLogo.vue';
 import { usePage } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { NavItem } from '@/types';
 import { urlIsActive } from '@/lib/utils';
 import { Menu, Settings, LogOut } from 'lucide-vue-next';
@@ -33,11 +33,30 @@ interface Props {
 const props = defineProps<Props>();
 
 const isOpen = ref(false);
+const isScrolled = ref(false);
+
+const handleScroll = () => {
+    isScrolled.value = window.scrollY > 0;
+};
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+});
 </script>
 
 <template>
-    <div class="bg-black">
-        <nav class="border-b border-neutral-900">
+    <div :class="[
+        'transition-all duration-300',
+        isScrolled ? 'fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-md shadow-lg' : 'bg-black'
+    ]">
+        <nav :class="[
+            'border-b transition-colors duration-300',
+            isScrolled ? 'border-neutral-800/50' : 'border-neutral-900'
+        ]">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
                     <!-- Logo/Brand -->
@@ -106,7 +125,7 @@ const isOpen = ref(false);
                             </Link>
                             <Link href="/register"
                                 class="rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition hover:bg-secondary/80">
-                                {{ $t('user.register') }}
+                                {{ $t('user.sign_up') }}
                             </Link>
                         </template>
                     </div>
@@ -171,7 +190,7 @@ const isOpen = ref(false);
                                             </Link>
                                             <Link href="/register" @click="isOpen = false"
                                                 class="w-full rounded-md bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 text-center">
-                                                {{ $t('user.register') }}
+                                                {{ $t('user.sign_up') }}
                                             </Link>
                                         </template>
                                     </div>
