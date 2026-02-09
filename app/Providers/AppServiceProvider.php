@@ -56,9 +56,5 @@ class AppServiceProvider extends ServiceProvider
             CommissionCompleted::class,
             SendPromoterCommissionNotification::class
         );
-
-        Inertia::share([
-            'locale' => fn () => App::getLocale(),
-        ]);
     }
 }

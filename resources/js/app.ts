@@ -3,9 +3,9 @@ import '../css/app.css';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
-import { createApp, h } from 'vue';
+import { createApp, h, watch } from 'vue';
 import { NMessageProvider } from 'naive-ui';
-import { i18nVue } from 'laravel-vue-i18n';
+import { i18nVue, loadLanguageAsync } from 'laravel-vue-i18n';
 
 // import { initializeTheme } from './composables/useAppearance';
 
@@ -19,13 +19,31 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(NMessageProvider, null, { default: () => h(App, props) }) })
-            .use(plugin)
+        const app = createApp({ 
+            render: () => h(NMessageProvider, null, { default: () => h(App, props) }),
+            setup() {
+                // Watch for locale changes in Inertia props and load the new language
+                watch(
+                    () => props.initialPage.props.locale,
+                    (newLocale) => {
+                        if (newLocale && typeof newLocale === 'string') {
+                            loadLanguageAsync(newLocale);
+                        }
+                    },
+                    { immediate: true }
+                );
+            }
+        });
+        
+        app.use(plugin)
             .use(i18nVue, {
-                resolve: async (lang: string) => {
+                lang: props.initialPage.props.locale,
+                fallbackLang: 'es',
+                resolve: (lang: string) => {
                     const langs = import.meta.glob('../../lang/*.json', { eager: true });
-                    return langs[`../../lang/${lang}.json`];
-                }
+                    const langModule = langs[`../../lang/php_${lang}.json`] as any;
+                    return langModule?.default || langModule;
+                },
             })
             .mount(el);
     },

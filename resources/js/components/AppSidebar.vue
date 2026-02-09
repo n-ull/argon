@@ -16,7 +16,6 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import AppLogo from './AppLogo.vue';
 import AppLogoIcon from './AppLogoIcon.vue';
-import { Component } from 'vue';
 
 const { state } = useSidebar();
 

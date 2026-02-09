@@ -16,7 +16,8 @@ class ExpireOrder implements ShouldQueue
 
     public function __construct(
         public int $orderId
-    ) {}
+    ) {
+    }
 
     public function handle(): void
     {
@@ -31,8 +32,10 @@ class ExpireOrder implements ShouldQueue
                 $order->update(['status' => OrderStatus::EXPIRED]);
 
                 foreach ($order->orderItems as $item) {
-                    \Domain\ProductCatalog\Models\ProductPrice::where('id', $item->product_price_id)
-                        ->decrement('quantity_sold', $item->quantity);
+                    if ($item->product) {
+                        \Domain\ProductCatalog\Models\ProductPrice::where('id', $item->product_price_id)
+                            ->decrement('quantity_sold', $item->quantity);
+                    }
                 }
             }
         });

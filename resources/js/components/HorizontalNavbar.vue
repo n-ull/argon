@@ -131,7 +131,7 @@ onUnmounted(() => {
                         </template>
                         <template v-else>
                             <Link href="/login"
-                                class="rounded-md px-4 py-2 text-sm font-medium text-primary transition hover:bg-gray-100">
+                                class="rounded-md px-4 py-2 text-sm font-medium text-primary transition hover:bg-moovin-lime hover:text-moovin-green">
                                 {{ $t('user.login') }}
                             </Link>
                             <Link href="/register"
