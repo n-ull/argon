@@ -19,13 +19,17 @@ const dayNumber = computed(() => {
 const monthShort = computed(() => {
     return dateObj.value.toLocaleDateString('es-ES', { month: 'short' }).slice(0, 3).toUpperCase();
 });
+
+const isMobile = computed(() => {
+    return window.innerWidth < 640;
+});
 </script>
 
 <template>
     <div class="group relative flex flex-col w-full">
         <!-- Poster Image Container -->
-        <Link :href="show(event.slug)"
-            class="relative aspect-2/3 w-full h-[580px] overflow-hidden rounded-2xl bg-neutral-900 shadow-md transition-all duration-300 hover:shadow-xl group-hover:-translate-y-1">
+        <Link :href="show(event.slug)" :class="isMobile ? 'h-[580px]' : 'aspect-2/3'"
+            class="relative w-full overflow-hidden rounded-2xl bg-neutral-900 shadow-md transition-all duration-300 hover:shadow-xl group-hover:-translate-y-1">
             <img v-if="event.poster_image_path" :src="`/storage/${event.poster_image_path}`" :alt="event.title"
                 class="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
             <!-- Fallback if no poster -->
