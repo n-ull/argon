@@ -5,7 +5,7 @@ import { usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { NavItem } from '@/types';
 import { urlIsActive } from '@/lib/utils';
-import { Menu } from 'lucide-vue-next';
+import { Menu, Settings, LogOut } from 'lucide-vue-next';
 import {
     Sheet,
     SheetContent,
@@ -13,6 +13,15 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -52,22 +61,52 @@ const isOpen = ref(false);
                     <!-- Desktop Right side - Auth links -->
                     <div class="hidden md:flex items-center gap-2">
                         <template v-if="user">
-                            <span class="text-sm text-primary">
-                                {{ user.name }}
-                            </span>
-                            <Link href="/logout" method="post" as="button"
-                                class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:bg-primary/80">
-                                Logout
-                            </Link>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger as-child>
+                                    <button
+                                        class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-800">
+                                        <div
+                                            class="h-8 w-8 rounded-full bg-neutral-800 flex items-center justify-center text-primary font-bold">
+                                            {{ user.name.charAt(0).toUpperCase() }}
+                                        </div>
+                                        <span>{{ user.name }}</span>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" class="w-56 bg-neutral-900 border-neutral-800 text-white">
+                                    <DropdownMenuLabel class="font-normal">
+                                        <div class="flex flex-col space-y-1">
+                                            <p class="text-sm font-medium leading-none">{{ user.name }}</p>
+                                            <p class="text-xs leading-none text-muted-foreground">{{ user.email }}</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem :as-child="true">
+                                            <Link href="/settings/profile" class="flex items-center cursor-pointer">
+                                                <Settings class="mr-2 h-4 w-4" />
+                                                <span>{{ $t('user.profile') }}</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem :as-child="true">
+                                        <Link href="/logout" method="post" as="button"
+                                            class="flex items-center w-full cursor-pointer">
+                                            <LogOut class="mr-2 h-4 w-4" />
+                                            <span>{{ $t('user.logout') }}</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </template>
                         <template v-else>
                             <Link href="/login"
                                 class="rounded-md px-4 py-2 text-sm font-medium text-primary transition hover:bg-gray-100">
-                                Login
+                                {{ $t('user.login') }}
                             </Link>
                             <Link href="/register"
                                 class="rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground transition hover:bg-secondary/80">
-                                Register
+                                {{ $t('user.register') }}
                             </Link>
                         </template>
                     </div>
@@ -116,19 +155,23 @@ const isOpen = ref(false);
                                                     <span class="text-xs text-neutral-500">{{ user.email }}</span>
                                                 </div>
                                             </div>
+                                            <Link href="/settings/profile" @click="isOpen = false"
+                                                class="w-full rounded-md bg-neutral-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-neutral-800 text-center">
+                                                {{ $t('user.profile') }}
+                                            </Link>
                                             <Link href="/logout" method="post" as="button" @click="isOpen = false"
                                                 class="w-full rounded-md bg-primary/10 px-4 py-3 text-sm font-bold text-primary transition hover:bg-primary/20 text-center">
-                                                Logout
+                                                {{ $t('user.logout') }}
                                             </Link>
                                         </template>
                                         <template v-else>
                                             <Link href="/login" @click="isOpen = false"
                                                 class="w-full rounded-md bg-neutral-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-neutral-800 text-center">
-                                                Login
+                                                {{ $t('user.login') }}
                                             </Link>
                                             <Link href="/register" @click="isOpen = false"
                                                 class="w-full rounded-md bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 text-center">
-                                                Register
+                                                {{ $t('user.register') }}
                                             </Link>
                                         </template>
                                     </div>

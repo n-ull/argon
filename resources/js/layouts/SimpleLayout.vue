@@ -54,10 +54,6 @@ const items = computed<NavItem[]>(() => {
     if (user.value) {
         navItems.push(
             {
-                title: t('argon.dashboard'),
-                href: '/dashboard',
-            },
-            {
                 title: t('argon.tickets'),
                 href: '/tickets',
             },
@@ -92,6 +88,34 @@ const items = computed<NavItem[]>(() => {
             </main>
             <Toaster />
             <GlobalDialog />
+            
+            <!-- Footer -->
+            <footer class="bg-neutral-950 py-12">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Moovin™</h3>
+                            <p class="mt-4 text-gray-400">La plataforma líder en venta de entradas para eventos.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Enlaces</h3>
+                            <ul class="mt-4 space-y-2">
+                                <li><a href="#" class="text-gray-400 hover:text-white">Inicio</a></li>
+                                <li><a href="/events" class="text-gray-400 hover:text-white">Eventos</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Contacto</h3>
+                            <ul class="mt-4 space-y-2">
+                                <li><a href="#" class="text-gray-400 hover:text-white">soporte@moovin.ar</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-12 border-t border-neutral-800 pt-8">
+                        <p class="text-center text-gray-400">© 2024-2026 Moovin™. Todos los derechos reservados.</p>
+                    </div>
+                </div>
+            </footer>
         </div>
     </n-config-provider>
 </template>
