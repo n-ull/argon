@@ -14,10 +14,12 @@ class CheckoutController extends Controller
     {
         $settings = $order->event->organizer->settings;
 
+        // if order is completed, redirect to order show
         if ($order->status === OrderStatus::COMPLETED) {
             return redirect()->route('orders.show', $order->id);
         }
 
+        // if order is expired or cancelled, redirect to event show
         if ($order->status === OrderStatus::EXPIRED || $order->status === OrderStatus::CANCELLED) {
             return redirect()->route('events.show', $order->event->slug)
                 ->with('message', flash_error(
@@ -26,6 +28,19 @@ class CheckoutController extends Controller
                 ));
         }
 
+        // if order guest doesnt have the same ip as the saved ip in cache for this guest order
+        if (! $order->user_id) {
+            $cacheIp = cache()->get("guest_order_{$order->id}");
+            if ($cacheIp !== request()->ip()) {
+                return redirect()->route('events.show', $order->event->slug)
+                    ->with('message', flash_error(
+                        __('order.order_unavailable'),
+                        __('order.order_unavailable.description')
+                    ));
+            }
+        }
+
+        // if order user is not the same as the authenticated user
         if ($order->user_id !== auth()->id()) {
             return redirect()->route('events.show', $order->event->slug)
                 ->with('message', flash_error(

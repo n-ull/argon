@@ -20,6 +20,11 @@ class OrderController extends Controller
 
             $order = $createOrder->handle($orderDTO);
 
+            // Cache the IP for guest orders to prevent unauthorized access
+            if (! auth()->check()) {
+                cache()->put("guest_order_{$order->id}", request()->ip(), 60 * 15);
+            }
+
             if ($order->status === \Domain\Ordering\Enums\OrderStatus::COMPLETED) {
                 return redirect(route('orders.show', $order->id));
             }
