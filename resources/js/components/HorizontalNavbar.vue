@@ -36,19 +36,30 @@ const isOpen = ref(false);
 const isScrolled = ref(false);
 
 const handleScroll = () => {
-    isScrolled.value = window.scrollY > 0;
+    if (typeof window !== 'undefined') {
+        isScrolled.value = window.scrollY > 0;
+    }
 };
 
 onMounted(() => {
-    window.addEventListener('scroll', handleScroll);
+    if (typeof window !== 'undefined') {
+        window.addEventListener('scroll', handleScroll);
+        // Initial check
+        handleScroll();
+    }
 });
 
 onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll);
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', handleScroll);
+    }
 });
 </script>
 
 <template>
+    <!-- Spacer to prevent content jump when navbar becomes fixed -->
+    <div v-if="isScrolled" class="h-16"></div>
+    
     <div :class="[
         'transition-all duration-300',
         isScrolled ? 'fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-md shadow-lg' : 'bg-black'
