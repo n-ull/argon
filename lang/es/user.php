@@ -3,6 +3,7 @@
 return [
     'logout' => 'Cerrar sesión',
     'login' => 'Iniciar sesión',
+    'name' => 'Nombre',
     'profile' => 'Perfil',
     'two_factor_auth' => 'Autenticación de dos factores',
     'appearance' => 'Apariencia',
@@ -50,5 +51,14 @@ return [
         'resent' => 'Se ha enviado un nuevo enlace de verificación a tu dirección de correo electrónico.',
         'resent_button' => 'Reenviar correo de verificación',
         'back_to_login' => 'Volver al inicio de sesión',
-    ]
+    ],
+    'profile_title' => 'Información del perfil',
+    'profile_description' => 'Actualiza tu nombre y dirección de correo electrónico',
+    'profile_updated' => 'Perfil actualizado correctamente.',
+    'save' => 'Guardar',
+    'delete_account' => 'Eliminar cuenta',
+    'delete_account_description' => 'Una vez que tu cuenta sea eliminada, todos tus datos serán eliminados permanentemente. Por favor, descarga cualquier dato que desees conservar antes de continuar.',
+    'delete_account_button' => 'Eliminar cuenta',
+    'email_unverified' => 'Tu correo electrónico no está verificado.',
+    'resend_verification_email' => 'Haz clic aquí para reenviar el correo de verificación.',
 ];

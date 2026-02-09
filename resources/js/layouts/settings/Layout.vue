@@ -3,7 +3,6 @@ import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
@@ -24,20 +23,16 @@ const sidebarNavItems: NavItem[] = [
         title: t('user.two_factor_auth'),
         href: show(),
     },
-    {
-        title: t('user.appearance'),
-        href: editAppearance(),
-    },
 ];
 
 const currentPath = typeof window !== undefined ? window.location.pathname : '';
 </script>
 
 <template>
-    <div class="px-4 py-6">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Heading :title="t('user.settings')" :description="t('user.settings_description')" />
 
-        <div class="flex flex-col lg:flex-row lg:space-x-12">
+        <div class="flex flex-col lg:flex-row lg:space-x-24">
             <aside class="w-full max-w-xl lg:w-48">
                 <nav class="flex flex-col space-y-1 space-x-0">
                     <Button v-for="item in sidebarNavItems" :key="toUrl(item.href)" variant="ghost" :class="[

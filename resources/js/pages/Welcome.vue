@@ -40,7 +40,7 @@ const { events } = defineProps<Props>();
 
                 <!-- Events Grid -->
                 <div v-if="events.length > 0"
-                    class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6 md:grid md:gap-6 md:pb-0 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:overflow-visible no-scrollbar">
+                    class="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-6 md:grid md:gap-6 md:pb-0 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:overflow-visible no-scrollbar">
                     <div v-for="event in events" :key="event.id"
                         class="w-[85vw] sm:w-[350px] shrink-0 snap-center md:w-auto pl-4 first:pl-0 last:pr-4 md:pl-0 md:last:pr-0">
                         <EventCard :event="event" />

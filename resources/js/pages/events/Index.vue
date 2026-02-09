@@ -32,11 +32,6 @@ const { events } = defineProps<Props>();
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <EventHorizontalCard v-for="event in events.data" :key="event.id" :event="event" />
                     </div>
-                    <!-- <template #next="{ loading, fetch, hasMore }">
-                        <button v-if="hasMore" @click="fetch" :disabled="loading">
-                            {{ loading ? 'Loading...' : 'Load more' }}
-                        </button>
-                    </template> -->
                 </InfiniteScroll>
 
                 <div v-if="events.data.length === 0" class="rounded-lg border p-12 text-center">
@@ -45,18 +40,6 @@ const { events } = defineProps<Props>();
                     </p>
                 </div>
             </div>
-
-            <!-- Pagination -->
-            <!-- <div v-if="events.last_page > 1" class="mt-8 flex items-center justify-center gap-2">
-                <Link v-for="link in events.links" :key="link.label" :href="link.url || '#'" :class="[
-                    'rounded-md px-4 py-2 text-sm font-medium transition',
-                    link.active
-                        ? 'bg-blue-600 text-white'
-                        : link.url
-                            ? 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
-                            : 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-900 dark:text-gray-600',
-                ]" :disabled="!link.url" v-html="link.label" />
-            </div> -->
         </div>
     </SimpleLayout>
 </template>

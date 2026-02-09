@@ -3,6 +3,7 @@
 return [
     'logout' => 'Logout',
     'login' => 'Login',
+    'name' => 'Name',
     'profile' => 'Profile',
     'two_factor_auth' => 'Two-Factor Auth',
     'appearance' => 'Appearance',
@@ -50,5 +51,14 @@ return [
         'resent' => 'A new verification link has been sent to your email address.',
         'resent_button' => 'Resend verification email',
         'back_to_login' => 'Back to login',
-    ]
+    ],
+    'profile_title' => 'Profile Information',
+    'profile_description' => 'Update your name and email address',
+    'profile_updated' => 'Profile updated successfully.',
+    'save' => 'Save',
+    'delete_account' => 'Delete account',
+    'delete_account_description' => 'Once your account is deleted, all of your data will be permanently removed. Please download any data you wish to keep before proceeding.',
+    'delete_account_button' => 'Delete account',
+    'email_unverified' => 'Your email address is unverified.',
+    'resend_verification_email' => 'Click here to resend the verification email.',
 ];
