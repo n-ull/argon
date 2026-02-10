@@ -11,8 +11,9 @@ import { useDialog } from '@/composables/useDialog';
 import OrganizerSelectorDialog from '@/components/OrganizerSelectorDialog.vue';
 import { NInput, NSelect, NSpace, NIcon, NPagination, NTag, NEmpty } from 'naive-ui';
 import { Search } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import organizer from '@/routes/manage/organizer';
+import { trans as t } from 'laravel-vue-i18n';
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -38,7 +39,7 @@ const selectedStatus = ref<EventStatus | null>(props.filters.status ?? null);
 
 // Organizer options for select
 const organizerOptions = computed(() => [
-    { label: 'All Organizations', value: null },
+    { label: t('dashboard.filters.all_organizations'), value: null },
     ...props.organizers.map(org => ({
         label: org.name,
         value: org.id,
@@ -47,10 +48,10 @@ const organizerOptions = computed(() => [
 
 // Status options for select
 const statusOptions = computed(() => [
-    { label: 'All Statuses', value: null },
-    { label: 'Draft', value: 'draft' },
-    { label: 'Published', value: 'published' },
-    { label: 'Archived', value: 'archived' },
+    { label: t('dashboard.filters.all_statuses'), value: null },
+    { label: t('dashboard.filters.draft'), value: 'draft' },
+    { label: t('dashboard.filters.published'), value: 'published' },
+    { label: t('dashboard.filters.archived'), value: 'archived' },
 ] as any);
 
 // Handle filter changes
@@ -105,6 +106,8 @@ const selectOrganizer = () => {
         component: OrganizerSelectorDialog,
         props: {
             organizers: props.organizers,
+            title: t('dashboard.select_organization'),
+            description: t('dashboard.select_organization_description'),
         },
     });
 };
@@ -126,13 +129,13 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
 
 <template>
 
-    <Head title="Dashboard" />
+    <Head :title="t('dashboard.title')" />
 
     <SimpleLayout>
         <Section>
             <div class="flex not-sm:flex-col not-sm:items-start justify-between items-center mb-6">
-                <SectionHeader title="Dashboard"
-                    :description="`Welcome back, ${user?.name}. This is a list of all your events`" />
+                <SectionHeader :title="t('dashboard.title')"
+                    :description="t('dashboard.description', { name: user?.name })" />
                 <div @click="selectOrganizer"
                     class="cursor-pointer flex items-center gap-4 p-4 border bg-neutral-900 rounded-lg">
                     <div class="flex -space-x-2">
@@ -145,7 +148,7 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
                         </span>
                     </div>
                     <p class="text-sm text-neutral-400">{{ props.organizers.length }} {{ props.organizers.length === 1 ?
-                        'Organizer' : 'Organizers' }}</p>
+                        t('dashboard.organizer') : t('dashboard.organizers') }}</p>
                 </div>
             </div>
 
@@ -153,7 +156,7 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
             <div class="mb-6 p-4 border bg-neutral-900 rounded-lg">
                 <n-space :size="12" wrap>
                     <!-- Search Input -->
-                    <n-input v-model:value="searchQuery" placeholder="Search events by title..." clearable
+                    <n-input v-model:value="searchQuery" :placeholder="t('dashboard.search_by_title_placeholder')" clearable
                         style="min-width: 300px" @update:value="handleFilterChange">
                         <template #prefix>
                             <n-icon>
@@ -164,11 +167,12 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
 
                     <!-- Organization Filter -->
                     <n-select v-model:value="selectedOrganizer" :options="organizerOptions"
-                        placeholder="Filter by organization" style="min-width: 220px"
+                        :placeholder="t('dashboard.filter_by.organization')" style="min-width: 220px"
                         @update:value="handleFilterChange" />
 
                     <!-- Status Filter -->
-                    <n-select v-model:value="selectedStatus" :options="statusOptions" placeholder="Filter by status"
+                    <n-select v-model:value="selectedStatus" :options="statusOptions"
+                        :placeholder="t('dashboard.filter_by.status')"
                         style="min-width: 180px" @update:value="handleFilterChange" />
                 </n-space>
             </div>
@@ -180,27 +184,27 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
                     <Link :href="dashboard(event.id)">
                         <div class="flex justify-between items-start gap-4">
                             <div class="flex flex-col flex-1">
-                                <span class="text-xs text-neutral-500">Title</span>
+                                <span class="text-xs text-neutral-500">{{ t('dashboard.event.title') }}</span>
                                 <p class="text-lg font-semibold">{{ event.title }}</p>
-                                <span class="text-xs text-neutral-500 mt-2">Organization</span>
+                                <span class="text-xs text-neutral-500 mt-2">{{ t('dashboard.event.organizer') }}</span>
                                 <p class="text-sm text-neutral-400">{{ event.organizer.name }}</p>
                             </div>
                             <div class="flex flex-col text-right">
                                 <div class="flex justify-end mb-2">
                                     <n-tag :type="getStatusTagType(event.status!)" :bordered="false" size="small">
-                                        {{ event.status ?? 'Unknown' }}
+                                        {{ event.status ? $t('dashboard.status.' + event.status) : $t('dashboard.status.unknown') }}
                                     </n-tag>
                                 </div>
-                                <span class="text-xs text-neutral-500">Start Date:</span>
+                                <span class="text-xs text-neutral-500">{{ $t('dashboard.event.start_date') }}</span>
                                 <p v-if="isFuture(event.start_date)" class="text-sm text-neutral-400">
                                     {{ formatDate(event.start_date) }}
                                 </p>
                                 <p v-else-if="isLive(event.start_date, event.end_date ?? undefined)"
                                     class="text-sm text-green-400">
-                                    Live
+                                    {{ $t('dashboard.event.live') }}
                                 </p>
                                 <p v-else class="text-sm text-red-400">
-                                    Ended {{ formatDate(event.end_date ?? '') }}
+                                    {{ $t('dashboard.event.ended') }} {{ formatDate(event.end_date ?? '') }}
                                 </p>
                             </div>
                         </div>
@@ -210,7 +214,7 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
 
             <!-- Empty State -->
             <div v-else class="p-8 border bg-neutral-900 rounded-lg">
-                <n-empty description="No events found" />
+                <n-empty :description="$t('dashboard.empty_state')" />
             </div>
 
             <!-- Pagination -->
@@ -221,12 +225,8 @@ const getStatusTagType = (status: EventStatus): 'success' | 'warning' | 'default
             </div>
             <!-- Quick Actions -->
             <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-8">
-                <DashboardTestButton link="/events" title="Browse Events" description="View all public events"
-                    icon="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    color="blue" />
-
-                <DashboardTestButton :link="organizer.create().url" title="Create Organization"
-                    description="Start a new organization"
+                <DashboardTestButton :link="organizer.create().url" :title="t('dashboard.create_organization')"
+                    :description="t('dashboard.create_organization_description')"
                     icon="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                     color="green" />
             </div>

@@ -26,6 +26,6 @@ const color = computed(() => {
 
 <template>
     <n-tag :bordered="false" :type="color">
-        {{ status.charAt(0).toUpperCase() + status.slice(1) }}
+        {{ $t(`order.status.${status}`) }}
     </n-tag>
 </template>

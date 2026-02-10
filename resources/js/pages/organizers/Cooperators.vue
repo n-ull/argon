@@ -4,8 +4,9 @@ import { cooperators, show } from '@/routes/manage/organizer';
 import { Cooperator, Organizer, BreadcrumbItem } from '@/types';
 import { Head, useForm } from '@inertiajs/vue3';
 import { Trash2Icon } from 'lucide-vue-next';
-import { NButton, NCard, NDataTable, NFlex, NIcon, NInput, NModal, NForm, NFormItem, NPopconfirm, useMessage } from 'naive-ui';
+import { NButton, NDataTable, NIcon, NInput, NModal, NForm, NFormItem, NPopconfirm, useMessage } from 'naive-ui';
 import { h, ref } from 'vue';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     organizer: Organizer;
@@ -21,7 +22,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: show(props.organizer.id).url,
     },
     {
-        title: 'Cooperators',
+        title: t('organizer.cooperators'),
         href: cooperators(props.organizer.id).url,
     },
 ];
@@ -36,12 +37,12 @@ const addForm = useForm({
 const submitAdd = () => {
     addForm.post(cooperators(props.organizer.id).url, {
         onSuccess: () => {
-            message.success('Cooperator added successfully');
+            message.success(t('organizer.cooperator_added_successfully'));
             showAddModal.value = false;
             addForm.reset();
         },
         onError: () => {
-            message.error('Failed to add cooperator');
+            message.error(t('organizer.failed_to_add_cooperator'));
         },
     });
 };
@@ -53,25 +54,25 @@ const deleteCooperator = (cooperator: Cooperator) => {
 
     form.delete(url, {
         onSuccess: () => {
-            message.success('Cooperator removed successfully');
+            message.success(t('organizer.cooperator_removed_successfully'));
         },
         onError: () => {
-            message.error('Failed to remove cooperator');
+            message.error(t('organizer.failed_to_remove_cooperator'));
         },
     });
 };
 
 const columns = [
     {
-        title: 'Name',
+        title: t('argon.name'),
         key: 'name',
     },
     {
-        title: 'Email',
+        title: t('argon.email'),
         key: 'email',
     },
     {
-        title: 'Actions',
+        title: t('argon.actions'),
         key: 'actions',
         render(row: Cooperator) {
             if (!props.userIsOwner || row.id === props.organizer.owner_id) {
@@ -95,7 +96,7 @@ const columns = [
                                 icon: () => h(NIcon, null, { default: () => h(Trash2Icon) }),
                             }
                         ),
-                    default: () => 'Are you sure you want to remove this cooperator?',
+                    default: () => t('organizer.confirm_remove_cooperator'),
                 }
             );
         },
@@ -105,16 +106,16 @@ const columns = [
 
 <template>
 
-    <Head title="Cooperators" />
+    <Head :title="t('organizer.cooperators')" />
     <OrganizerLayout :breadcrumbs="breadcrumbs" :organizer="organizer">
         <div class="flex flex-col gap-4 m-4">
             <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Cooperators</h1>
-                    <p class="text-gray-500 mt-1">Manage and monitor all your cooperators.</p>
+                    <h1 class="text-3xl font-bold tracking-tight">{{ t('organizer.cooperators') }}</h1>
+                    <p class="text-gray-500 mt-1">{{ t('organizer.cooperators_description') }}</p>
                 </div>
                 <n-button v-if="userIsOwner" type="primary" @click="showAddModal = true">
-                    Add Cooperator
+                    {{ t('organizer.add_cooperator') }}
                 </n-button>
             </div>
             <div
@@ -123,18 +124,18 @@ const columns = [
                     class="rounded-lg overflow-hidden" />
             </div>
 
-            <n-modal v-if="userIsOwner" v-model:show="showAddModal" preset="card" title="Add Cooperator"
+            <n-modal v-if="userIsOwner" v-model:show="showAddModal" preset="card" :title="t('organizer.add_cooperator')"
                 class="w-full max-w-md">
                 <n-form @submit.prevent="submitAdd">
-                    <n-form-item label="Email Address" :feedback="addForm.errors.email"
+                    <n-form-item :label="t('argon.email')" :feedback="addForm.errors.email"
                         :validation-status="addForm.errors.email ? 'error' : undefined">
-                        <n-input v-model:value="addForm.email" placeholder="user@example.com" />
+                        <n-input v-model:value="addForm.email" :placeholder="t('argon.email')" />
                     </n-form-item>
 
                     <div class="flex justify-end gap-2 mt-4">
-                        <n-button @click="showAddModal = false">Cancel</n-button>
+                        <n-button @click="showAddModal = false">{{ t('argon.cancel') }}</n-button>
                         <n-button type="primary" attr-type="submit" :loading="addForm.processing">
-                            Add
+                            {{ t('argon.add') }}
                         </n-button>
                     </div>
                 </n-form>

@@ -12,6 +12,7 @@ import { h, ref } from 'vue';
 import { formatDate } from '@/lib/utils';
 import { Plus, Search } from 'lucide-vue-next';
 import CreateEventForm from './forms/CreateEventForm.vue';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     organizer: Organizer;
@@ -34,14 +35,14 @@ const breadcrumbItems: BreadcrumbItem[] = [
         href: `/manage/organizer/${props.organizer.id}`,
     },
     {
-        title: 'Events',
+        title: t('organizer.events'),
         href: eventsRoute(props.organizer.id).url,
     }
 ];
 
 const columns: DataTableColumns<Event> = [
     {
-        title: 'Title',
+        title: t('argon.title'),
         key: 'title',
         render(row) {
             return h(Link, {
@@ -51,14 +52,14 @@ const columns: DataTableColumns<Event> = [
         }
     },
     {
-        title: 'Start Date',
+        title: t('argon.start_date'),
         key: 'start_date',
         render(row) {
             return formatDate(row.start_date);
         }
     },
     {
-        title: 'Status',
+        title: t('argon.status'),
         key: 'status',
         render(row) {
             const status = row.status || 'draft';
@@ -74,12 +75,12 @@ const columns: DataTableColumns<Event> = [
             }
 
             return h(NTag, { type, bordered: false, round: true, size: 'small' }, {
-                default: () => status.charAt(0).toUpperCase() + status.slice(1)
+                default: () => t(`event.statuses.${status}`)
             });
         }
     },
     {
-        title: 'Location',
+        title: t('argon.location'),
         key: 'location_info.address',
         render(row) {
             return row.location_info?.address || 'TBD';
@@ -92,7 +93,7 @@ const columns: DataTableColumns<Event> = [
         render(row) {
             return h('div', { class: 'flex items-center justify-end gap-2' }, [
                 h(Link, { href: dashboard(row.id).url }, {
-                    default: () => h(NButton, { size: 'tiny', secondary: true, type: 'primary' }, { default: () => 'Manage' })
+                    default: () => h(NButton, { size: 'tiny', secondary: true, type: 'primary' }, { default: () => t('argon.manage') })
                 }),
                 h(EventActions, { event: row })
             ]);
@@ -106,21 +107,21 @@ const sortField = ref(props.filters.sort_by || 'created_at');
 const sortDirection = ref(props.filters.sort_direction || 'desc');
 
 const statusOptions: any[] = [
-    { label: 'All Statuses', value: null },
-    { label: 'Draft', value: 'draft' },
-    { label: 'Published', value: 'published' },
-    { label: 'Archived', value: 'archived' },
+    { label: t('organizer.filter.all_statuses'), value: null },
+    { label: t('event.statuses.draft'), value: 'draft' },
+    { label: t('event.statuses.published'), value: 'published' },
+    { label: t('event.statuses.archived'), value: 'archived' },
 ];
 
 const sortFieldOptions = [
-    { label: 'Start Date', value: 'start_date' },
-    { label: 'Title', value: 'title' },
-    { label: 'Creation Date', value: 'created_at' },
+    { label: t('argon.start_date'), value: 'start_date' },
+    { label: t('argon.title'), value: 'title' },
+    { label: t('argon.created_at'), value: 'created_at' },
 ];
 
 const sortDirectionOptions = [
-    { label: 'Descending', value: 'desc' },
-    { label: 'Ascending', value: 'asc' },
+    { label: t('argon.descending'), value: 'desc' },
+    { label: t('argon.ascending'), value: 'asc' },
 ];
 
 const handleFilterChange = () => {
@@ -147,8 +148,8 @@ const openCreateEventDialog = () => {
         component: CreateEventForm,
         props: {
             organizer: props.organizer,
-            title: 'Create Event',
-            description: 'Create a new event',
+            title: t('organizer.create_event'),
+            description: t('organizer.create_event_description'),
         }
     })
 }
@@ -158,13 +159,13 @@ const openCreateEventDialog = () => {
 
 <template>
 
-    <Head title="Events" />
+    <Head :title="t('organizer.events_title')" />
     <OrganizerLayout :organizer="props.organizer" :breadcrumbs="breadcrumbItems">
         <div class="m-4 space-y-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Events</h1>
-                    <p class="text-gray-500 mt-1">Manage and monitor all your events.</p>
+                    <h1 class="text-3xl font-bold tracking-tight">{{ t('organizer.events_title') }}</h1>
+                    <p class="text-gray-500 mt-1">{{ t('organizer.events_description') }}</p>
                 </div>
                 <!-- TODO: Link to create event page -->
                 <NButton type="primary" size="large" @click="openCreateEventDialog">
@@ -173,6 +174,7 @@ const openCreateEventDialog = () => {
                             <Plus />
                         </NIcon>
                     </template>
+                    {{ $t('organizer.create_event_button') }}
                 </NButton>
             </div>
 
@@ -180,8 +182,8 @@ const openCreateEventDialog = () => {
             <div
                 class="bg-white dark:bg-neutral-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
                 <NSpace :size="12" wrap>
-                    <NInput v-model:value="searchQuery" placeholder="Search by event title" clearable
-                        style="min-width: 300px" @update:value="handleFilterChange">
+                    <NInput v-model:value="searchQuery" :placeholder="t('organizer.search_by_title_placeholder')"
+                        clearable style="min-width: 300px" @update:value="handleFilterChange">
                         <template #prefix>
                             <NIcon>
                                 <Search :size="16" />
@@ -189,14 +191,15 @@ const openCreateEventDialog = () => {
                         </template>
                     </NInput>
 
-                    <NSelect v-model:value="statusFilter" :options="statusOptions" placeholder="Filter by status"
+                    <NSelect v-model:value="statusFilter" :options="statusOptions"
+                        :placeholder="t('organizer.filter_by_status')" style="min-width: 180px"
+                        @update:value="handleFilterChange" />
+
+                    <NSelect v-model:value="sortField" :options="sortFieldOptions" :placeholder="t('argon.sort_by')"
                         style="min-width: 180px" @update:value="handleFilterChange" />
 
-                    <NSelect v-model:value="sortField" :options="sortFieldOptions" placeholder="Sort by"
-                        style="min-width: 180px" @update:value="handleFilterChange" />
-
-                    <NSelect v-model:value="sortDirection" :options="sortDirectionOptions" placeholder="Direction"
-                        style="min-width: 150px" @update:value="handleFilterChange" />
+                    <NSelect v-model:value="sortDirection" :options="sortDirectionOptions"
+                        :placeholder="t('argon.direction')" style="min-width: 150px" @update:value="handleFilterChange" />
                 </NSpace>
             </div>
 
@@ -212,7 +215,7 @@ const openCreateEventDialog = () => {
             </div>
 
             <div v-if="events.data.length === 0" class="text-center py-12 text-gray-400">
-                <p>No events found. Create your first event to get started.</p>
+                <p>{{ t('organizer.events_empty_state') }}</p>
             </div>
         </div>
     </OrganizerLayout>

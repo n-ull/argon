@@ -16,10 +16,7 @@ interface Props {
     description?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-    title: 'Select Organization',
-    description: 'Choose an organization to view its events',
-});
+const props = defineProps<Props>();
 
 // Pagination state
 const currentPage = ref(1);
@@ -76,14 +73,14 @@ const goToPage = (page: number) => {
         <div v-if="needsPagination" class="flex items-center justify-between pt-4 border-t">
             <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1"
                 class="px-4 py-2 text-sm rounded-md border hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                Previous
+                {{ $t('argon.previous') }}
             </button>
             <span class="text-sm text-neutral-400">
-                Page {{ currentPage }} of {{ totalPages }}
+                {{ $t('argon.page') }} {{ currentPage }} {{ $t('argon.of') }} {{ totalPages }}
             </span>
             <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages"
                 class="px-4 py-2 text-sm rounded-md border hover:bg-neutral-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-                Next
+                {{ $t('argon.next') }}
             </button>
         </div>
     </DialogContent>

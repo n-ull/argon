@@ -1,0 +1,37 @@
+<?php
+
+return [
+    "current_events" => "Últimos Eventos",
+    "last_orders" => "Últimas Ordenes",
+    "events" => "Eventos",
+    "completed_orders" => "Ordenes Completadas",
+    "filter" => [
+        "all_statuses" => "Todos los estados"
+    ],
+    "set_as_draft" => "Establecer como borrador",
+    "set_as_published" => "Publicar Evento",
+    "set_as_archived" => "Archivar Evento",
+    "create_event" => "Crear Evento",
+    "create_event_description" => "Crea un nuevo evento",
+    "events_title" => "Eventos",
+    "events_description" => "Administra todos los eventos de tu productora.",
+    "search_by_title_placeholder" => "Buscar por título",
+    "filter_by_status" => "Filtrar por estado",
+    "events_empty_state" => "No hay ningún evento disponible.",
+    "archive_confirm" => "Archivar",
+    "set_as_archived_description" => "¿Estás seguro de que quieres archivar este evento? Ya no será visible para el público.",
+    "sort_by" => "Ordenar por",
+    "direction" => "Dirección",
+    "cooperators" => "Cooperadores",
+    "cooperator" => "Cooperador",
+    "cooperator_added_successfully" => "Cooperador añadido exitosamente",
+    "failed_to_add_cooperator" => "Error al añadir el cooperador",
+    "cooperator_removed_successfully" => "Cooperador eliminado exitosamente",
+    "failed_to_remove_cooperator" => "Error al eliminar el cooperador",
+    "add_cooperator" => "Añadir Cooperador",
+    "add_cooperator_description" => "Añade un nuevo cooperador a tu productora.",
+    "confirm_remove_cooperator" => "¿Estás seguro de que quieres eliminar este cooperador?",
+    "cooperators_description" => "Administra todos los cooperadores de tu productora.",
+    "cooperators_empty_state" => "No hay ningún cooperador disponible.",
+    "create_event_button" => "Crear Evento",
+];

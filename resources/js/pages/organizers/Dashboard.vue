@@ -33,25 +33,14 @@ console.log(props.last_orders);
 <template>
     <OrganizerLayout :organizer :breadcrumbs="breadcrumbItems">
         <div class="m-4 space-y-4">
-
-            <!-- Control Actions -->
-            <!-- <div class="flex justify-end">
-                <NButton size="large" type="primary">
-                    <template #icon>
-                        <Plus />
-                    </template>
-Create Event
-</NButton>
-</div> -->
-
             <div class="flex flex-row *:grow space-x-4 ">
-                <InfoWidget :icon="LucideCalendar" title="Events" :info="events_count.toString()" />
-                <InfoWidget :icon="LucideShoppingCart" title="Completed Orders" :info="orders_count.toString()" />
+                <InfoWidget :icon="LucideCalendar" :title="$t('organizer.events')" :info="events_count.toString()" />
+                <InfoWidget :icon="LucideShoppingCart" :title="$t('organizer.completed_orders')" :info="orders_count.toString()" />
             </div>
 
             <div class="flex flex-col md:flex-row space-x-4 space-y-4">
                 <div class="basis-full md:basis-2/3 space-y-2">
-                    <h2 class="text-2xl font-bold">Current Events</h2>
+                    <h2 class="text-2xl font-bold">{{$t('organizer.current_events')}}</h2>
                     <div class="space-y-4">
                         <div class="bg-neutral-800 p-4 rounded-lg shadow" v-for="event in last_events" :key="event.id">
                             <div class="flex items-center justify-between">
@@ -66,7 +55,7 @@ Create Event
                 </div>
 
                 <div class="basis-full md:basis-1/3 space-y-2">
-                    <h2 class="text-2xl font-bold">Last orders</h2>
+                    <h2 class="text-2xl font-bold">{{$t('organizer.last_orders')}}</h2>
                     <div class="space-y-4">
                         <div class="bg-neutral-800 p-4 rounded-lg shadow" v-for="order in last_orders" :key="order.id">
                             <div class="flex items-center justify-between">

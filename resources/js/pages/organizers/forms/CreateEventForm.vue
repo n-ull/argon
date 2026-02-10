@@ -57,8 +57,8 @@ const handleSubmit = () => {
             <form @submit.prevent="handleSubmit" id="create-event-form">
                 <div class="space-y-4">
                     <div>
-                        <span class="block mb-1 text-md font-medium required">Event name</span>
-                        <NInput v-model:value="form.title" placeholder="Enter event name"
+                        <span class="block mb-1 text-md font-medium required">{{ $t('event.form.title') }}</span>
+                        <NInput v-model:value="form.title" :placeholder="$t('event.form.title_placeholder')"
                             :status="form.errors.title ? 'error' : 'success'">
                             <template #prefix>
                                 <lucide-stars :size="14" :color="form.errors.title ? 'red' : 'gray'" />
@@ -68,8 +68,9 @@ const handleSubmit = () => {
                     </div>
 
                     <div>
-                        <span class="block mb-1 text-md font-medium">Description</span>
-                        <NInput v-model:value="form.description" type="textarea" placeholder="Enter event description"
+                        <span class="block mb-1 text-md font-medium">{{ $t('event.form.description') }}</span>
+                        <NInput v-model:value="form.description" type="textarea"
+                            :placeholder="$t('event.form.description_placeholder')"
                             :status="form.errors.description ? 'error' : 'success'" />
                         <p v-if="form.errors.description" class="text-xs text-red-500 mt-1">{{ form.errors.description
                         }}</p>
@@ -77,16 +78,16 @@ const handleSubmit = () => {
 
                     <div class="flex items-center gap-2">
                         <div class="flex-1">
-                            <span class="block mb-1 text-md font-medium required">Start date</span>
-                            <NDatePicker v-model:formatted-value="form.start_date" value-format="yyyy-MM-dd HH:mm:ss"
-                                type="datetime" />
+                            <span class="block mb-1 text-md font-medium required">{{ $t('event.form.start_date') }}</span>
+                            <NDatePicker :placeholder="$t('event.form.start_date_placeholder')"
+                                v-model:formatted-value="form.start_date" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" />
                             <p v-if="form.errors.start_date" class="text-xs text-red-500 mt-1">{{ form.errors.start_date
                             }}</p>
                         </div>
                         <div class="flex-1">
-                            <span class="block mb-1 text-md font-medium">End date</span>
-                            <NDatePicker v-model:formatted-value="form.end_date" value-format="yyyy-MM-dd HH:mm:ss"
-                                type="datetime" />
+                            <span class="block mb-1 text-md font-medium">{{ $t('event.form.end_date') }}</span>
+                            <NDatePicker :placeholder="$t('event.form.end_date_placeholder')"
+                                v-model:formatted-value="form.end_date" value-format="yyyy-MM-dd HH:mm:ss" type="datetime" />
                             <p v-if="form.errors.end_date" class="text-xs text-red-500 mt-1">{{ form.errors.end_date
                             }}</p>
                         </div>
@@ -95,9 +96,9 @@ const handleSubmit = () => {
             </form>
         </div>
         <DialogFooter class="flex justify-end gap-2 pt-4">
-            <NButton type="default" @click="handleClose">Cancel</NButton>
+            <NButton type="default" @click="handleClose">{{ $t('argon.cancel') }}</NButton>
             <NButton type="primary" attr-type="submit" form="create-event-form" :loading="form.processing">
-                Create Event
+                {{ $t('event.form.create') }}
             </NButton>
         </DialogFooter>
     </DialogContent>

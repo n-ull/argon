@@ -43,4 +43,10 @@ return [
     'not_in_pending_state' => 'El pedido no está en estado pendiente',
     'order_unavailable' => 'El pedido no está disponible',
     'order_unavailable.description' => 'Este pedido ha expirado o ha sido cancelado.',
+    'status' => [
+        'completed' => 'Completed',
+        'pending' => 'Pending',
+        'cancelled' => 'Cancelled',
+        'expired' => 'Expired',
+    ]
 ];

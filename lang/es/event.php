@@ -25,4 +25,26 @@ return [
     'end_date' => 'Fecha de finalización',
     'actions' => 'Acciones',
     'combos' => 'Lotes',
+    'event' => 'Evento',
+    'form' => [
+        'title' => 'Título del evento',
+        'description' => 'Descripción del evento',
+        'title_placeholder' => 'El titulo de mi evento',
+        'description_placeholder' => 'La descripción de mi evento, line-up, información, etc...',
+        'start_date' => 'Fecha de inicio',
+        'start_date_placeholder' => 'Selecciona la fecha de inicio',
+        'end_date' => 'Fecha de finalización',
+        'end_date_placeholder' => 'Selecciona la fecha de finalización',
+        'location' => 'Ubicación',
+        'create' => 'Crear',
+        'update' => 'Actualizar',
+    ],
+    'statuses' => [
+        'draft' => 'Borrador',
+        'published' => 'Publicado',
+        'archived' => 'Archivado',
+        'ended' => 'Finalizado',
+        'cancelled' => 'Cancelado',
+        'deleted' => 'Eliminado',
+    ]
 ];

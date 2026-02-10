@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import Button from '@/components/ui/button/Button.vue';
 import { useDialog } from '@/composables/useDialog';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     title?: string;
@@ -20,8 +21,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    confirmText: 'Confirm',
-    cancelText: 'Cancel',
+    confirmText: t('argon.confirm'),
+    cancelText: t('argon.cancel'),
     showCancel: true,
 });
 
