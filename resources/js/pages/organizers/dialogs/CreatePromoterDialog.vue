@@ -48,16 +48,15 @@ const submit = () => {
 
         <form action="" class="flex flex-col gap-4">
             <div class="flex flex-col gap-2">
-                <NInput placeholder="Email" v-model:value="form.email" />
+                <NInput :placeholder="$t('argon.email')" v-model:value="form.email" />
                 <span v-if="form.errors.email" class="text-red-500 text-xs">{{ form.errors.email }}</span>
-                <span class="text-xs text-gray-400">We will send an email to the promoter to confirm their
-                    participation.</span>
+                <span class="text-xs text-gray-400">{{ $t('promoter.dialogs.invite_promoter.invitation_description') }}</span>
             </div>
 
             <div class="flex flex-col gap-2">
                 <NRadioGroup v-model:value="commissionType" @update:value="form.commission_type = $event">
-                    <NRadio value="percentage">Percentage</NRadio>
-                    <NRadio value="fixed">Fixed</NRadio>
+                    <NRadio value="percentage">{{ $t('argon.percentage') }}</NRadio>
+                    <NRadio value="fixed">{{ $t('argon.fixed') }}</NRadio>
                 </NRadioGroup>
 
                 <NInputNumber placeholder="Commission" v-model:value="form.commission_value" :show-button="false">
@@ -69,14 +68,18 @@ const submit = () => {
 
                 <span v-if="form.errors.commission_value" class="text-red-500 text-xs">{{ form.errors.commission_value
                 }}</span>
-                <span class="text-xs text-gray-400">Commission for the promoter</span>
+                <span class="text-xs text-gray-400">{{ $t('promoter.dialogs.invite_promoter.commission_description') }}</span>
 
                 <div v-if="commissionType === 'fixed'" class="text-xs text-gray-400">
-                    Fixed commission is applied to the total amount of tickets sold by the promoter.
+                    {{ $t('promoter.dialogs.invite_promoter.fixed_description') }}
                 </div>
 
                 <div v-else class="text-xs text-gray-400">
-                    Percentage commission is applied to the total amount of tickets sold by the promoter.
+                    {{ $t('promoter.dialogs.invite_promoter.percentage_description') }}
+                </div>
+
+                <div class="text-xs text-moovin-lila">
+                    {{$t('promoter.dialogs.invite_promoter.warning')}}
                 </div>
             </div>
         </form>

@@ -52,47 +52,55 @@ watch(() => page.props.flash?.message, (message) => {
     }
 }, { deep: true });
 
-const mainNavItems: NavItem[] = [
-    {
-        title: t('argon.dashboard'),
-        href: show({
-            organizer: props.organizer.id,
-        }),
-        icon: LayoutGrid,
-    },
-    {
-        title: t('argon.events'),
-        href: events(props.organizer.id),
-        icon: Calendar,
-    },
-    {
-        title: t('argon.cooperators'),
-        href: cooperators(props.organizer.id),
-        icon: UsersRound,
-    },
-    {
-        title: t('argon.promoters'),
-        href: promoters(props.organizer.id),
-        icon: Megaphone,
-    },
-    ...(userIsOwner.value
-        ? [
-            {
-                title: t('argon.settings'),
-                href: settings(props.organizer.id),
-                icon: Settings,
-            },
-        ]
-        : []),
-];
+const mainNavItems = computed<NavItem[]>(() => {
+    // Add locale as dependency to trigger re-computation
+    const _ = page.props.locale;
+    return [
+        {
+            title: t('argon.dashboard'),
+            href: show({
+                organizer: props.organizer.id,
+            }),
+            icon: LayoutGrid,
+        },
+        {
+            title: t('argon.events'),
+            href: events(props.organizer.id),
+            icon: Calendar,
+        },
+        {
+            title: t('argon.cooperators'),
+            href: cooperators(props.organizer.id),
+            icon: UsersRound,
+        },
+        {
+            title: t('argon.promoters'),
+            href: promoters(props.organizer.id),
+            icon: Megaphone,
+        },
+        ...(userIsOwner.value
+            ? [
+                {
+                    title: t('argon.settings'),
+                    href: settings(props.organizer.id),
+                    icon: Settings,
+                },
+            ]
+            : []),
+    ];
+});
 
-const footerNavItems: NavItem[] = [
-    {
-        title: t('argon.how_to_make_an_event'),
-        icon: LucideMessageCircleQuestion,
-        href: '#',
-    }
-];
+const footerNavItems = computed<NavItem[]>(() => {
+    // Add locale as dependency to trigger re-computation
+    const _ = page.props.locale;
+    return [
+        {
+            title: t('argon.how_to_make_an_event'),
+            icon: LucideMessageCircleQuestion,
+            href: '#',
+        }
+    ];
+});
 
 const dark: GlobalTheme = darkTheme;
 

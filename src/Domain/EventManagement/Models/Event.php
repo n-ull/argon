@@ -107,7 +107,7 @@ class Event extends Model
     {
         return [
             'completed_orders_count' => $this->orders()->where('status', OrderStatus::COMPLETED)->count(),
-            'total_revenue' => $this->orders()->where('status', OrderStatus::COMPLETED)->sum('subtotal'),
+            'total_revenue' => (float) $this->orders()->where('status', OrderStatus::COMPLETED)->sum('subtotal'),
             'unique_visitors' => $this->statistics->unique_visitors,
             'products_sold_count' => OrderItem::whereHas('order', function ($query) {
                 $query->where('event_id', $this->id)
@@ -165,7 +165,7 @@ class Event extends Model
     {
         return $this->tickets()->where('is_courtesy', true);
     }
-
+    
     public function taxesAndFees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(TaxAndFee::class, 'event_tax_and_fee')

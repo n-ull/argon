@@ -16,7 +16,6 @@ import { toast } from 'vue-sonner';
 interface Props {
     event: Event;
 }
-
 const { event } = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -80,8 +79,10 @@ const publishEvent = () => {
                     :info="event.widget_stats!.completed_orders_count.toString()" />
                 <InfoWidget title="Unique Visitors" :icon="Eye"
                     :info="event.widget_stats!.unique_visitors.toString()" />
-                <InfoWidget title="Total Revenue" :icon="DollarSign"
-                    :info="'$ ' + event.widget_stats!.total_revenue.toString()" />
+                <InfoWidget title="Total Revenue" :icon="DollarSign" :info="'$ ' + event.widget_stats!.total_revenue.toLocaleString('es-AR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })" />
                 <InfoWidget title="Generated Tickets" :icon="Ticket"
                     :info="event.widget_stats!.generated_tickets_count.toString()" />
                 <InfoWidget title="Courtesy Tickets" :icon="Gift"

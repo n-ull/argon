@@ -100,8 +100,9 @@ const items = computed<NavItem[]>(() => {
                         <div>
                             <h3 class="text-lg font-semibold text-white">Enlaces</h3>
                             <ul class="mt-4 space-y-2">
-                                <li><a href="#" class="text-gray-400 hover:text-white">Inicio</a></li>
+                                <li><a href="/" class="text-gray-400 hover:text-white">Inicio</a></li>
                                 <li><a href="/events" class="text-gray-400 hover:text-white">Eventos</a></li>
+                                <li><a href="/dashboard" class="text-gray-400 hover:text-white">Soy Productor</a></li>
                             </ul>
                         </div>
                         <div>

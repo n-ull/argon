@@ -9,7 +9,7 @@ import type { GlobalTheme } from 'naive-ui'
 import { Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css'
 import { usePage } from '@inertiajs/vue3';
-import { watch } from 'vue';
+import { watch, computed } from 'vue';
 import { toast } from 'vue-sonner';
 import { trans as t } from 'laravel-vue-i18n';
 
@@ -48,82 +48,90 @@ const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
 
-const mainNavItems: NavItem[] = [
-    {
-        title: t('argon.dashboard'),
-        href: dashboard(props.event.id),
-        icon: LayoutGrid,
-        group: t('argon.general'),
-    },
-    {
-        title: t('argon.analytics'),
-        href: analytics(props.event.id).url,
-        icon: ChartLine,
-        group: t('argon.general'),
-    },
-    {
-        title: t('argon.settings'),
-        href: settings(props.event.id).url,
-        icon: Settings,
-        group: t('argon.manage'),
-    },
-    {
-        title: t('argon.products_and_tickets'),
-        href: products(props.event.id).url,
-        icon: Tickets,
-        group: t('argon.manage'),
-    },
-    {
-        title: t('argon.orders'),
-        href: orders(props.event.id).url,
-        icon: BookA,
-        group: t('argon.clients'),
-    },
-    {
-        title: t('argon.attendees'),
-        href: attendees(props.event.id).url,
-        icon: Users,
-        group: t('argon.clients'),
-    },
-    {
-        title: t('argon.doormen'),
-        href: doormen(props.event.id).url,
-        icon: ShieldAlert,
-        group: t('argon.manage'),
-    },
-    {
-        title: t('argon.vouchers'),
-        href: vouchers(props.event.id).url,
-        icon: DiamondPercent,
-        group: t('argon.manage'),
-    },
-    {
-        title: t('argon.courtesies'),
-        href: courtesies(props.event.id).url,
-        icon: Gift,
-        group: t('argon.manage'),
-    },
-    {
-        title: t('argon.messages'),
-        href: '#',
-        icon: MessageSquareHeart,
-        group: t('argon.clients'),
-    },
-    {
-        title: t('argon.questions'),
-        href: '#',
-        icon: LucideMessageCircleQuestion,
-        group: t('argon.manage'),
-    }
-];
+const mainNavItems = computed<NavItem[]>(() => {
+    // Add locale as dependency to trigger re-computation
+    const _ = page.props.locale;
+    return [
+        {
+            title: t('argon.dashboard'),
+            href: dashboard(props.event.id),
+            icon: LayoutGrid,
+            group: t('argon.general'),
+        },
+        {
+            title: t('argon.analytics'),
+            href: analytics(props.event.id).url,
+            icon: ChartLine,
+            group: t('argon.general'),
+        },
+        {
+            title: t('argon.settings'),
+            href: settings(props.event.id).url,
+            icon: Settings,
+            group: t('argon.manage'),
+        },
+        {
+            title: t('argon.products_and_tickets'),
+            href: products(props.event.id).url,
+            icon: Tickets,
+            group: t('argon.manage'),
+        },
+        {
+            title: t('argon.orders'),
+            href: orders(props.event.id).url,
+            icon: BookA,
+            group: t('argon.clients'),
+        },
+        {
+            title: t('argon.attendees'),
+            href: attendees(props.event.id).url,
+            icon: Users,
+            group: t('argon.clients'),
+        },
+        {
+            title: t('argon.doormen'),
+            href: doormen(props.event.id).url,
+            icon: ShieldAlert,
+            group: t('argon.manage'),
+        },
+        {
+            title: t('argon.vouchers'),
+            href: vouchers(props.event.id).url,
+            icon: DiamondPercent,
+            group: t('argon.manage'),
+        },
+        {
+            title: t('argon.courtesies'),
+            href: courtesies(props.event.id).url,
+            icon: Gift,
+            group: t('argon.manage'),
+        },
+        {
+            title: t('argon.messages'),
+            href: '#',
+            icon: MessageSquareHeart,
+            group: t('argon.clients'),
+        },
+        {
+            title: t('argon.questions'),
+            href: '#',
+            icon: LucideMessageCircleQuestion,
+            group: t('argon.manage'),
+        }
+    ];
+});
 
-const footerNavItems: NavItem[] = [
-    {
-        title: t('argon.how_to_make_an_event'),
-        icon: LucideMessageCircleQuestion,
-        href: '#',
-    }
-];
+const footerNavItems = computed<NavItem[]>(() => {
+    // Add locale as dependency to trigger re-computation
+    const _ = page.props.locale;
+    return [
+        {
+            title: t('argon.how_to_make_an_event'),
+            icon: LucideMessageCircleQuestion,
+            href: '#',
+        }
+    ];
+});
 
 const dark: GlobalTheme = darkTheme;
 

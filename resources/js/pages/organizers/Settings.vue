@@ -39,6 +39,7 @@ import {
     Pencil as EditIcon,
     Trash2 as DeleteIcon,
 } from 'lucide-vue-next';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface TaxAndFee {
     id: number;
@@ -76,16 +77,16 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const breadcrumbItems: BreadcrumbItem[] = [
+const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     {
         title: props.organizer.name,
         href: `/manage/organizer/${props.organizer.id}`,
     },
     {
-        title: 'Settings',
+        title: t('argon.settings'),
         href: settings(props.organizer.id).url,
     }
-];
+]);
 
 // Consolidated Form
 const form = useForm({
@@ -108,19 +109,18 @@ const submit = () => {
     });
 };
 
-// Mock state for MercadoPago linkage
 const isMercadoPagoVinculated = computed(() => !!props.organizer.owner?.mercado_pago_account);
-// const vinculateUrl = computed(() => `/manage/organizer/${props.organizer.id}/mercadopago/vinculate`);
 const isLinking = ref(false);
 
+// todo: this shouldn't be here, it should be in the mercado pago module
 const handleLinkAccount = async () => {
     window.location.href = "https://auth.mercadopago.com/authorization?client_id=3662159661325622&redirect_uri=https%3A%2F%2Fmoovin.ar%2Fmercado-pago%2Fcallback&response_type=code&platform_id=mp";
 };
 
-const raiseMoneyOptions = [
-    { label: 'Internal (Recaudación Interna)', value: 'internal' },
-    { label: 'Split (MercadoPago Split)', value: 'split' },
-];
+const raiseMoneyOptions = computed(() => [
+    { label: t('organizer.settings.raise_methods.internal'), value: 'internal' },
+    { label: t('organizer.settings.raise_methods.split'), value: 'split' },
+]);
 
 const activeTab = ref('general');
 
@@ -194,36 +194,36 @@ const deleteTax = (tax: TaxAndFee) => {
     <OrganizerLayout :organizer="props.organizer" :breadcrumbs="breadcrumbItems">
         <div class="max-w-4xl m-4">
             <div class="mb-6">
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Organizer Settings</h1>
-                <p class="text-gray-500 text-sm">Manage your organizer profile and payment configurations.</p>
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">{{ t('organizer.settings.title') }}</h1>
+                <p class="text-gray-500 text-sm">{{ t('organizer.settings.description') }}</p>
             </div>
 
             <n-card>
                 <n-tabs type="line" animated :value="activeTab" @update:value="updateTabUrl">
                     <!-- Basic Info Tab -->
-                    <n-tab-pane name="general" tab="General Info">
+                    <n-tab-pane name="general" :tab="t('organizer.settings.tabs.general')">
                         <n-form ref="generalFormRef" :model="form" label-placement="top" class="mt-4">
                             <n-grid :x-gap="24" :y-gap="24" cols="1 s:1 m:2">
                                 <n-grid-item>
-                                    <n-form-item label="Name" path="name">
-                                        <n-input v-model:value="form.name" placeholder="Organizer Name" />
+                                    <n-form-item :label="t('argon.name')" path="name">
+                                        <n-input v-model:value="form.name" :placeholder="t('argon.name')" />
                                     </n-form-item>
                                 </n-grid-item>
                                 <n-grid-item>
-                                    <n-form-item label="Email" path="email">
-                                        <n-input v-model:value="form.email" placeholder="contact@example.com" />
+                                    <n-form-item :label="t('argon.email')" path="email">
+                                        <n-input v-model:value="form.email" :placeholder="t('argon.email')" />
                                     </n-form-item>
                                 </n-grid-item>
                                 <n-grid-item>
-                                    <n-form-item label="Phone" path="phone">
-                                        <n-input v-model:value="form.phone" placeholder="+54 9 11 ..." />
+                                    <n-form-item :label="t('argon.phone')" path="phone">
+                                        <n-input v-model:value="form.phone" :placeholder="t('argon.phone')" />
                                     </n-form-item>
                                 </n-grid-item>
                                 <n-grid-item>
-                                    <n-form-item label="Logo">
+                                    <n-form-item :label="t('argon.logo')">
                                         <n-upload list-type="image-card" :max="1" :default-file-list="props.organizer.logo ? [{
                                             id: 'logo',
-                                            name: 'Logo',
+                                            name: t('argon.logo'),
                                             status: 'finished',
                                             url: props.organizer.logo ? `/storage/${props.organizer.logo}` : ''
                                         }] : []" @change="(options) => {
@@ -235,7 +235,7 @@ const deleteTax = (tax: TaxAndFee) => {
                                         }">
                                             <div class="flex flex-col items-center justify-center gap-2">
                                                 <n-icon size="24" :component="ImageIcon" />
-                                                <span class="text-xs">Upload Logo</span>
+                                                <span class="text-xs">{{ t('argon.upload_logo') }}</span>
                                             </div>
                                         </n-upload>
                                     </n-form-item>
@@ -244,17 +244,15 @@ const deleteTax = (tax: TaxAndFee) => {
 
                             <div class="flex justify-end mt-6">
                                 <n-button type="primary" :loading="form.processing" @click="submit">
-                                    Save General Info
+                                    {{ t('organizer.settings.save') }}
                                 </n-button>
                             </div>
                         </n-form>
                     </n-tab-pane>
 
                     <!-- Payment Settings Tab -->
-                    <n-tab-pane name="payment" tab="Payments">
+                    <n-tab-pane name="payment" :tab="t('organizer.settings.tabs.payment_methods')">
                         <div class="space-y-8 mt-4">
-
-                            <!-- Service Fee Visualization (Placeholder) -->
                             <div
                                 class="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-lg border border-primary-100 dark:border-primary-800">
                                 <div class="flex items-center gap-4">
@@ -263,9 +261,10 @@ const deleteTax = (tax: TaxAndFee) => {
                                         <n-icon size="24" :component="WalletIcon" />
                                     </div>
                                     <div>
-                                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Current Service
-                                            Fee</h3>
-                                        <p class="text-sm text-gray-500">The fee applied to each ticket sale.</p>
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{
+                                            t('organizer.settings.current_service_fee') }}</h3>
+                                        <p class="text-sm text-gray-500">{{
+                                            t('organizer.settings.current_service_fee_description') }}</p>
                                     </div>
                                     <div class="ml-auto">
                                         <n-statistic label="" :value="props.organizer.settings?.service_fee">
@@ -278,12 +277,16 @@ const deleteTax = (tax: TaxAndFee) => {
                             <n-form :model="form" label-placement="top">
                                 <!-- Payment Methods Switches -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <n-card title="Payment Providers" size="small" embedded :bordered="false">
+                                    <n-card :title="t('organizer.settings.payment_providers')" size="small" embedded
+                                        :bordered="false">
+                                        <p class="text-sm text-gray-500 mb-4">{{
+                                            t('organizer.settings.payment_providers_description') }}</p>
                                         <div class="space-y-6 pt-2">
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <span class="text-base font-medium">MercadoPago</span>
-                                                    <p class="text-xs text-gray-500">Enable payments via MP</p>
+                                                    <p class="text-xs text-gray-500">{{
+                                                        t('organizer.settings.enable_payments_via_mp') }}</p>
                                                 </div>
                                                 <n-switch v-model:value="form.is_mercadopago_active" />
                                             </div>
@@ -291,7 +294,8 @@ const deleteTax = (tax: TaxAndFee) => {
                                                 class="flex items-center justify-between opacity-40 cursor-not-allowed">
                                                 <div>
                                                     <span class="text-base font-medium">MODO</span>
-                                                    <p class="text-xs text-gray-500">Enable payments via MODO</p>
+                                                    <p class="text-xs text-gray-500">{{
+                                                        t('organizer.settings.enable_payments_via_modo') }}</p>
                                                 </div>
                                                 <n-switch disabled v-model:value="form.is_modo_active" />
                                             </div>
@@ -299,8 +303,9 @@ const deleteTax = (tax: TaxAndFee) => {
                                     </n-card>
 
                                     <!-- Raise Money Configuration -->
-                                    <n-card title="Collection Method" size="small" embedded :bordered="false">
-                                        <n-form-item label="How do you want to collect funds?">
+                                    <n-card :title="t('organizer.settings.raise_method')" size="small" embedded
+                                        :bordered="false">
+                                        <n-form-item :label="t('organizer.settings.how_do_you_want_to_collect_funds')">
                                             <n-select v-model:value="form.raise_money_method"
                                                 :options="raiseMoneyOptions" />
                                         </n-form-item>
@@ -309,10 +314,13 @@ const deleteTax = (tax: TaxAndFee) => {
                                         <div class="mt-4">
                                             <!-- Internal -> CBU -->
                                             <div v-if="form.raise_money_method === 'internal'">
-                                                <n-form-item label="CBU / CVU for Auto-Transfer">
+                                                <n-form-item :label="t('organizer.settings.cbu_cvu_for_auto_transfer')">
                                                     <n-input v-model:value="form.raise_money_account"
                                                         placeholder="0000000000000000000000" />
                                                 </n-form-item>
+                                                <p class="text-xs text-gray-500">{{
+                                                    t('organizer.settings.cbu_cvu_for_auto_transfer_description') }}
+                                                </p>
                                             </div>
 
                                             <!-- Split -> Linked Account -->
@@ -325,27 +333,30 @@ const deleteTax = (tax: TaxAndFee) => {
                                                                 :color="isMercadoPagoVinculated ? '#18a058' : '#f0a020'"
                                                                 :component="isMercadoPagoVinculated ? ConnectedIcon : DisconnectedIcon" />
                                                             <div class="flex flex-col">
-                                                                <span class="font-medium">MercadoPago Account</span>
+                                                                <span class="font-medium">{{
+                                                                    t('organizer.settings.mercadopago_account')
+                                                                    }}</span>
                                                                 <span class="text-xs"
                                                                     :class="isMercadoPagoVinculated ? 'text-green-600' : 'text-orange-600'">
-                                                                    {{ isMercadoPagoVinculated ? "Connected" :
-                                                                        "Not Connected" }}
+                                                                    {{ isMercadoPagoVinculated ?
+                                                                        t('organizer.settings.mercadopago_account_linked')
+                                                                    :
+                                                                    t('organizer.settings.mercadopago_account_not_linked')
+                                                                    }}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         <n-button v-if="!isMercadoPagoVinculated" size="small"
                                                             type="info" secondary :loading="isLinking"
                                                             @click="handleLinkAccount">
-                                                            Link Account
+                                                            {{ t('organizer.settings.link_account_button') }}
                                                         </n-button>
                                                         <n-button v-else size="small" type="error" secondary>
-                                                            Unlink
+                                                            {{ t('organizer.settings.unlink_account_button') }}
                                                         </n-button>
                                                     </div>
                                                     <n-alert type="info" :show-icon="false" class="text-xs">
-                                                        Note: With Split payments, funds are automatically distributed
-                                                        to your connected MercadoPago
-                                                        account.
+                                                        {{ t('organizer.settings.split_note') }}
                                                     </n-alert>
                                                 </div>
                                             </div>
@@ -355,20 +366,20 @@ const deleteTax = (tax: TaxAndFee) => {
 
                                 <div class="flex justify-end mt-8">
                                     <n-button type="primary" :loading="form.processing" @click="submit">
-                                        Save Payment Settings
+                                        {{ t('organizer.settings.save') }}
                                     </n-button>
                                 </div>
                             </n-form>
                         </div>
                     </n-tab-pane>
 
-                    <n-tab-pane name="taxesandfees" tab="Taxes and Fees">
+                    <n-tab-pane name="taxesandfees" :tab="t('organizer.settings.tabs.taxes_and_fees')">
                         <div class="flex justify-end mb-4">
                             <n-button type="primary" @click="openCreateTaxModal">
                                 <template #icon>
                                     <n-icon :component="PlusIcon" />
                                 </template>
-                                Add Tax/Fee
+                                {{ t('organizer.settings.add_tax_fee') }}
                             </n-button>
                         </div>
 
@@ -381,8 +392,8 @@ const deleteTax = (tax: TaxAndFee) => {
                                                 <n-icon :component="EditIcon" />
                                             </template>
                                         </n-button>
-                                        <n-popconfirm @positive-click="deleteTax(item)" negative-text="Cancel"
-                                            positive-text="Delete">
+                                        <n-popconfirm @positive-click="deleteTax(item)"
+                                            :negative-text="t('argon.cancel')" :positive-text="t('argon.delete')">
                                             <template #trigger>
                                                 <n-button size="small" type="error" secondary>
                                                     <template #icon>
@@ -390,7 +401,7 @@ const deleteTax = (tax: TaxAndFee) => {
                                                     </template>
                                                 </n-button>
                                             </template>
-                                            Are you sure you want to delete this item?
+                                            {{ t('organizer.settings.delete_tax_fee_confirm') }}
                                         </n-popconfirm>
                                     </div>
                                 </template>
@@ -399,25 +410,27 @@ const deleteTax = (tax: TaxAndFee) => {
                                         {{ item.name }}
                                         <n-tag size="small" :type="item.type === 'tax' ? 'error' : 'warning'"
                                             class="ml-2">
-                                            {{ item.type.toUpperCase() }}
+                                            {{ t('organizer.settings.' + item.type) }}
                                         </n-tag>
                                         <n-tag size="small" :type="item.is_active ? 'success' : 'default'" class="ml-2"
                                             :bordered="false">
-                                            {{ item.is_active ? 'Active' : 'Inactive' }}
+                                            {{ item.is_active ? t('argon.active') : t('argon.inactive') }}
                                         </n-tag>
                                         <n-tag size="small" type="info" class="ml-2" v-if="item.is_default"
                                             :bordered="false">
-                                            Default
+                                            {{ t('argon.default') }}
                                         </n-tag>
                                     </template>
                                     <template #description>
                                         <div class="flex gap-4 text-xs text-gray-500">
                                             <span>
-                                                Value: {{ item.value }}{{ item.calculation_type === 'percentage' ? '%' :
-                                                    '' }}
+                                                {{ t('organizer.settings.value') }}: {{ item.value }}{{
+                                                    item.calculation_type === 'percentage' ? '%' :
+                                                '' }}
                                             </span>
                                             <span>
-                                                Mode: {{ item.display_mode }}
+                                                {{ t('organizer.settings.mode') }}: {{ t('organizer.settings.' +
+                                                item.display_mode) }}
                                             </span>
                                         </div>
                                     </template>
@@ -425,7 +438,7 @@ const deleteTax = (tax: TaxAndFee) => {
                             </n-list-item>
                             <div v-if="props.organizer.taxes_and_fees.length === 0"
                                 class="p-4 text-center text-gray-500">
-                                No taxes or fees configured.
+                                {{ t('organizer.settings.no_taxes_or_fees_configured') }}
                             </div>
                         </n-list>
 
@@ -435,55 +448,61 @@ const deleteTax = (tax: TaxAndFee) => {
                                 <n-form label-placement="top">
                                     <n-grid :x-gap="24" :y-gap="24" cols="1 s:1 m:2">
                                         <n-grid-item>
-                                            <n-form-item label="Name">
+                                            <n-form-item :label="t('argon.name')">
                                                 <n-input v-model:value="taxForm.name"
-                                                    placeholder="e.g. VAT, Service Charge" />
+                                                    :placeholder="t('organizer.settings.tax_name_placeholder')" />
                                             </n-form-item>
                                         </n-grid-item>
                                         <n-grid-item>
-                                            <n-form-item label="Type">
+                                            <n-form-item :label="t('argon.type')">
                                                 <n-radio-group v-model:value="taxForm.type" name="type">
-                                                    <n-radio-button value="tax" label="Tax" />
-                                                    <n-radio-button value="fee" label="Fee" />
+                                                    <n-radio-button value="tax" :label="t('organizer.settings.tax')" />
+                                                    <n-radio-button value="fee" :label="t('organizer.settings.fee')" />
                                                 </n-radio-group>
                                             </n-form-item>
                                         </n-grid-item>
                                         <n-grid-item>
-                                            <n-form-item label="Calculation">
+                                            <n-form-item :label="t('organizer.settings.calculation')">
                                                 <n-radio-group v-model:value="taxForm.calculation_type" name="calc">
-                                                    <n-radio-button value="percentage" label="Percentage (%)" />
-                                                    <n-radio-button value="fixed" label="Fixed Amount" />
+                                                    <n-radio-button value="percentage"
+                                                        :label="t('organizer.settings.percentage')" />
+                                                    <n-radio-button value="fixed"
+                                                        :label="t('organizer.settings.fixed')" />
                                                 </n-radio-group>
                                             </n-form-item>
                                         </n-grid-item>
                                         <n-grid-item>
-                                            <n-form-item label="Value">
+                                            <n-form-item :label="t('organizer.settings.value')">
                                                 <n-input-number v-model:value="taxForm.value" :min="0"
                                                     button-placement="both" />
                                             </n-form-item>
                                         </n-grid-item>
                                         <n-grid-item>
-                                            <n-form-item label="Display Mode">
+                                            <n-form-item :label="t('organizer.settings.display_mode')">
                                                 <n-select v-model:value="taxForm.display_mode" :options="[
-                                                    { label: 'Separated (Shown as separate line item)', value: 'separated' },
-                                                    { label: 'Integrated (Included in price)', value: 'integrated' }
+                                                    { label: t('organizer.settings.separated_description'), value: 'separated' },
+                                                    { label: t('organizer.settings.integrated_description'), value: 'integrated' }
                                                 ]" />
                                             </n-form-item>
                                         </n-grid-item>
                                         <n-grid-item>
                                             <div class="flex gap-4">
-                                                <n-form-item label="Status">
+                                                <n-form-item :label="t('argon.status')">
                                                     <n-switch v-model:value="taxForm.is_active">
-                                                        <template #checked>Active</template>
-                                                        <template #unchecked>Inactive</template>
+                                                        <template #checked>{{ $t('argon.active') }}</template>
+                                                        <template #unchecked>{{ $t('argon.inactive') }}</template>
                                                     </n-switch>
                                                 </n-form-item>
-                                                <n-form-item label="Default">
+                                                <n-form-item :label="t('argon.default')">
                                                     <n-switch v-model:value="taxForm.is_default">
-                                                        <template #checked>Yes</template>
-                                                        <template #unchecked>No</template>
+                                                        <template #checked>{{ $t('argon.yes') }}</template>
+                                                        <template #unchecked>{{ $t('argon.no') }}</template>
                                                     </n-switch>
                                                 </n-form-item>
+                                            </div>
+
+                                            <div class="text-sm text-moovin-lila" v-if="taxForm.is_default">
+                                                <p>{{ $t('organizer.settings.default_tax_note') }}</p>
                                             </div>
                                         </n-grid-item>
                                     </n-grid>

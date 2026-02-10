@@ -167,7 +167,6 @@ const openCreateEventDialog = () => {
                     <h1 class="text-3xl font-bold tracking-tight">{{ t('organizer.events_title') }}</h1>
                     <p class="text-gray-500 mt-1">{{ t('organizer.events_description') }}</p>
                 </div>
-                <!-- TODO: Link to create event page -->
                 <NButton type="primary" size="large" @click="openCreateEventDialog">
                     <template #icon>
                         <NIcon>
@@ -204,7 +203,7 @@ const openCreateEventDialog = () => {
             </div>
 
             <div
-                class="bg-white dark:bg-neutral-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                class="bg-neutral-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
                 <NDataTable :columns="columns" :data="events.data" :pagination="false" :bordered="false" striped
                     class="rounded-lg overflow-hidden" />
 
