@@ -6,9 +6,10 @@ import type { BreadcrumbItem, Event, PaginatedResponse, User } from '@/types';
 import { useForm, router } from '@inertiajs/vue3';
 import { NButton, NCard, NDataTable, NDynamicTags, NForm, NFormItem, NSpace, NTag, NIcon, NSwitch, NPopconfirm } from 'naive-ui';
 import { TableColumn } from 'naive-ui/es/data-table/src/interface';
-import { h, ref, watch } from 'vue';
+import { computed, h, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { Trash2, Shield, User as UserIcon } from 'lucide-vue-next';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Doorman {
     id: number;
@@ -25,7 +26,7 @@ interface Props {
 const props = defineProps<Props>();
 const { event } = props;
 
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
         title: event.organizer.name,
         href: show(event.organizer.id).url,
@@ -35,10 +36,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard(event.id).url,
     },
     {
-        title: 'Doormen',
+        title: t('event.manage.doormen.title'),
         href: doormenRootRoute(event.id).url,
     }
-];
+]);
 
 const form = useForm({
     emails: [] as string[],
@@ -92,10 +93,10 @@ const submitAddDoormen = () => {
     form.post(url, {
         onSuccess: () => {
             form.reset();
-            toast.success('Doormen invited successfully');
+            toast.success(t('event.manage.doormen.invited_successfully'));
         },
         onError: () => {
-            toast.error('Failed to add doormen');
+            toast.error(t('event.manage.doormen.failed_to_add'));
         }
     });
 };
@@ -107,10 +108,10 @@ const handleRemoveDoorman = (doorman: Doorman) => {
     router.delete(url, {
         preserveScroll: true,
         onSuccess: () => {
-            toast.success('Doorman removed successfully');
+            toast.success(t('event.manage.doormen.removed_successfully'));
         },
         onError: () => {
-            toast.error('Failed to remove doorman');
+            toast.error(t('event.manage.doormen.failed_to_remove'));
         }
     });
 };
@@ -124,17 +125,17 @@ const handleStatusSwitch = (value: boolean, doorman: Doorman) => {
     }, {
         preserveScroll: true,
         onSuccess: () => {
-            toast.success(`Doorman ${value ? 'enabled' : 'disabled'} successfully`);
+            toast.success(t(`event.manage.doormen.status_${value ? 'enabled' : 'disabled'}`));
         },
         onError: () => {
-            toast.error('Failed to update status');
+            toast.error(t('event.manage.doormen.failed_to_update_status'));
         }
     });
 };
 
 const createColumns = (): TableColumn<Doorman>[] => [
     {
-        title: 'Name',
+        title: t('event.manage.doormen.name'),
         key: 'user.name',
         render(row) {
             return h('div', { class: 'flex items-center gap-3' }, [
@@ -147,7 +148,7 @@ const createColumns = (): TableColumn<Doorman>[] => [
         }
     },
     {
-        title: 'Status',
+        title: t('event.manage.doormen.status'),
         key: 'status',
         render(row) {
             // Optimistic UI update logic would be complex with just props, relying on Inertia reload
@@ -160,7 +161,7 @@ const createColumns = (): TableColumn<Doorman>[] => [
         }
     },
     {
-        title: 'Added At',
+        title: t('event.manage.doormen.added_at'),
         key: 'created_at',
         render(row) {
             const date = row.created_at;
@@ -168,7 +169,7 @@ const createColumns = (): TableColumn<Doorman>[] => [
         }
     },
     {
-        key: 'actions',
+        key: t('event.manage.doormen.actions'),
         width: 60,
         render(row) {
             return h(NPopconfirm, {
@@ -180,7 +181,7 @@ const createColumns = (): TableColumn<Doorman>[] => [
                     quaternary: true,
                     circle: true
                 }, { icon: () => h(Trash2, { size: 16 }) }),
-                default: () => 'Are you sure you want to remove this doorman?'
+                default: () => t('event.manage.doormen.confirm_remove_doormen')
             });
         }
     }
@@ -195,36 +196,38 @@ const columns = createColumns();
         <div class="m-8 space-y-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight">Doormen Management</h1>
-                    <p class="text-muted-foreground">Manage access control personnel for this event.</p>
+                    <h1 class="text-2xl font-bold tracking-tight">{{ t('event.manage.doormen.title') }}</h1>
+                    <p class="text-muted-foreground">{{ t('event.manage.doormen.description') }}</p>
                 </div>
             </div>
 
             <div class="grid gap-6 md:grid-cols-3">
                 <!-- Add Doorman Form -->
                 <div class="md:col-span-1">
-                    <NCard title="Add Doorman" size="medium">
+                    <NCard :title="t('event.manage.doormen.add_doormen')" size="medium">
                         <template #header-extra>
                             <NIcon size="20" class="text-gray-400">
                                 <Shield />
                             </NIcon>
                         </template>
                         <NForm @submit.prevent="submitAddDoormen" class="space-y-4">
-                            <NFormItem label="User Emails"
+                            <NFormItem :label="t('event.manage.doormen.user_emails')"
                                 :validation-status="form.errors.emails || Object.keys(form.errors).some(k => k.startsWith('emails.')) ? 'error' : undefined"
                                 :feedback="form.errors.emails">
                                 <NDynamicTags v-model:value="form.emails" :render-tag="renderTag"
-                                    placeholder="Enter emails..." />
+                                    :placeholder="t('event.manage.doormen.enter_emails')" />
                             </NFormItem>
                             <p class="text-xs text-gray-500 mb-2">
-                                Enter the email addresses of the users you want to add as doormen. They must
-                                systematically existing users.
+                                {{ t('event.manage.doormen.enter_email_addresses') }}
+                            </p>
+                            <p class="text-xs text-gray-500 mb-2">
+                                {{ t('event.manage.doormen.enter_email_addresses_description') }}
                             </p>
 
                             <div class="flex justify-end">
                                 <NButton type="primary" attr-type="submit" :loading="form.processing"
                                     :disabled="form.emails.length === 0">
-                                    Add Doormen
+                                    {{ t('event.manage.doormen.add_doormen') }}
                                 </NButton>
                             </div>
                         </NForm>
@@ -233,10 +236,9 @@ const columns = createColumns();
 
                 <!-- Doormen List -->
                 <div class="md:col-span-2">
-                    <NCard title="Active Doormen" size="medium">
+                    <NCard :title="t('event.manage.doormen.active_doormen')" size="medium">
                         <NDataTable :columns="columns" :data="props.doormen?.data || []" :loading="loading"
                             :row-key="(row: any) => row.id" />
-                        <!-- Simple pagination if needed, relying on NDataTable logic or custom pagination component if provided -->
                     </NCard>
                 </div>
             </div>
