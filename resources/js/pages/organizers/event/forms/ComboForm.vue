@@ -11,6 +11,7 @@ import { NInput, NSelect, NButton, NInputNumber, NSwitch, NIcon, NCard } from 'n
 import { useForm } from '@inertiajs/vue3';
 import { TrashIcon, PlusIcon } from 'lucide-vue-next';
 import combos from '@/routes/manage/event/combos';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface FormItem {
     product_id: number | null;
@@ -27,8 +28,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    title: 'Create Combo',
-    description: 'Create a new combo',
+    title: t('event.manage.forms.combos.create'),
+    description: t('event.manage.forms.combos.create_description'),
 });
 
 const emit = defineEmits(['close']);
@@ -99,20 +100,20 @@ const handleClose = () => {
 
                 <!-- Basic Info -->
                 <div>
-                    <label for="name" class="required block mb-1">Name</label>
-                    <NInput v-model:value="form.name" placeholder="Combo Name" />
+                    <label for="name" class="required block mb-1">{{$t('event.manage.forms.combos.name')}}</label>
+                    <NInput v-model:value="form.name" :placeholder="t('event.manage.forms.combos.name_placeholder')" />
                     <p v-if="form.errors.name" class="text-red-500 text-sm mt-1">{{ form.errors.name }}</p>
                 </div>
 
                 <div>
-                    <label for="description" class="block mb-1">Description</label>
-                    <NInput type="textarea" v-model:value="form.description" placeholder="Combo Description" />
+                    <label for="description" class="block mb-1">{{$t('event.manage.forms.combos.description')}}</label>
+                    <NInput type="textarea" v-model:value="form.description" :placeholder="t('event.manage.forms.combos.description_placeholder')" />
                     <p v-if="form.errors.description" class="text-red-500 text-sm mt-1">{{ form.errors.description }}
                     </p>
                 </div>
 
                 <div>
-                    <label class="required block mb-1">Price</label>
+                    <label class="required block mb-1">{{$t('event.manage.forms.combos.price')}}</label>
                     <NInputNumber v-model:value="form.price" :min="0" :show-button="false">
                         <template #prefix>$</template>
                     </NInputNumber>
@@ -120,21 +121,21 @@ const handleClose = () => {
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <label class="block">Active</label>
+                    <label class="block">{{$t('event.manage.forms.combos.active')}}</label>
                     <NSwitch v-model:value="form.is_active" />
                 </div>
 
                 <!-- Combo Items -->
                 <div class="space-y-4 mt-4">
                     <div class="flex justify-between items-center">
-                        <label class="block font-medium">Combo Items</label>
+                        <label class="block font-medium">{{$t('event.manage.forms.combos.add_product')}}</label>
                         <NButton size="small" @click="addItem">
                             <template #icon>
                                 <NIcon>
                                     <PlusIcon />
                                 </NIcon>
                             </template>
-                            Add Item
+                            {{$t('event.manage.forms.combos.add_product')}}
                         </NButton>
                     </div>
 
@@ -142,12 +143,12 @@ const handleClose = () => {
                         <NCard v-for="(item, index) in form.items" :key="index" size="small" class="bg-gray-50">
                             <div class="grid grid-cols-12 gap-3 items-end">
                                 <div class="col-span-8">
-                                    <label class="block text-xs mb-1">Product</label>
+                                    <label class="block text-xs mb-1">{{$t('event.manage.forms.combos.add_product')}}</label>
                                     <NSelect v-model:value="item.product_id" :options="productOptions" filterable
-                                        placeholder="Select Product" />
+                                        :placeholder="t('event.manage.forms.combos.add_product_placeholder')" />
                                 </div>
                                 <div class="col-span-3">
-                                    <label class="block text-xs mb-1">Quantity</label>
+                                    <label class="block text-xs mb-1">{{$t('event.manage.forms.combos.quantity')}}</label>
                                     <NInputNumber v-model:value="item.quantity" :min="1" />
                                 </div>
                                 <div class="col-span-1 flex justify-end">
@@ -163,7 +164,7 @@ const handleClose = () => {
                         </NCard>
                         <div v-if="form.items.length === 0"
                             class="text-center text-gray-500 py-4 border border-dashed rounded">
-                            No items added to this combo yet.
+                            {{$t('event.manage.forms.combos.no_products_added')}}
                         </div>
                     </div>
                 </div>
@@ -173,7 +174,7 @@ const handleClose = () => {
             <DialogFooter class="flex justify-end gap-2 pt-4">
                 <NButton type="default" @click="handleClose">Cancel</NButton>
                 <NButton type="primary" attr-type="submit" :loading="form.processing">
-                    {{ combo ? 'Save Changes' : 'Create Combo' }}
+                    {{ combo ? $t('event.manage.forms.combos.save_changes') : $t('event.manage.forms.combos.create_combo') }}
                 </NButton>
             </DialogFooter>
         </form>

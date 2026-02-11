@@ -26,26 +26,21 @@ const taxOptions = availableTaxes.map(tax => ({
 
 <template>
     <div class="space-y-4 border border-neutral-800 bg-neutral-900 p-4 rounded">
-        <h2 class="text-lg font-semibold">Payment</h2>
+        <h2 class="text-lg font-semibold">{{ $t('event.manage.forms.payment.title') }}</h2>
         <hr>
         <div class="space-y-4">
             <div class="text-xs text-neutral-400">
-                <span>To see more options, visit the <a
+                <span>{{ $t('event.manage.forms.payment.to_see_more1') }} <a
                         :href="`/manage/organizer/${event.organizer_id}/settings#payment`"
-                        class="text-moovin-lime underline">organizer
-                        settings</a>, where
-                    you can select the
-                    raising
-                    money method
-                    and vinculate your payment accounts.</span>
+                        class="text-moovin-lime underline">{{ $t('event.manage.forms.payment.to_see_more2') }}</a>,
+                    {{ $t('event.manage.forms.payment.to_see_more3') }}</span>
             </div>
-            <!-- !: check if organizer has a valid MODO and MercadoPago account if he has 'split' as raise money method -->
 
             <div class="space-y-2">
-                <label for="taxesAndFees">Taxes and Fees</label>
-                <p class="text-xs text-neutral-400">Enable taxes and fees</p>
+                <label for="taxesAndFees">{{ $t('event.manage.forms.payment.taxes_and_fees') }}</label>
+                <p class="text-xs text-neutral-400">{{ $t('event.manage.forms.payment.enable_taxes_and_fees') }}</p>
                 <n-select v-model:value="event.taxes_and_fees" :options="taxOptions" filterable multiple
-                    placeholder="Select taxes and fees">
+                    :placeholder="$t('event.manage.forms.payment.select_taxes_placeholder')">
                     <template #arrow>
                         <transition name="slide-left">
                             <LucideBadgeDollarSign />

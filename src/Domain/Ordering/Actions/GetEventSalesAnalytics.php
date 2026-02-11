@@ -33,13 +33,6 @@ class GetEventSalesAnalytics
             default => '%Y-%m-%d',
         };
 
-        // SQLite compatibility check (since local dev might be sqlite)
-        // Ideally should support both mysql and sqlite but for now assuming MySQL/Postgres standard or using raw date functions carefully.
-        // Assuming MySQL for production usually, but let's check what DB driver they use?
-        // Ah, the user didn't specify DB, but assuming standard Laravel usage.
-        // Let's use Carbon to post-process if we want to be safe, OR use DB raw.
-        // Using DB::raw for grouping is more efficient.
-
         $selectDate = match (config('database.default')) {
             'sqlite' => match ($period) {
                     'month' => "strftime('%Y-%m', created_at)",

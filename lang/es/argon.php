@@ -56,4 +56,14 @@ return [
     'calculation' => 'Cálculo',
     'yes' => 'Sí',
     'no' => 'No',
+    'daily' => 'Diario',
+    'weekly' => 'Semanal',
+    'monthly' => 'Mensual',
+    'date' => 'Fecha',
+    'total_sold' => 'Total Vendido',
+    'start_from' => 'Desde',
+    'end_to' => 'Hasta',
+    'confirm' => 'Confirmar',
+    'create_product' => 'Crear Producto',
+    'save_changes' => 'Guardar Cambios'
 ];

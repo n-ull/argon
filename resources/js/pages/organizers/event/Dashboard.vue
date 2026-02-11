@@ -67,37 +67,35 @@ const publishEvent = () => {
                     <EventActions :event="event" />
                 </div>
 
-                <p class="text-sm text-neutral-400">The event is now
+                <p class="text-sm text-neutral-400">{{ $t('event.manage.status_is_now') }}
                     <EventStatusBadge :status="event.status!" />
                 </p>
             </div>
             <!-- Widgets -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                <InfoWidget title="Products Sold" :icon="ShoppingCart"
+                <InfoWidget :title="$t('event.manage.stats.products_sold')" :icon="ShoppingCart"
                     :info="event.widget_stats!.products_sold_count.toString()" />
-                <InfoWidget title="Completed Orders" :icon="BookA"
+                <InfoWidget :title="$t('event.manage.stats.completed_orders')" :icon="BookA"
                     :info="event.widget_stats!.completed_orders_count.toString()" />
-                <InfoWidget title="Unique Visitors" :icon="Eye"
+                <InfoWidget :title="$t('event.manage.stats.unique_visitors')" :icon="Eye"
                     :info="event.widget_stats!.unique_visitors.toString()" />
-                <InfoWidget title="Total Revenue" :icon="DollarSign" :info="'$ ' + event.widget_stats!.total_revenue.toLocaleString('es-AR', {
+                <InfoWidget :title="$t('event.manage.stats.total_revenue')" :icon="DollarSign" :info="'$ ' + event.widget_stats!.total_revenue.toLocaleString('es-AR', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 })" />
-                <InfoWidget title="Generated Tickets" :icon="Ticket"
+                <InfoWidget :title="$t('event.manage.stats.generated_tickets')" :icon="Ticket"
                     :info="event.widget_stats!.generated_tickets_count.toString()" />
-                <InfoWidget title="Courtesy Tickets" :icon="Gift"
+                <InfoWidget :title="$t('event.manage.stats.courtesy_tickets')" :icon="Gift"
                     :info="event.widget_stats!.courtesy_tickets_count?.toString() ?? '0'" />
-                <InfoWidget title="Scanned Tickets" :icon="ScanQrCode"
+                <InfoWidget :title="$t('event.manage.stats.scanned_tickets')" :icon="ScanQrCode"
                     :info="event.widget_stats!.scanned_tickets_count?.toString() ?? '0'" />
             </div>
 
             <!-- Information -->
             <div class="mt-4 p-4 bg-neutral-900 rounded">
                 <div class="space-y-2" v-if="event.products_count === 0 || event.status !== 'published'">
-                    <h2 class="text-lg font-semibold">Your event isn't ready yet</h2>
-                    <p class="text-sm text-neutral-400">Once you've added your products and configured your event
-                        location, you
-                        can publish and start selling tickets.</p>
+                    <h2 class="text-lg font-semibold">{{ $t('event.manage.not_ready') }}</h2>
+                    <p class="text-sm text-neutral-400">{{ $t('event.manage.not_ready_info') }}</p>
                     <div class="flex items-center gap-2">
                         <Link :href="products(event.id).url">
                             <NButton tertiary icon-placement="left" size="large" v-if="event.products_count === 0">
@@ -106,7 +104,7 @@ const publishEvent = () => {
                                         <Plus />
                                     </NIcon>
                                 </template>
-                                Create Product or Ticket
+                                {{ $t('event.manage.create_product_or_ticket') }}
                             </NButton>
                         </Link>
 
@@ -117,7 +115,7 @@ const publishEvent = () => {
                                         <MapIcon />
                                     </NIcon>
                                 </template>
-                                Set Location at Settings
+                                {{ $t('event.manage.set_location_button') }}
                             </NButton>
                         </Link>
 
@@ -128,7 +126,7 @@ const publishEvent = () => {
                                     <Eye />
                                 </NIcon>
                             </template>
-                            Publish Event
+                            {{ $t('event.manage.publish_button') }}
                         </NButton>
 
                         <Link :href="eventShow({ slug: event.slug }).url">
@@ -138,14 +136,14 @@ const publishEvent = () => {
                                         <Globe />
                                     </NIcon>
                                 </template>
-                                Preview Event
+                                {{ $t('event.manage.preview_button') }}
                             </NButton>
                         </Link>
                     </div>
                 </div>
                 <div v-else>
-                    <h2 class="text-lg font-semibold">Your event is ready</h2>
-                    <p class="text-sm text-neutral-400">Your event is now published and ready to sell tickets.</p>
+                    <h2 class="text-lg font-semibold">{{ $t('event.manage.ready') }}</h2>
+                    <p class="text-sm text-neutral-400">{{ $t('event.manage.ready_info') }}</p>
 
                     <div class="mt-4">
                         <Link :href="eventShow({ slug: event.slug }).url">
@@ -155,7 +153,7 @@ const publishEvent = () => {
                                         <Globe />
                                     </NIcon>
                                 </template>
-                                Preview Event
+                                {{ $t('event.manage.preview_button') }}
                             </NButton>
                         </Link>
                     </div>
@@ -174,7 +172,7 @@ const publishEvent = () => {
                                         <Copy />
                                     </NIcon>
                                 </template>
-                                Copy
+                                {{ $t('event.manage.copy_button') }}
                             </NButton>
                         </div>
                         <div class="p-4 bg-neutral-800 rounded flex flex-col items-center justify-center">
@@ -187,7 +185,7 @@ const publishEvent = () => {
                                             <Download />
                                         </NIcon>
                                     </template>
-                                    Download QR Code
+                                    {{ $t('event.manage.download_qr_button') }}
                                 </NButton>
                             </div>
                         </div>

@@ -11,6 +11,8 @@ import MiscellaneousForm from './forms/MiscellaneousForm.vue';
 import StatusForm from './forms/StatusForm.vue';
 import { useForm } from '@inertiajs/vue3';
 import { formatDateForPicker } from '@/lib/utils';
+import { trans as t } from 'laravel-vue-i18n';
+import { computed } from 'vue';
 
 interface Props {
     event: Event;
@@ -25,7 +27,7 @@ interface Props {
 
 const { event, availableTaxes } = defineProps<Props>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
         title: event.organizer.name,
         href: show(event.organizer.id).url,
@@ -35,10 +37,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard(event.id).url,
     },
     {
-        title: 'Settings',
+        title: t('argon.settings'),
         href: settings(event.id).url,
     }
-];
+]);
 
 type SettingsForm = EventForm;
 
@@ -62,28 +64,28 @@ const form = useForm<SettingsForm>({
     <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
         <form method="POST" @submit.prevent="form.post(settings(event.id).url)">
             <div class="m-4 space-y-4">
-                <h1>Settings</h1>
+                <h1>{{ $t('argon.settings') }}</h1>
                 <n-tabs type="line" animated>
-                    <n-tab-pane name="general" tab="General">
+                    <n-tab-pane name="general" :tab="$t('event.manage.settings.general')">
                         <GeneralInformationForm :event="form" />
                     </n-tab-pane>
-                    <n-tab-pane name="location" tab="Location">
+                    <n-tab-pane name="location" :tab="$t('event.manage.settings.location')">
                         <LocationForm :event="form" />
                     </n-tab-pane>
-                    <n-tab-pane name="payment" tab="Payment">
+                    <n-tab-pane name="payment" :tab="$t('event.manage.settings.payment')">
                         <PaymentForm :event="form" :available-taxes="availableTaxes" />
                     </n-tab-pane>
-                    <n-tab-pane name="status" tab="Status">
+                    <n-tab-pane name="status" :tab="$t('event.manage.settings.status')">
                         <StatusForm :event="event" />
                     </n-tab-pane>
-                    <n-tab-pane disabled name="misc" tab="Miscellaneous">
+                    <n-tab-pane disabled name="misc" :tab="$t('event.manage.settings.misc')">
                         <MiscellaneousForm :event="form" />
                     </n-tab-pane>
                 </n-tabs>
 
                 <n-button :loading="form.processing" :disabled="form.processing || !form.isDirty" tag="button"
                     attr-type="submit" type="primary" class="float-right">
-                    Save Changes
+                    {{$t('event.manage.settings.save')}}
                 </n-button>
             </div>
         </form>

@@ -11,8 +11,9 @@ import ProductForm from './forms/ProductForm.vue';
 import ComboForm from './forms/ComboForm.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import { deleteMethod, duplicate } from '@/routes/manage/event/products';
-
 import { router } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     event: Event;
@@ -22,7 +23,7 @@ interface Props {
 
 const { event, products, combos = [] } = defineProps<Props>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
         title: event.organizer.name,
         href: show(event.organizer.id).url,
@@ -32,10 +33,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard(event.id).url,
     },
     {
-        title: 'Products and Tickets',
+        title: t('event.manage.products_and_tickets.title'),
         href: productsRoute(event.id).url,
     }
-];
+]);
 
 const { open: openDialog } = useDialog();
 
@@ -45,8 +46,8 @@ const handleEdit = (product: Product) => {
         props: {
             event: event,
             product: product,
-            title: 'Edit Product',
-            description: 'Update product details',
+            title: t('event.manage.products_and_tickets.edit_product'),
+            description: t('event.manage.products_and_tickets.edit_product_description'),
         }
     });
 };
@@ -55,8 +56,8 @@ const handleDelete = (product: Product) => {
     openDialog({
         component: ConfirmDialog,
         props: {
-            title: 'Delete Product',
-            description: 'Are you sure you want to delete this product?',
+            title: t('event.manage.products_and_tickets.delete_product'),
+            description: t('event.manage.products_and_tickets.delete_product_description'),
             onConfirm: () => {
                 router.delete(deleteMethod({ event: event.id, product: product.id }).url);
             }
@@ -68,8 +69,8 @@ const handleDuplicate = (product: Product) => {
     openDialog({
         component: ConfirmDialog,
         props: {
-            title: 'Duplicate Product',
-            description: 'Are you sure you want to duplicate this product?',
+            title: t('event.manage.products_and_tickets.duplicate_product'),
+            description: t('event.manage.products_and_tickets.duplicate_product_description'),
             onConfirm: () => {
                 router.post(duplicate({ event: event.id, product: product.id }).url);
             }
@@ -82,8 +83,8 @@ const handleCreate = () => {
         component: ProductForm,
         props: {
             event: event,
-            title: 'Create Product',
-            description: 'Create a new product',
+            title: t('event.manage.products_and_tickets.create_product'),
+            description: t('event.manage.products_and_tickets.create_product_description'),
         }
     });
 };
@@ -94,8 +95,8 @@ const handleCreateCombo = () => {
         props: {
             event: event,
             products: products,
-            title: 'Create Combo',
-            description: 'Create a new combo',
+            title: t('event.manage.products_and_tickets.create_combo'),
+            description: t('event.manage.products_and_tickets.create_combo_description'),
         }
     });
 };
@@ -108,19 +109,18 @@ const handleCreateSelect = (key: string) => {
     }
 }
 
-const createOptions = [
+const createOptions = computed(()=>[
     {
-        label: 'Product',
+        label: t('event.manage.products_and_tickets.create_product'),
         key: 'product'
     },
     {
-        label: 'Combo',
+        label: t('event.manage.products_and_tickets.create_combo'),
         key: 'combo'
     }
-];
+]);
 
 const handleSortOrder = (product: Product, direction: 'up' | 'down') => {
-    console.log('going to sort', product, direction);
     router.patch(`/manage/event/${event.id}/products/${product.id}/sort`, {
         direction: direction
     }, {
@@ -134,7 +134,7 @@ const handleSortOrder = (product: Product, direction: 'up' | 'down') => {
     <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
         <div class="m-4">
             <div class="flex justify-between items-center">
-                <h1>Products and Tickets</h1>
+                <h1>{{ $t('event.manage.products_and_tickets.title') }}</h1>
                 <n-dropdown :options="createOptions" @select="handleCreateSelect" trigger="click">
                     <n-button type="primary">
                         <template #icon>
@@ -142,26 +142,26 @@ const handleSortOrder = (product: Product, direction: 'up' | 'down') => {
                                 <LucideTickets />
                             </n-icon>
                         </template>
-                        Create...
+                        {{ $t('event.manage.products_and_tickets.create') }}
                     </n-button>
                 </n-dropdown>
             </div>
 
             <div class="mt-4">
-                <h2 class="text-xl font-semibold mb-2">Products</h2>
+                <h2 class="text-xl font-semibold mb-2">{{ $t('event.manage.products_and_tickets.products') }}</h2>
                 <div class="space-y-4 bg-neutral-900 border rounded divide-y">
                     <ProductCard v-for="product in products" :key="product.id" :product="product" @edit="handleEdit"
                         @delete="handleDelete" @duplicate="handleDuplicate" @sort-order="handleSortOrder" />
 
                     <div v-if="products.length === 0" class="flex items-center justify-center p-4">
-                        <n-empty description="No products found">
+                        <n-empty :description="$t('event.manage.products_and_tickets.no_products_found')">
                         </n-empty>
                     </div>
                 </div>
             </div>
 
             <div class="mt-8">
-                <h2 class="text-xl font-semibold mb-2">Combos</h2>
+                <h2 class="text-xl font-semibold mb-2">{{ $t('event.manage.products_and_tickets.combos') }}</h2>
                 <div class="space-y-4 bg-neutral-900 border rounded divide-y">
                     <!-- Placeholder for ComboCard, using ProductCard if compatible or basic div -->
                     <div v-if="combos.length > 0">
@@ -171,7 +171,7 @@ const handleSortOrder = (product: Product, direction: 'up' | 'down') => {
                     </div>
 
                     <div v-if="combos.length === 0" class="flex items-center justify-center p-4">
-                        <n-empty description="No combos found">
+                        <n-empty :description="$t('event.manage.products_and_tickets.no_combos_found')">
                         </n-empty>
                     </div>
                 </div>

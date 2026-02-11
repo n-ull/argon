@@ -42,19 +42,19 @@ const argentinianCities = [
 
 <template>
     <div class="space-y-4 border border-neutral-800 bg-neutral-900 p-4 rounded">
-        <h2 class="text-lg font-semibold">Location</h2>
+        <h2 class="text-lg font-semibold">{{$t('event.manage.forms.location.title')}}</h2>
         <hr>
         <div class="space-y-2">
-            <label for="site">Site name</label>
+            <label for="site">{{$t('event.manage.forms.location.site_name')}}</label>
             <n-input :input-props="{
                 name: 'location_info[site]'
-            }" placeholder="e.g. The House of the Event" v-model:value="event.location_info.site" id="site"></n-input>
+            }" placeholder="ej. La casa del Evento" v-model:value="event.location_info.site" id="site"></n-input>
             <p v-if="event.errors['location_info.site']" class="text-xs text-red-500">{{
                 event.errors['location_info.site'] }}</p>
         </div>
 
         <div class="space-y-2">
-            <label for="address" class="required">Address</label>
+            <label for="address" class="required">{{$t('event.manage.forms.location.address')}}</label>
             <n-input :input-props="{
                 name: 'location_info[address]'
             }" placeholder="e.g. 123 Main St" v-model:value="event.location_info.address" id="address"
@@ -64,7 +64,7 @@ const argentinianCities = [
         </div>
 
         <div class="space-y-2">
-            <label for="country" class="required">Country</label>
+            <label for="country" class="required">{{$t('event.manage.forms.location.country')}}</label>
             <n-input :input-props="{
                 name: 'location_info[country]'
             }" :value="event.location_info.country" id="country" disabled></n-input>
@@ -73,17 +73,16 @@ const argentinianCities = [
         </div>
 
         <div class="space-y-2">
-            <label for="city" class="required">City</label>
+            <label for="city" class="required">{{$t('event.manage.forms.location.city')}}</label>
             <n-select v-model:value="event.location_info.city" id="city" :options="argentinianCities"></n-select>
             <p v-if="event.errors['location_info.city']" class="text-xs text-red-500">{{
                 event.errors['location_info.city'] }}</p>
         </div>
 
         <div class="space-y-2">
-            <label for="mapLink">URL of the map</label>
-            <p class="text-xs text-neutral-400">The URL of the map where the event is located, if it is not provided the
-                map will be generated automatically using the address.</p>
-            <n-input placeholder="https://www.google.com/maps" v-model:value="event.location_info.mapLink"
+            <label for="mapLink">{{$t('event.manage.forms.location.map_url')}}</label>
+            <p class="text-xs text-neutral-400">{{$t('event.manage.forms.location.map_url_description')}}</p>
+            <n-input :placeholder="$t('event.manage.forms.location.map_placeholder')" v-model:value="event.location_info.mapLink"
                 id="mapLink"></n-input>
             <p v-if="event.errors['location_info.mapLink']" class="text-xs text-red-500">{{
                 event.errors['location_info.mapLink'] }}</p>

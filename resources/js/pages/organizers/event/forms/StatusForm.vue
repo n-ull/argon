@@ -6,6 +6,7 @@ import { update as updateStatusRoute } from '@/routes/manage/event/status';
 import type { Event } from '@/types';
 import { useDialog } from '@/composables/useDialog';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     event: Event;
@@ -27,9 +28,9 @@ const handleArchive = () => {
     openDialog({
         component: ConfirmDialog,
         props: {
-            title: 'Archive Event',
-            description: 'Are you sure you want to archive this event? It will no longer be visible to the public.',
-            confirmText: 'Archive',
+            title: t('event.manage.forms.status.archive_event'),
+            description: t('event.manage.forms.status.archive_event_confirm_description'),
+            confirmText: t('event.manage.forms.status.archive_event_confirm_text'),
             onConfirm: () => updateStatus('archived'),
         },
     });
@@ -40,8 +41,8 @@ const handleArchive = () => {
 <template>
     <div class="space-y-6">
         <div>
-            <h2 class="text-lg font-medium">Event Status</h2>
-            <p class="text-sm text-neutral-400">Manage the lifecycle of your event.</p>
+            <h2 class="text-lg font-medium">{{ $t('event.manage.forms.status.title') }}</h2>
+            <p class="text-sm text-neutral-400">{{ $t('event.manage.forms.status.description') }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -50,14 +51,13 @@ const handleArchive = () => {
                 <div>
                     <div class="flex items-center gap-2 mb-2">
                         <NIcon :component="Play" class="text-green-500" />
-                        <h3 class="font-medium">Publish Event</h3>
+                        <h3 class="font-medium">{{ $t('event.manage.forms.status.publish_event') }}</h3>
                     </div>
-                    <p class="text-xs text-neutral-400 mb-4">Make your event visible to the public and start selling
-                        tickets.</p>
+                    <p class="text-xs text-neutral-400 mb-4">{{ $t('event.manage.forms.status.publish_event_description') }}</p>
                 </div>
                 <NButton type="primary" @click="updateStatus('published')" :disabled="event.status === 'published'"
                     block>
-                    {{ event.status === 'published' ? 'Already Published' : 'Publish Now' }}
+                    {{ event.status === 'published' ? $t('event.manage.forms.status.already_published') : $t('event.manage.forms.status.publish_now') }}
                 </NButton>
             </div>
 
@@ -66,13 +66,12 @@ const handleArchive = () => {
                 <div>
                     <div class="flex items-center gap-2 mb-2">
                         <NIcon :component="FileText" class="text-yellow-500" />
-                        <h3 class="font-medium">Set as Draft</h3>
+                        <h3 class="font-medium">{{ $t('event.manage.forms.status.set_as_draft') }}</h3>
                     </div>
-                    <p class="text-xs text-neutral-400 mb-4">Hide your event from the public while you continue to
-                        configure it.</p>
+                    <p class="text-xs text-neutral-400 mb-4">{{ $t('event.manage.forms.status.set_as_draft_description') }}</p>
                 </div>
                 <NButton tertiary @click="updateStatus('draft')" :disabled="event.status === 'draft'" block>
-                    {{ event.status === 'draft' ? 'Already Draft' : 'Set as Draft' }}
+                    {{ event.status === 'draft' ? $t('event.manage.forms.status.already_draft') : $t('event.manage.forms.status.set_as_draft') }}
                 </NButton>
             </div>
 
@@ -81,19 +80,18 @@ const handleArchive = () => {
                 <div>
                     <div class="flex items-center gap-2 mb-2">
                         <NIcon :component="Archive" class="text-red-500" />
-                        <h3 class="font-medium text-red-500">Archive Event</h3>
+                        <h3 class="font-medium text-red-500">{{ $t('event.manage.forms.status.archive_event') }}</h3>
                     </div>
-                    <p class="text-xs text-neutral-400 mb-4">Archive the event to hide it from your active list. This
-                        action is reversible.</p>
+                    <p class="text-xs text-neutral-400 mb-4">{{ $t('event.manage.forms.status.archive_event_description') }}</p>
                 </div>
                 <NButton secondary type="error" @click="handleArchive" :disabled="event.status === 'archived'" block>
-                    {{ event.status === 'archived' ? 'Already Archived' : 'Archive Event' }}
+                    {{ event.status === 'archived' ? $t('event.manage.forms.status.already_archived') : $t('event.manage.forms.status.archive_event') }}
                 </NButton>
             </div>
         </div>
 
-        <NAlert v-if="event.status === 'archived'" title="Event is Archived" type="warning">
-            This event is currently archived and will not appear in the default event list.
+        <NAlert v-if="event.status === 'archived'" :title="$t('event.manage.forms.status.event_is_archived')" type="warning">
+            {{ $t('event.manage.forms.status.event_is_archived_description') }}
         </NAlert>
     </div>
 </template>

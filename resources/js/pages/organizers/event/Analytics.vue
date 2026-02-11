@@ -4,10 +4,10 @@ import { analytics, dashboard } from '@/routes/manage/event';
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event } from '@/types';
 import { NCard, NTabs, NTabPane, NSpace, NSelect, NDatePicker, NDataTable, NSpin, NTag } from 'naive-ui';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { promoters, sales } from '@/routes/manage/event/analytics';
-
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     event: Event;
@@ -15,7 +15,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const breadcrumbs: BreadcrumbItem[] = [
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
         title: props.event.organizer.name,
         href: show(props.event.organizer.id).url,
@@ -25,10 +25,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard(props.event.id).url,
     },
     {
-        title: 'Analytics',
+        title: t('event.manage.analytics.title'),
         href: analytics(props.event.id).url,
     }
-];
+]);
 
 // -- General Sales State --
 const generalSalesData = ref<any[]>([]);
@@ -36,24 +36,24 @@ const loadingGeneral = ref(false);
 const period = ref('day');
 const dateRange = ref<[number, number] | null>(null);
 
-const periodOptions = [
-    { label: 'Daily', value: 'day' },
-    { label: 'Weekly', value: 'week' },
-    { label: 'Monthly', value: 'month' },
-];
+const periodOptions = computed(() => [
+    { label: t('argon.daily'), value: 'day' },
+    { label: t('argon.weekly'), value: 'week' },
+    { label: t('argon.monthly'), value: 'month' },
+]);
 
-const generalColumns = [
-    { title: 'Date', key: 'date' },
-    { title: 'Total Orders', key: 'total_orders' },
-    { title: 'Completed Orders', key: 'completed_orders' },
+const generalColumns = computed(() => [
+    { title: t('argon.date'), key: 'date' },
+    { title: t('event.manage.analytics.total_orders'), key: 'total_orders' },
+    { title: t('event.manage.analytics.completed_orders'), key: 'completed_orders' },
     {
-        title: 'Revenue',
+        title: t('event.manage.analytics.revenue'),
         key: 'revenue',
         render(row: any) {
-            return '$' + Number(row.revenue).toFixed(2);
+            return '$' + Number(row.revenue).toLocaleString('es-AR');
         }
     },
-];
+]);
 
 const fetchGeneralSales = async () => {
     loadingGeneral.value = true;
@@ -93,8 +93,8 @@ const fetchPromoterSales = async () => {
         });
 
         const newColumns: any[] = [
-            { title: 'Promoter', key: 'name' },
-            { title: 'Email', key: 'email' },
+            { title: t('argon.promoter'), key: 'name' },
+            { title: t('argon.email'), key: 'email' },
         ];
 
         productsSet.forEach(productName => {
@@ -109,7 +109,7 @@ const fetchPromoterSales = async () => {
             });
         });
 
-        newColumns.push({ title: 'Total Sold', key: 'total_sales' });
+        newColumns.push({ title: t('argon.total_sold'), key: 'total_sales' });
 
         promoterColumns.value = newColumns;
         promoterSalesData.value = data;
@@ -132,16 +132,16 @@ onMounted(() => {
 <template>
     <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
         <div class="m-4">
-            <h1 class="text-2xl font-bold mb-4">Analytics</h1>
+            <h1 class="text-2xl font-bold mb-4">{{$t('event.manage.analytics.title')}}</h1>
 
             <NCard>
                 <NTabs type="line" animated>
-                    <NTabPane name="general" tab="General Sells">
+                    <NTabPane name="general" :tab="$t('event.manage.analytics.general')">
 
                         <div class="mb-4 flex gap-4 items-center">
                             <NSelect v-model:value="period" :options="periodOptions" style="width: 150px"
                                 @update:value="fetchGeneralSales" />
-                            <NDatePicker v-model:value="dateRange" type="daterange" clearable
+                            <NDatePicker :start-placeholder="$t('argon.start_from')" :end-placeholder="$t('argon.end_to')" v-model:value="dateRange" type="daterange" clearable
                                 @update:value="fetchGeneralSales" />
                         </div>
 
@@ -151,7 +151,7 @@ onMounted(() => {
                         </NSpin>
 
                     </NTabPane>
-                    <NTabPane name="promoter" tab="Promoter Sells">
+                    <NTabPane name="promoter" :tab="$t('event.manage.analytics.promoters')">
 
                         <NSpin :show="loadingPromoters">
                             <NDataTable :columns="promoterColumns" :data="promoterSalesData"

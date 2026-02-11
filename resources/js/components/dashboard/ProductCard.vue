@@ -4,6 +4,7 @@ import { LucideChevronUp, LucideChevronDown, MoreVerticalIcon, LucidePencil, Luc
 import { NDropdown, NIcon } from 'naive-ui';
 import { computed, h, type Component } from 'vue';
 import type { DropdownOption } from 'naive-ui';
+import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     product: Product
@@ -24,28 +25,28 @@ const renderIcon = (icon: Component) => {
 
 const productTypeLabel = computed(() => {
     if (product.product_type === 'general') {
-        return 'Product';
+        return t('event.manage.products_and_tickets.product');
     }
-    return 'Ticket';
+    return t('event.manage.products_and_tickets.ticket');
 });
 
-const menuOptions: DropdownOption[] = [
+const menuOptions = computed<DropdownOption[]>(() => [
     {
-        label: 'Edit ' + productTypeLabel.value,
+        label: t('event.manage.products_and_tickets.edit') + ' ' + productTypeLabel.value.toLowerCase(),
         key: 'edit',
         icon: renderIcon(LucidePencil),
     },
     {
-        label: 'Delete ' + productTypeLabel.value,
+        label: t('event.manage.products_and_tickets.delete') + ' ' + productTypeLabel.value.toLowerCase(),
         key: 'delete',
         icon: renderIcon(LucideTrash2),
     },
     {
-        label: 'Duplicate ' + productTypeLabel.value,
+        label: t('event.manage.products_and_tickets.duplicate') + ' ' + productTypeLabel.value.toLowerCase(),
         key: 'duplicate',
         icon: renderIcon(LucideCopy),
     },
-];
+]);
 
 const handleSelect = (key: string) => {
     switch (key) {

@@ -21,8 +21,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    confirmText: t('argon.confirm'),
-    cancelText: t('argon.cancel'),
+    confirmText: "Confirmar",
+    cancelText: "Cancelar",
     showCancel: true,
 });
 

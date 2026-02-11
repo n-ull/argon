@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { EventStatus } from '@/types';
 import { tv } from 'tailwind-variants';
+import { trans as t } from 'laravel-vue-i18n';
+import { computed } from 'vue';
 
 interface Props {
     status: EventStatus;
@@ -8,14 +10,16 @@ interface Props {
 
 const { status } = defineProps<Props>();
 
-const statusMap: Record<EventStatus, string> = {
-    draft: 'Draft',
-    published: 'Published',
-    ended: 'Ended',
-    cancelled: 'Cancelled',
-    deleted: 'Deleted',
-    archived: 'Archived',
-};
+const statusMap = computed(() => {
+    return {
+        draft: t('event.statuses.draft'),
+        published: t('event.statuses.published'),
+        ended: t('event.statuses.ended'),
+        cancelled: t('event.statuses.cancelled'),
+        deleted: t('event.statuses.deleted'),
+        archived: t('event.statuses.archived'),
+    };
+});
 
 const variants = tv({
     base: 'px-2 py-1 text-xs font-medium rounded-full',
