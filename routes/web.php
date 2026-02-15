@@ -16,9 +16,8 @@ Route::get('/', function () {
         'canRegister' => Features::enabled(Features::registration()),
         'events' => \Domain\EventManagement\Models\Event::query()
             ->where('status', \Domain\EventManagement\Enums\EventStatus::PUBLISHED)
-            ->latest()
+            ->orderBy('start_date', 'asc')
             ->take(4)
-            ->orderBy('start_date', 'desc')
             ->get(),
     ]);
 })->name('home');
