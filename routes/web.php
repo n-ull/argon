@@ -18,6 +18,7 @@ Route::get('/', function () {
             ->where('status', \Domain\EventManagement\Enums\EventStatus::PUBLISHED)
             ->latest()
             ->take(4)
+            ->orderBy('start_date', 'asc')
             ->get(),
     ]);
 })->name('home');
