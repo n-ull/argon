@@ -7,6 +7,7 @@ import { Trash2Icon } from 'lucide-vue-next';
 import { NButton, NDataTable, NIcon, NInput, NModal, NForm, NFormItem, NPopconfirm, useMessage } from 'naive-ui';
 import { h, ref } from 'vue';
 import { trans as t } from 'laravel-vue-i18n';
+import { deleteMethod, store } from '@/routes/manage/organizer/cooperators';
 
 interface Props {
     organizer: Organizer;
@@ -35,7 +36,7 @@ const addForm = useForm({
 });
 
 const submitAdd = () => {
-    addForm.post(cooperators(props.organizer.id).url, {
+    addForm.post(store(props.organizer.id).url, {
         onSuccess: () => {
             message.success(t('organizer.cooperator_added_successfully'));
             showAddModal.value = false;
@@ -49,10 +50,10 @@ const submitAdd = () => {
 
 const deleteCooperator = (cooperator: Cooperator) => {
     const form = useForm({});
-    // Assuming the delete route follows RESTful pattern or append ID to the base URL
-    const url = `${cooperators(props.organizer.id).url}/${cooperator.id}`;
-
-    form.delete(url, {
+    form.delete(deleteMethod({
+        organizer: props.organizer.id,
+        user: cooperator.id,
+    }).url, {
         onSuccess: () => {
             message.success(t('organizer.cooperator_removed_successfully'));
         },

@@ -5,6 +5,8 @@ use App\Modules\OrganizerManagement\Controllers\DashboardController;
 use App\Modules\Ticketing\Controllers\ScannerController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
 use App\Modules\Ticketing\Controllers\TicketIndexController;
+use Domain\OrganizerManagement\Actions\AddCooperator;
+use Domain\OrganizerManagement\Actions\RemoveCooperator;
 use Domain\Ticketing\Actions\ScanTicket;
 use Domain\Ticketing\Actions\TransferTicket;
 use Illuminate\Support\Facades\Route;
@@ -108,6 +110,12 @@ Route::group([
 
         Route::get('{organizer}/cooperators', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'cooperators'])
             ->name('cooperators');
+
+        Route::post('{organizer}/cooperators', AddCooperator::class)
+            ->name('cooperators.store');
+
+        Route::delete('{organizer}/cooperators/{user}', RemoveCooperator::class)
+            ->name('cooperators.delete');
 
         Route::get('{organizer}/settings', [\App\Modules\OrganizerManagement\Controllers\ManageOrganizations::class, 'settings'])
             ->name('settings');
