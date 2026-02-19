@@ -30,7 +30,7 @@ class OrderResource extends JsonResource
                 'slug' => $this->event->slug,
                 'start_date' => $this->event->start_date,
                 'location_info' => $this->event->location_info,
-                'horizontal_image_url' => $this->event->horizontal_image_url,
+                'poster_image_path' => $this->event->poster_image_path,
             ],
             // We'll add tickets later if needed, but for now let's keep it simple
             'tickets_count' => $this->tickets()->count(),

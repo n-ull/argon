@@ -6,6 +6,7 @@ import { formatDate } from '@/lib/utils';
 import { NButton, NTag } from 'naive-ui';
 import { show } from '@/routes/events';
 import { index } from '@/routes/tickets';
+import { Event } from '@/types';
 
 interface Props {
     order: {
@@ -24,18 +25,7 @@ interface Props {
             unit_price: number;
             subtotal: number;
         }>;
-        event: {
-            id: number;
-            title: string;
-            slug: string;
-            start_date: string;
-            location_info: {
-                address: string;
-                city: string;
-                country: string;
-            };
-            horizontal_image_url: string | null;
-        };
+        event: Event;
         tickets_count: number;
     }
 }
@@ -60,7 +50,7 @@ const { order } = defineProps<Props>();
                 <div class="p-8 space-y-8">
                     <!-- Event Summary -->
                     <div class="flex gap-6 items-start">
-                        <img :src="order.event.horizontal_image_url ?? 'https://placehold.co/600x400/png'"
+                        <img :src="'/storage/' + order.event.poster_image_path"
                             class="w-32 h-20 object-cover rounded-md" alt="Event Thumbnail" />
                         <div class="space-y-1">
                             <h2 class="text-xl font-bold text-white">{{ order.event.title }}</h2>

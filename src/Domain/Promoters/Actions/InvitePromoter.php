@@ -39,7 +39,7 @@ class InvitePromoter
             'organizer_id' => $organizer->id,
             'promoter_id' => $promoter?->id,
             'token' => \Str::random(60),
-            'email' => $validated['email'],
+            'email' => strtolower($validated['email']),
             'commission_type' => $validated['commission_type'],
             'commission_value' => $validated['commission_value'],
         ]);

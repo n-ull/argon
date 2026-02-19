@@ -266,7 +266,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                 </div>
                             </div>
                             <div
-                                class="flex flex-row justify-between items-center py-4 px-4 bg-neutral-800 rounded-b mt-2">
+                                class="flex flex-row flex-wrap justify-between items-center gap-2 py-4 px-4 bg-neutral-800 rounded-b mt-2">
                                 <div class="flex flex-row gap-2">
                                     <span class="text-moovin-lime text-lg font-black">${{ combo.price
                                         }}</span>
@@ -306,7 +306,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                         Stock: {{ price.stock }}
                                     </div>
                                     <div
-                                        class="flex flex-row justify-between items-center py-4 px-4 bg-neutral-800 rounded-b">
+                                        class="flex flex-row flex-wrap justify-between items-center gap-2 py-4 px-4 bg-neutral-800 rounded-b">
                                         <div class="flex flex-row gap-2">
                                             <div v-if="product.product_prices.length > 1"
                                                 class="flex items-center gap-2">
@@ -323,7 +323,7 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                             class="text-sm text-neutral-400">
                                             {{ t('event.sales_start_in') }} {{ formatDateDiff(price.sales_start_date) }}
                                             {{
-                                                formatDateDiff(price.sales_start_date) === 1 ? 'day' : 'days' }}
+                                                formatDateDiff(price.sales_start_date) === 1 ? $t('event.day') : $t('event.days') }}
                                         </div>
                                         <div v-else-if="price.sales_end_date && new Date(price.sales_end_date) < new Date()"
                                             class="text-sm text-neutral-400">

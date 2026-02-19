@@ -26,6 +26,8 @@ return [
     'actions' => 'Acciones',
     'combos' => 'Lotes',
     'event' => 'Evento',
+    "day" => "día",
+    "days" => "días",
     'form' => [
         'title' => 'Título del evento',
         'description' => 'Descripción del evento',
@@ -126,7 +128,7 @@ return [
             "status_disabled" => "El portero ahora está deshabilitado",
             "failed_to_update_status" => "No se pudo cambiar el estado del portero",
             "name" => "Nombre",
-            "status"=> "Estado",
+            "status" => "Estado",
             "added_at" => "Añadido el",
             "actions" => "Acciones",
             "user_emails" => "Correos de los usuarios",
