@@ -4,8 +4,7 @@ import { courtesies as courtesiesRoute, dashboard } from '@/routes/manage/event'
 import { show } from '@/routes/manage/organizer';
 import type { BreadcrumbItem, Event, PaginatedResponse, Product, Ticket, User } from '@/types';
 import { useForm, router } from '@inertiajs/vue3';
-import { NButton, NCard, NDataTable, NDynamicTags, NForm, NFormItem, NInputNumber, NSelect, NSpace, NTag, NIcon, PaginationProps } from 'naive-ui';
-import { TableColumn } from 'naive-ui/es/data-table/src/interface';
+import { NButton, NDataTable, NDynamicTags, NForm, NFormItem, NInputNumber, NSelect, NTag, NIcon, PaginationProps, type DataTableColumns } from 'naive-ui';
 import { computed, h, watch, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import DataTableRowActions from '@/components/DataTableRowActions.vue';
@@ -20,20 +19,19 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-const { event, courtesies, products } = props;
 
-const breadcrumbs = computed<BreadcrumbItem[]>(() =>[
+const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: event.organizer.name,
-        href: show(event.organizer.id).url,
+        title: props.event.organizer.name,
+        href: show(props.event.organizer.id).url,
     },
     {
-        title: event.title,
-        href: dashboard(event.id).url,
+        title: props.event.title,
+        href: dashboard(props.event.id).url,
     },
     {
         title: t('event.manage.courtesies.title'),
-        href: courtesiesRoute(event.id).url,
+        href: courtesiesRoute(props.event.id).url,
     }
 ]);
 
@@ -45,8 +43,7 @@ const form = useForm({
 });
 
 const selectedRowKeys = ref<number[]>([]);
-
-const courtesiesList = ref<(Ticket & { given_by: User })[]>(courtesies.data);
+const courtesiesList = ref<(Ticket & { given_by: User })[]>(props.courtesies.data);
 
 watch(() => props.courtesies, (newVal) => {
     courtesiesList.value = newVal.data;
@@ -82,7 +79,7 @@ const pagination = computed<PaginationProps>(() => ({
 const handleRowAction = (key: string | number, row: Ticket) => {
     if (key === 'delete') {
         if (!confirm(t('event.manage.courtesies.confirm_deletion'))) return;
-        router.delete((deleteMethod({ event: event.id, courtesy: row.id })).url, {
+        router.delete((deleteMethod({ event: props.event.id, courtesy: row.id })).url, {
             preserveScroll: true,
             onSuccess: () => {
                 courtesiesList.value = courtesiesList.value.filter(t => t.id !== row.id);
@@ -94,7 +91,7 @@ const handleRowAction = (key: string | number, row: Ticket) => {
 const handleBulkDelete = () => {
     if (!confirm(t('event.manage.courtesies.confirm_bulk_delete', { count: selectedRowKeys.value.length.toString() }))) return;
 
-    const url = (bulkDelete(event.id)).url;
+    const url = (bulkDelete(props.event.id)).url;
 
     router.delete(`${url}`, {
         data: {
@@ -130,7 +127,7 @@ watch(() => form.emails, (newEmails) => {
 }, { deep: true });
 
 const productOptions = computed(() => {
-    return products.map(product => ({
+    return props.products.map(product => ({
         label: product.name,
         value: product.id,
         product: product
@@ -156,94 +153,95 @@ const renderProductLabel = (option: any) => {
     ]);
 };
 
-const createColumns = (): TableColumn<Ticket>[] => {
-    return [
-        {
-            type: 'selection',
-        },
-        {
-            title: t('event.manage.courtesies.user'),
-            key: 'user',
-            render(row) {
-                return h('div', [
-                    h('div', { class: 'font-medium' }, row.user.name),
-                    h('div', { class: 'text-xs text-gray-500' }, row.user.email)
-                ]);
-            }
-        },
-        {
-            title: t('event.manage.courtesies.ticket'),
-            key: 'product.name',
-            render(row) {
-                return row.product.name;
-            }
-        },
-        {
-            title: t('event.manage.courtesies.type'),
-            key: 'type',
-            render(row) {
-                return h(NTag, { type: row.type === 'static' ? 'info' : 'success', size: 'small' }, () => row.type.toUpperCase());
-            }
-        },
-        {
-            title: t('event.manage.courtesies.created_at'),
-            key: 'created_at',
-            render(row) {
-                return row.created_at ? new Date(row.created_at).toLocaleDateString() : 'N/A';
-            }
-        },
-        {
-            title: t('event.manage.courtesies.status'),
-            key: 'status',
-            render(row) {
-                const statusType = row.status === 'active' ? 'success' : 'default';
-                return h(NTag, { type: statusType, size: 'small', bordered: false }, () => t('tickets.status.' + row.status));
-            }
-        },
-        {
-            title: t('event.manage.courtesies.given_by'),
-            key: 'given_by',
-            render(row: any) {
-                return row.given_by ? row.given_by.name : 'N/A';
-            }
-        },
-        {
-            key: 'actions',
-            width: 60,
-            render(row) {
-                return h(DataTableRowActions, {
-                    options: [
-                        {
-                            label: t('event.manage.courtesies.delete_ticket_button'),
-                            key: 'delete',
-                            icon: () => h(NIcon, null, { default: () => h(Trash2, { class: 'text-red-500' }) }),
-                            props: { style: { color: 'rgb(239 68 68)' } } // red-500
-                        }
-                    ],
-                    onSelect: (key) => handleRowAction(key, row)
-                });
-            }
+const columns: DataTableColumns<Ticket & { given_by: User }> = [
+    {
+        type: 'selection',
+        width: 48,
+    },
+    {
+        title: t('event.manage.courtesies.user'),
+        key: 'user',
+        minWidth: 180,
+        render(row) {
+            return h('div', [
+                h('div', { class: 'font-medium' }, row.user.name),
+                h('div', { class: 'text-xs text-gray-500' }, row.user.email)
+            ]);
         }
-    ]
-}
-
-const columns = createColumns();
+    },
+    {
+        title: t('event.manage.courtesies.ticket'),
+        key: 'product.name',
+        minWidth: 150,
+        render(row) {
+            return row.product.name;
+        }
+    },
+    {
+        title: t('event.manage.courtesies.type'),
+        key: 'type',
+        minWidth: 100,
+        render(row) {
+            return h(NTag, { type: row.type === 'static' ? 'info' : 'success', size: 'small' }, () => row.type.toUpperCase());
+        }
+    },
+    {
+        title: t('event.manage.courtesies.created_at'),
+        key: 'created_at',
+        minWidth: 120,
+        render(row) {
+            return row.created_at ? new Date(row.created_at).toLocaleDateString() : 'N/A';
+        }
+    },
+    {
+        title: t('event.manage.courtesies.status'),
+        key: 'status',
+        minWidth: 120,
+        render(row) {
+            const statusType = row.status === 'active' ? 'success' : 'default';
+            return h(NTag, { type: statusType, size: 'small', bordered: false }, () => t('tickets.status.' + row.status));
+        }
+    },
+    {
+        title: t('event.manage.courtesies.given_by'),
+        key: 'given_by',
+        minWidth: 120,
+        render(row) {
+            return row.given_by ? row.given_by.name : 'N/A';
+        }
+    },
+    {
+        key: 'actions',
+        width: 60,
+        fixed: 'right',
+        render(row) {
+            return h(DataTableRowActions, {
+                options: [
+                    {
+                        label: t('event.manage.courtesies.delete_ticket_button'),
+                        key: 'delete',
+                        icon: () => h(NIcon, null, { default: () => h(Trash2, { class: 'text-red-500' }) }),
+                        props: { style: { color: 'rgb(239 68 68)' } } // red-500
+                    }
+                ],
+                onSelect: (key) => handleRowAction(key, row)
+            });
+        }
+    }
+];
 
 const submit = () => {
-    form.post((courtesiesRoute(event.id)).url, {
+    form.post((courtesiesRoute(props.event.id)).url, {
         onSuccess: () => {
             form.reset('emails');
             toast.success(t('event.manage.courtesies.ticket_creation_processing'));
 
-            // Poll for updates a few times
             let checks = 0;
             const interval = setInterval(() => {
                 router.reload({
                     only: ['courtesies'],
                     onFinish: () => {
                         checks++;
-                        // If we have more courtesies than before? 
-                        // Hard to track simply. Just stop after 5 checks (10 seconds).
                         if (checks >= 5) clearInterval(interval);
                     }
                 });
@@ -267,7 +265,7 @@ const renderTag = (tag: string, index: number) => {
     }, { default: () => tag });
 };
 
-const manageErrors = watch(() => form.errors, () => {
+watch(() => form.errors, () => {
     if (form.errors.emails) {
         toast.error(form.errors.emails);
     }
@@ -280,12 +278,12 @@ const manageErrors = watch(() => form.errors, () => {
 </script>
 
 <template>
-    <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
-        <div class="m-8 space-y-8">
-            <div class="flex items-center justify-between">
+    <ManageEventLayout :event="props.event" :breadcrumbs="breadcrumbs">
+        <div class="m-4">
+            <div class="flex items-center justify-between mb-6">
                 <div>
                     <h1 class="text-2xl font-bold tracking-tight">{{ t('event.manage.courtesies.title') }}</h1>
-                    <p class="text-muted-foreground">{{ t('event.manage.courtesies.description') }}</p>
+                    <p class="text-muted-foreground text-sm">{{ t('event.manage.courtesies.description') }}</p>
                 </div>
                 <!-- Bulk Actions -->
                 <div v-if="selectedRowKeys.length > 0">
@@ -298,18 +296,19 @@ const manageErrors = watch(() => form.errors, () => {
                 </div>
             </div>
 
-            <div class="grid gap-6 md:grid-cols-3">
+            <div class="space-y-6">
                 <!-- Create Courtesy Ticket Form -->
-                <div class="md:col-span-1">
-                    <NCard :title="t('event.manage.courtesies.give_courtesy_tickets')" size="medium">
-                        <NForm @submit.prevent="submit" class="space-y-4">
-                            <NFormItem :label="t('event.manage.courtesies.select_ticket')"
-                                :validation-status="form.errors.product_id ? 'error' : undefined"
-                                :feedback="form.errors.product_id">
-                                <NSelect size="large" v-model:value="form.product_id" :options="productOptions"
-                                    :render-label="renderProductLabel" :placeholder="t('event.manage.courtesies.select_ticket')" />
-                            </NFormItem>
+                <div class="bg-neutral-900 border rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold mb-4">{{ t('event.manage.courtesies.give_courtesy_tickets') }}</h3>
+                    <NForm @submit.prevent="submit" class="space-y-4">
+                        <NFormItem :label="t('event.manage.courtesies.select_ticket')"
+                            :validation-status="form.errors.product_id ? 'error' : undefined"
+                            :feedback="form.errors.product_id">
+                            <NSelect size="large" v-model:value="form.product_id" :options="productOptions"
+                                :render-label="renderProductLabel" :placeholder="t('event.manage.courtesies.select_ticket')" />
+                        </NFormItem>
 
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <NFormItem :label="t('event.manage.courtesies.quantity_per_user')"
                                 :validation-status="form.errors.quantity ? 'error' : undefined"
                                 :feedback="form.errors.quantity">
@@ -321,33 +320,39 @@ const manageErrors = watch(() => form.errors, () => {
                                 :feedback="form.errors.transfersLeft">
                                 <NInputNumber v-model:value="form.transfersLeft" :min="0" :max="10" class="w-full" />
                             </NFormItem>
+                        </div>
 
-                            <div>
-                                <NFormItem :label="t('event.manage.courtesies.user_emails')"
-                                    :validation-status="form.errors.emails || Object.keys(form.errors).some(k => k.startsWith('emails.')) ? 'error' : undefined"
-                                    :feedback="form.errors.emails">
-                                    <NDynamicTags v-model:value="form.emails" :render-tag="renderTag" />
-                                </NFormItem>
-                                <p class="text-xs text-gray-500 mb-2">{{ t('event.manage.courtesies.email_help') }}</p>
-                            </div>
+                        <div>
+                            <NFormItem :label="t('event.manage.courtesies.user_emails')"
+                                :validation-status="form.errors.emails || Object.keys(form.errors).some(k => k.startsWith('emails.')) ? 'error' : undefined"
+                                :feedback="form.errors.emails">
+                                <NDynamicTags v-model:value="form.emails" :render-tag="renderTag" />
+                            </NFormItem>
+                            <p class="text-xs text-gray-400 mt-2">{{ t('event.manage.courtesies.email_help') }}</p>
+                        </div>
 
-                            <div class="flex justify-end">
-                                <NButton type="primary" attr-type="submit" :loading="form.processing"
-                                    :disabled="!form.product_id || form.emails.length === 0">
-                                    {{ t('event.manage.courtesies.send_tickets_button') }}
-                                </NButton>
-                            </div>
-                        </NForm>
-                    </NCard>
+                        <div class="flex justify-end pt-2">
+                            <NButton type="primary" attr-type="submit" :loading="form.processing"
+                                :disabled="!form.product_id || form.emails.length === 0">
+                                {{ t('event.manage.courtesies.send_tickets_button') }}
+                            </NButton>
+                        </div>
+                    </NForm>
                 </div>
 
                 <!-- Tickets List -->
-                <div class="md:col-span-2">
-                    <NCard :title="t('event.manage.courtesies.history')" size="medium">
-                        <NDataTable :loading="loading" remote :columns="columns" :data="courtesiesList"
-                            :pagination="pagination" :row-key="(row: any) => row.id"
-                            v-model:checked-row-keys="selectedRowKeys" />
-                    </NCard>
+                <div class="bg-neutral-900 border rounded-xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold mb-4">{{ t('event.manage.courtesies.history') }}</h3>
+                    <NDataTable 
+                        remote 
+                        :loading="loading" 
+                        :columns="columns" 
+                        :data="courtesiesList"
+                        :pagination="pagination" 
+                        :row-key="(row: any) => row.id"
+                        :scroll-x="1000"
+                        v-model:checked-row-keys="selectedRowKeys" 
+                    />
                 </div>
             </div>
         </div>

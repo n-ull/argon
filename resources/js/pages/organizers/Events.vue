@@ -204,7 +204,7 @@ const openCreateEventDialog = () => {
 
             <div
                 class="bg-neutral-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                <NDataTable :columns="columns" :data="events.data" :pagination="false" :bordered="false" striped
+                <NDataTable :columns="columns" :scroll-x="800" :data="events.data" :pagination="false" :bordered="false" striped
                     class="rounded-lg overflow-hidden" />
 
                 <div class="mt-4 flex justify-end" v-if="events.total > events.per_page">
