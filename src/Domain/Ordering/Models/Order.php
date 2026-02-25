@@ -63,6 +63,9 @@ class Order extends Model
         'expires_at',
         'service_fee_snapshot',
         'referral_code',
+        'voucher_id',
+        'voucher_discount_amount',
+        'voucher_snapshot',
     ];
 
     protected $casts = [

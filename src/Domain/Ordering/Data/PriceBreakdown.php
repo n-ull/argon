@@ -14,6 +14,9 @@ class PriceBreakdown
         public readonly array $taxesSnapshot,
         public readonly array $feesSnapshot,
         public readonly float $serviceFeeSnapshot,
+        public readonly float $voucherDiscount = 0.0,
+        public readonly ?int $voucherId = null,
+        public readonly ?array $voucherSnapshot = null,
     ) {
     }
 
@@ -29,6 +32,9 @@ class PriceBreakdown
             'taxes_snapshot' => $this->taxesSnapshot,
             'fees_snapshot' => $this->feesSnapshot,
             'service_fee_snapshot' => $this->serviceFeeSnapshot,
+            'voucher_discount' => $this->voucherDiscount,
+            'voucher_id' => $this->voucherId,
+            'voucher_snapshot' => $this->voucherSnapshot,
         ];
     }
 }
