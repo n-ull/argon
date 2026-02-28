@@ -68,7 +68,7 @@ Route::group([
         ->name('checkout');
 
     Route::get('{order}', [\App\Modules\Ordering\Controllers\OrderDetailsController::class, 'show'])
-        ->name('show');
+        ->name('show')->middleware(['auth']);
 
     Route::post('checkout/{order}/cancel', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'cancel'])
         ->name('cancel');
