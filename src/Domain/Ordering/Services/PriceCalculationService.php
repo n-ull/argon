@@ -63,7 +63,8 @@ class PriceCalculationService
                     $query->whereNull('ends_at')->orWhere('ends_at', '>=', now());
                 })
                 ->where(function ($query) {
-                    $query->whereNull('total_limit')->orWhere('total_limit', '>', 'used_count');
+                    $query->whereNull('total_limit')
+                        ->orWhereColumn('used_count', '<', 'total_limit');
                 })
                 ->first();
 
