@@ -56,8 +56,8 @@ class OrderService
             $priceBreakdown = $this->priceCalculationService->calculate(
                 $orderItems,
                 $event,
-                $orderData->gateway ?? null,
-                $orderData->voucher_code ?? null
+                $orderData->gateway,
+                $orderData->voucher_code
             );
 
             $status = OrderStatus::PENDING;

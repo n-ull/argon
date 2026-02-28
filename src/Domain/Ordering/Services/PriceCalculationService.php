@@ -188,9 +188,6 @@ class PriceCalculationService
     }
 
     /**
-     * Create snapshot of order items
-     */
-    /**
      * Create snapshot of order items with integrated tax adjustments and discounts
      */
     private function createItemsSnapshot(array $items, Event $event, float $discountFactor = 1.0): array
@@ -215,6 +212,7 @@ class PriceCalculationService
 
                 // Add integrated tax info to snapshot
                 $itemArray['unit_price_breakdown'] = [
+                    'original_price' => $item->unitPrice,
                     'base_price' => $unitPrice,
                     'integrated_tax_amount' => $integratedAmountPerUnit,
                     'final_price' => $unitPrice + $integratedAmountPerUnit,

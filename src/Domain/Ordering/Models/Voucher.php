@@ -3,6 +3,7 @@
 namespace Domain\Ordering\Models;
 
 use Domain\EventManagement\Models\Event;
+use Domain\Ordering\Enums\VoucherType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -23,7 +24,7 @@ class Voucher extends Model
     ];
 
     protected $casts = [
-        'type' => \Domain\Ordering\Enums\VoucherType::class,
+        'type' => VoucherType::class,
         'value' => 'float',
         'min_order_amount' => 'float',
         'max_discount_amount' => 'float',

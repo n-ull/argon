@@ -40,16 +40,16 @@ Implement a system for promotional codes (vouchers) that allow customers to rece
 ## 🚀 Tasks
 
 ### Phase 1: Backend Infrastructure
-- [ ] Create `VoucherType` enum.
-- [ ] Create `vouchers` table migration.
-- [ ] Create `Voucher` model with `event` relationship.
-- [ ] Update `orders` table with voucher columns.
+- [x] Create `VoucherType` enum.
+- [x] Create `vouchers` table migration.
+- [x] Create `Voucher` model with `event` relationship.
+- [x] Update `orders` table with voucher columns.
 
 ### Phase 2: Price Calculation Integration
-- [ ] Update `PriceBreakdown` DTO.
-- [ ] Modify `PriceCalculationService` to subtract discount from subtotal before tax calculation.
-- [ ] Update `OrderService` to handle voucher persistence.
-- [ ] Add unit tests for various voucher types (fixed vs percentage).
+- [x] Update `PriceBreakdown` DTO.
+- [x] Modify `PriceCalculationService` to subtract discount from subtotal before tax calculation.
+- [x] Update `OrderService` to handle voucher persistence.
+- [x] Add unit tests for various voucher types (fixed vs percentage).
 
 ### Phase 3: Management API
 - [ ] Implement CRUD in `ManageEventController`.

@@ -78,6 +78,8 @@ class Order extends Model
         'taxes_total' => 'decimal:2',
         'fees_total' => 'decimal:2',
         'service_fee_snapshot' => 'float',
+        'voucher_discount_amount' => 'float',
+        'voucher_snapshot' => 'array',
     ];
 
     protected $appends = [
