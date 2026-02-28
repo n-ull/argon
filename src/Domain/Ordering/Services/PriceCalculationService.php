@@ -62,6 +62,9 @@ class PriceCalculationService
                 ->where(function ($query) {
                     $query->whereNull('ends_at')->orWhere('ends_at', '>=', now());
                 })
+                ->where(function ($query) {
+                    $query->whereNull('total_limit')->orWhere('total_limit', '>', 'used_count');
+                })
                 ->first();
 
             if ($voucher) {
