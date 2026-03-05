@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
+# added middleware to order
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
