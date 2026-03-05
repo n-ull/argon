@@ -13,6 +13,7 @@ class CreateOrderData extends Data
      * @param int|null $userId
      * @param string|null $gateway
      * @param string|null $referral_code
+     * @param string|null $voucher_code
      */
     public function __construct(
         public int $eventId,
@@ -20,6 +21,7 @@ class CreateOrderData extends Data
         public ?int $userId = null,
         public ?string $gateway = null,
         public ?string $referral_code = null,
+        public ?string $voucher_code = null,
     ) {
     }
 

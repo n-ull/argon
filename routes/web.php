@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
+# added middleware to order
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
@@ -68,7 +70,7 @@ Route::group([
         ->name('checkout');
 
     Route::get('{order}', [\App\Modules\Ordering\Controllers\OrderDetailsController::class, 'show'])
-        ->name('show');
+        ->name('show')->middleware(['auth']);
 
     Route::post('checkout/{order}/cancel', [\App\Modules\Ordering\Controllers\CheckoutController::class, 'cancel'])
         ->name('cancel');

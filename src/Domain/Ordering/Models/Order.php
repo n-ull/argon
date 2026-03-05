@@ -63,6 +63,9 @@ class Order extends Model
         'expires_at',
         'service_fee_snapshot',
         'referral_code',
+        'voucher_id',
+        'voucher_discount_amount',
+        'voucher_snapshot',
     ];
 
     protected $casts = [
@@ -75,6 +78,8 @@ class Order extends Model
         'taxes_total' => 'decimal:2',
         'fees_total' => 'decimal:2',
         'service_fee_snapshot' => 'float',
+        'voucher_discount_amount' => 'float',
+        'voucher_snapshot' => 'array',
     ];
 
     protected $appends = [

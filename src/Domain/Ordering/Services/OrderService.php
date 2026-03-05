@@ -56,7 +56,8 @@ class OrderService
             $priceBreakdown = $this->priceCalculationService->calculate(
                 $orderItems,
                 $event,
-                $orderData->gateway ?? null
+                $orderData->gateway,
+                $orderData->voucher_code
             );
 
             $status = OrderStatus::PENDING;
@@ -79,6 +80,9 @@ class OrderService
                 'expires_at' => now()->addMinutes(15),
                 'status' => $status,
                 'referral_code' => $orderData->referral_code ?? null,
+                'voucher_id' => $priceBreakdown->voucherId,
+                'voucher_discount_amount' => $priceBreakdown->voucherDiscount,
+                'voucher_snapshot' => $priceBreakdown->voucherSnapshot,
             ]);
 
             // Create order items and increment quantity_sold
