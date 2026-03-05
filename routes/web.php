@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\MercadoPagoWebhookController;
+use App\Mail\OrderCompleted;
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
 use App\Modules\Ticketing\Controllers\ScannerController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
 use App\Modules\Ticketing\Controllers\TicketIndexController;
+use Domain\Ordering\Models\Order;
 use Domain\OrganizerManagement\Actions\AddCooperator;
 use Domain\OrganizerManagement\Actions\RemoveCooperator;
 use Domain\Ticketing\Actions\ScanTicket;
@@ -12,6 +14,20 @@ use Domain\Ticketing\Actions\TransferTicket;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use Illuminate\Support\Facades\Mail;
+
+
+# added middleware to order
+
+Route::get('/testMail', function () {
+    if (auth()->user()->id == 1) {
+        Mail::to('nicolasfcarol@gmail.com')->send(new OrderCompleted(Order::find(24)));
+        return 'Mail sent to nicolasfcarol@gmail.com';
+    }
+
+    return 'Mail not sent';
+})->middleware(['auth']);
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
