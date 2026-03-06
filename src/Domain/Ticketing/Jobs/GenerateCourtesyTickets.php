@@ -2,8 +2,10 @@
 
 namespace Domain\Ticketing\Jobs;
 
+use App\Models\User;
 use Domain\Ticketing\Enums\TicketStatus;
 use Domain\Ticketing\Facades\TokenGenerator;
+use Domain\Ticketing\Mail\CourtesyTicketGenerated;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class GenerateCourtesyTickets implements ShouldQueue
 {
@@ -32,7 +35,7 @@ class GenerateCourtesyTickets implements ShouldQueue
         DB::transaction(function () {
             foreach ($this->userIds as $userId) {
                 for ($i = 0; $i < $this->quantity; $i++) {
-                    Ticket::create([
+                    $ticket = Ticket::create([
                         'event_id' => $this->eventId,
                         'product_id' => $this->productId,
                         'user_id' => $userId,
@@ -45,6 +48,10 @@ class GenerateCourtesyTickets implements ShouldQueue
                         'used_at' => null,
                         'expired_at' => null,
                     ]);
+
+                    $user = User::find($userId);
+
+                    Mail::to($user->email)->send(new CourtesyTicketGenerated($ticket));
                 }
             }
         });
