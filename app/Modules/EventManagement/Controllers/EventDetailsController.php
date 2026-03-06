@@ -66,6 +66,14 @@ class EventDetailsController extends Controller
 
         $combos = $event->combos()
             ->where('is_active', true)
+            ->where(function ($query) {
+                $query->where('start_date', '<=', now())
+                    ->orWhereNull('start_date');
+            })
+            ->where(function ($query) {
+                $query->where('end_date', '>=', now())
+                    ->orWhereNull('end_date');
+            })
             ->with(['items.productPrice.product'])
             ->get();
 

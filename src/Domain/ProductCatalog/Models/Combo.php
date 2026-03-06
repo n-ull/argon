@@ -19,11 +19,15 @@ class Combo extends Model
         'description',
         'price',
         'is_active',
+        'start_date',
+        'end_date',
     ];
 
     protected $casts = [
         'price' => 'float',
         'is_active' => 'boolean',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
     ];
 
     public function event(): BelongsTo
