@@ -3,7 +3,7 @@
 
 Hola **{{ $ticket->user->name }}**,
 
-Te han enviado un ticket de cortesía para el evento **{{ $ticket->event->name }}**.
+Te han enviado un ticket de cortesía para el evento **{{ $ticket->event->title }}**.
 
 @if($ticket->type == \Domain\Ticketing\Enums\TicketType::STATIC)
 **{{ $ticket->product->name }}**
