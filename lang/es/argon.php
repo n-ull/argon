@@ -14,6 +14,7 @@ return [
     'clients' => 'Clientes',
     'attendees' => 'Asistentes',
     'doormen' => 'Porteros',
+    'doorman' => 'Portero',
     'vouchers' => 'Vales',
     'courtesies' => 'Cortesías',
     'messages' => 'Mensajes',

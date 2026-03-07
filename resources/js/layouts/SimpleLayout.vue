@@ -12,6 +12,8 @@ import { trans as t } from 'laravel-vue-i18n';
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 
+console.log(user.value);
+
 watch(() => page.props.flash, (flash) => {
     if (flash.message) {
         switch (flash.message.type) {
@@ -63,6 +65,13 @@ const items = computed<NavItem[]>(() => {
             navItems.push({
                 title: t('argon.promoter'),
                 href: '/promoters/dashboard',
+            });
+        }
+
+        if(user.value.is_doormen) {
+            navItems.push({
+                title: t('argon.doorman'),
+                href: '/doormen',
             });
         }
     }

@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Registrations;
 use Domain\OrganizerManagement\Models\Organizer;
 use Domain\Promoters\Models\Promoter;
+use Domain\Ticketing\Models\Doormen;
 use Domain\Ticketing\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -108,5 +109,15 @@ class User extends Authenticatable
     public function mercadoPagoAccount(): HasOne
     {
         return $this->hasOne(\Domain\OrganizerManagement\Models\MercadoPagoAccount::class);
+    }
+
+    public function doormen(): HasMany
+    {
+        return $this->hasMany(Doormen::class);
+    }
+
+    public function getIsDoormenAttribute(): bool
+    {
+        return $this->doormen()->exists();
     }
 }

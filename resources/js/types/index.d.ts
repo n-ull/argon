@@ -58,6 +58,7 @@ export interface User {
     created_at: string;
     updated_at: string;
     promoter?: Promoter | null;
+    is_doormen?: boolean;
 }
 
 export type EventStatus = 'draft' | 'published' | 'ended' | 'cancelled' | 'deleted' | 'archived';

@@ -124,7 +124,7 @@ const commissionColumns = [
     <Head :title="t('promoter.dashboard_title')" />
 
     <SimpleLayout>
-        <div class="py-12">
+        <div class="py-4 mx-2">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
                 <h1 class="text-2xl font-bold text-white mb-6">{{ t('promoter.dashboard_title') }}</h1>

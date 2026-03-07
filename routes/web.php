@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MercadoPagoWebhookController;
 use App\Mail\OrderCompleted;
+use App\Modules\EventManagement\Controllers\DoormenPanelController;
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
 use App\Modules\Ticketing\Controllers\ScannerController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
@@ -41,6 +42,8 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('dashboard', DashboardController::class)->name('dashboard')->middleware('auth');
+
+Route::get('doormen', DoormenPanelController::class)->name('doormen.dashboard')->middleware('auth');
 
 Route::group([
     'prefix' => 'tickets',
