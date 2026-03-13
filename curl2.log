@@ -1,0 +1,11 @@
+HTTP/1.0 404 Not Found
+Host: 127.0.0.1:8083
+Connection: close
+X-Powered-By: PHP/8.4.18
+X-Inertia: true
+Cache-Control: no-cache, private
+Date: Fri, 13 Mar 2026 00:58:09 GMT
+Content-Type: application/json
+phpdebugbar-id: 01KKJB6TE7EGF67SWATJR0HQ80
+
+{"component":"Error","props":{"status":404},"url":"\/random-page-404","version":"","clearHistory":false,"encryptHistory":false}
