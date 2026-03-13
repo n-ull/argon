@@ -196,6 +196,10 @@ Route::group([
 
         Route::put('{event}/combos/{combo}', \Domain\EventManagement\Actions\UpdateEventCombo::class)
             ->name('combos.update');
+        Route::delete('{event}/combos/{combo}', \Domain\EventManagement\Actions\DeleteEventCombo::class)
+            ->name('combos.delete');
+        Route::patch('{event}/combos/{combo}/sort', \Domain\EventManagement\Actions\SortEventCombo::class)
+            ->name('combos.sort');
 
         Route::get('{event}/orders', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'orders'])
             ->name('orders');

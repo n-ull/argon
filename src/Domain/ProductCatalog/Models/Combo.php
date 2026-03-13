@@ -21,6 +21,7 @@ class Combo extends Model
         'is_active',
         'start_date',
         'end_date',
+        'sort_order',
     ];
 
     protected $casts = [
@@ -28,6 +29,7 @@ class Combo extends Model
         'is_active' => 'boolean',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
+        'sort_order' => 'integer',
     ];
 
     public function event(): BelongsTo
@@ -38,5 +40,10 @@ class Combo extends Model
     public function items(): HasMany
     {
         return $this->hasMany(ComboItem::class);
+    }
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\Domain\ProductCatalog\Models\ComboFactory::new();
     }
 }

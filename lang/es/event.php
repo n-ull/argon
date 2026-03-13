@@ -111,7 +111,8 @@ return [
             "create_combo_description" => "Crea un nuevo combo de productos",
             "create" => "Crear...",
             "no_products_found" => "No se encontraron productos/tickets",
-            "no_combos_found" => "No se encontraron combos"
+            "no_combos_found" => "No se encontraron combos",
+            "items" => "Productos y Tickets",
         ],
         "doormen" => [
             "title" => "Porteros",
@@ -306,7 +307,7 @@ return [
                 'hide_after_sale_end' => 'Ocultar después de la fecha de finalización de venta',
                 'show_stock' => 'Mostrar Stock',
                 'transfers' => 'Transferencias',
-                'transfers_description' => '¿Cuántas veces puede ser transferido este ticket? 0 significa que no puede ser transferido.'
+                'transfers_description' => '¿Cuántas veces puede ser transferido este ticket? 0 significa que no puede ser transferido.',
             ]
         ]
     ]

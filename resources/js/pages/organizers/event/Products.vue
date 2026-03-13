@@ -9,6 +9,7 @@ import { NButton, NIcon, NEmpty, NDropdown } from 'naive-ui';
 import { useDialog } from '@/composables/useDialog';
 import ProductForm from './forms/ProductForm.vue';
 import ComboForm from './forms/ComboForm.vue';
+import ComboCard from '@/components/dashboard/ComboCard.vue';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import { deleteMethod, duplicate } from '@/routes/manage/event/products';
 import { router } from '@inertiajs/vue3';
@@ -128,6 +129,40 @@ const handleSortOrder = (product: Product, direction: 'up' | 'down') => {
     });
 }
 
+const handleEditCombo = (combo: any) => {
+    openDialog({
+        component: ComboForm,
+        props: {
+            event: event,
+            products: products,
+            combo: combo,
+            title: t('event.manage.products_and_tickets.edit_combo'),
+            description: t('event.manage.products_and_tickets.edit_combo_description'),
+        }
+    });
+};
+
+const handleDeleteCombo = (combo: any) => {
+    openDialog({
+        component: ConfirmDialog,
+        props: {
+            title: t('event.manage.products_and_tickets.delete_combo'),
+            description: t('event.manage.products_and_tickets.delete_combo_description'),
+            onConfirm: () => {
+                router.delete(`/manage/event/${event.id}/combos/${combo.id}`);
+            }
+        }
+    })
+};
+
+const handleSortOrderCombo = (combo: any, direction: 'up' | 'down') => {
+    router.patch(`/manage/event/${event.id}/combos/${combo.id}/sort`, {
+        direction: direction
+    }, {
+        preserveScroll: true,
+    });
+}
+
 </script>
 
 <template>
@@ -163,12 +198,8 @@ const handleSortOrder = (product: Product, direction: 'up' | 'down') => {
             <div class="mt-8">
                 <h2 class="text-xl font-semibold mb-2">{{ $t('event.manage.products_and_tickets.combos') }}</h2>
                 <div class="space-y-4 bg-neutral-900 border rounded divide-y">
-                    <!-- Placeholder for ComboCard, using ProductCard if compatible or basic div -->
-                    <div v-if="combos.length > 0">
-                        <div v-for="combo in combos" :key="combo.id" class="p-4">
-                            {{ combo.name }} (Combo UI Placeholder)
-                        </div>
-                    </div>
+                    <ComboCard v-for="combo in combos" :key="combo.id" :combo="combo" @edit="handleEditCombo"
+                        @delete="handleDeleteCombo" @sort-order="handleSortOrderCombo" />
 
                     <div v-if="combos.length === 0" class="flex items-center justify-center p-4">
                         <n-empty :description="$t('event.manage.products_and_tickets.no_combos_found')">
