@@ -172,7 +172,7 @@ onMounted(() => {
                         </div>
 
                         <NSpin :show="loadingGeneral">
-                            <NDataTable :columns="generalColumns" :data="generalSalesData"
+                            <NDataTable :striped="true" :columns="generalColumns" :data="generalSalesData"
                                 :pagination="{ pageSize: 10 }" bordered />
                         </NSpin>
 
@@ -180,7 +180,7 @@ onMounted(() => {
                     <NTabPane name="promoter" :tab="$t('event.manage.analytics.promoters')">
 
                         <NSpin :show="loadingPromoters">
-                            <NDataTable :columns="promoterColumns" :data="promoterSalesData"
+                            <NDataTable :striped="true" :columns="promoterColumns" :data="promoterSalesData"
                                 :pagination="{ pageSize: 10 }" bordered />
                         </NSpin>
 
@@ -201,6 +201,7 @@ onMounted(() => {
                             <div v-if="comboSalesData.length > 0">
                                 <h2 class="text-lg font-semibold mb-2">{{ $t('argon.combos') }}</h2>
                                 <NDataTable
+                                    :striped="true"
                                     :columns="productComboColumns"
                                     :data="comboSalesData"
                                     :pagination="{ pageSize: 10 }"
