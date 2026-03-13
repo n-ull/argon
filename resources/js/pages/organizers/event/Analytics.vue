@@ -6,7 +6,7 @@ import type { BreadcrumbItem, Event } from '@/types';
 import { NCard, NTabs, NTabPane, NSpace, NSelect, NDatePicker, NDataTable, NSpin, NTag } from 'naive-ui';
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import { promoters, sales } from '@/routes/manage/event/analytics';
+import { promoters, sales, products as productsRoute } from '@/routes/manage/event/analytics';
 import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
@@ -121,10 +121,36 @@ const fetchPromoterSales = async () => {
     }
 };
 
+// -- Products & Combos State --
+const productSalesData = ref<any[]>([]);
+const comboSalesData = ref<any[]>([]);
+const loadingProducts = ref(false);
+
+const productComboColumns = computed(() => [
+    { title: t('argon.name'), key: 'name' },
+    { title: t('event.manage.analytics.completed_orders'), key: 'completed_quantity' },
+    { title: t('argon.cancelled'), key: 'cancelled_quantity' },
+    { title: t('argon.total'), key: 'total_quantity' },
+]);
+
+const fetchProductSales = async () => {
+    loadingProducts.value = true;
+    try {
+        const response = await axios.get(productsRoute(props.event.id).url);
+        productSalesData.value = response.data.products ?? [];
+        comboSalesData.value = response.data.combos ?? [];
+    } catch (e) {
+        console.error(e);
+    } finally {
+        loadingProducts.value = false;
+    }
+};
+
 // Initial Fetch
 onMounted(() => {
     fetchGeneralSales();
     fetchPromoterSales();
+    fetchProductSales();
 });
 
 </script>
@@ -156,6 +182,31 @@ onMounted(() => {
                         <NSpin :show="loadingPromoters">
                             <NDataTable :columns="promoterColumns" :data="promoterSalesData"
                                 :pagination="{ pageSize: 10 }" bordered />
+                        </NSpin>
+
+                    </NTabPane>
+                    <NTabPane name="products" :tab="$t('event.manage.analytics.products_and_combos')">
+
+                        <NSpin :show="loadingProducts">
+                            <div class="mb-6">
+                                <h2 class="text-lg font-semibold mb-2">{{ $t('argon.products') }}</h2>
+                                <NDataTable
+                                    :columns="productComboColumns"
+                                    :data="productSalesData"
+                                    :pagination="{ pageSize: 10 }"
+                                    bordered
+                                />
+                            </div>
+
+                            <div v-if="comboSalesData.length > 0">
+                                <h2 class="text-lg font-semibold mb-2">{{ $t('argon.combos') }}</h2>
+                                <NDataTable
+                                    :columns="productComboColumns"
+                                    :data="comboSalesData"
+                                    :pagination="{ pageSize: 10 }"
+                                    bordered
+                                />
+                            </div>
                         </NSpin>
 
                     </NTabPane>

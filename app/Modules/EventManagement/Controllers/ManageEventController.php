@@ -59,6 +59,16 @@ class ManageEventController extends Controller
         return response()->json($data);
     }
 
+    public function analyticsProducts(int $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        Gate::authorize('update', $event);
+
+        $data = \Domain\Ordering\Actions\GetProductComboSalesAnalytics::run($event);
+
+        return response()->json($data);
+    }
+
     public function products(int $eventId)
     {
         $event = Event::where('id', $eventId)->first()->load('organizer');
