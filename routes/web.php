@@ -172,6 +172,9 @@ Route::group([
         Route::get('{event}/analytics/products', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'analyticsProducts'])
             ->name('analytics.products');
 
+        Route::get('{event}/analytics/scanned-tickets', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'analyticsScannedTickets'])
+            ->name('analytics.scanned-tickets');
+
 
         Route::get('{event}/products', [\App\Modules\EventManagement\Controllers\ManageEventController::class, 'products'])
             ->name('products');

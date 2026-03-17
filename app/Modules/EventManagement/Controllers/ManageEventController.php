@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Domain\Ordering\Models\Order;
 use Domain\Promoters\Models\Promoter;
+use Domain\Promoters\Actions\GetScannedTicketsAnalytics;
 
 class ManageEventController extends Controller
 {
@@ -65,6 +66,16 @@ class ManageEventController extends Controller
         Gate::authorize('update', $event);
 
         $data = \Domain\Ordering\Actions\GetProductComboSalesAnalytics::run($event);
+
+        return response()->json($data);
+    }
+
+    public function analyticsScannedTickets(int $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        Gate::authorize('update', $event);
+
+        $data = GetScannedTicketsAnalytics::run($event);
 
         return response()->json($data);
     }

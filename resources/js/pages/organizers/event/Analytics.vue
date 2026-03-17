@@ -6,7 +6,7 @@ import type { BreadcrumbItem, Event } from '@/types';
 import { NCard, NTabs, NTabPane, NSpace, NSelect, NDatePicker, NDataTable, NSpin, NTag } from 'naive-ui';
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import { promoters, sales, products as productsRoute } from '@/routes/manage/event/analytics';
+import { promoters, sales, products as productsRoute, scannedTickets } from '@/routes/manage/event/analytics';
 import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
@@ -146,11 +146,40 @@ const fetchProductSales = async () => {
     }
 };
 
+// -- Scanned Tickets State --
+const scannedTicketsData = ref<any[]>([]);
+const loadingScanned = ref(false);
+
+const scannedColumns = computed(() => [
+    { title: t('argon.promoter'), key: 'promoter_name' },
+    {
+        title: t('argon.breakdown'),
+        key: 'breakdown',
+        render(row: any) {
+            return row.breakdown.map((item: any) => `${item.product_name}: ${item.quantity}`).join(', ');
+        }
+    },
+    { title: t('argon.total_scanned'), key: 'total_scanned' },
+]);
+
+const fetchScannedTickets = async () => {
+    loadingScanned.value = true;
+    try {
+        const response = await axios.get(scannedTickets(props.event.id).url);
+        scannedTicketsData.value = response.data;
+    } catch (e) {
+        console.error(e);
+    } finally {
+        loadingScanned.value = false;
+    }
+};
+
 // Initial Fetch
 onMounted(() => {
     fetchGeneralSales();
     fetchPromoterSales();
     fetchProductSales();
+    fetchScannedTickets();
 });
 
 </script>
@@ -208,6 +237,14 @@ onMounted(() => {
                                     bordered
                                 />
                             </div>
+                        </NSpin>
+
+                    </NTabPane>
+                    <NTabPane name="scanned" :tab="$t('event.manage.analytics.scanned_tickets')">
+
+                        <NSpin :show="loadingScanned">
+                            <NDataTable :striped="true" :columns="scannedColumns" :data="scannedTicketsData"
+                                :pagination="{ pageSize: 10 }" bordered />
                         </NSpin>
 
                     </NTabPane>

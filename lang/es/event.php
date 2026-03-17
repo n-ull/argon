@@ -78,6 +78,8 @@ return [
             'revenue' => 'Recaudación',
             'general' => 'General',
             'promoters' => 'Promotores',
+            'products_and_combos' => 'Productos y Combos',
+            'scanned_tickets' => 'Tickets Escaneados'
         ],
         'settings' => [
             'general' => 'General',
