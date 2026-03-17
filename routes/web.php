@@ -20,6 +20,7 @@ Route::get('/', function () {
         'canRegister' => Features::enabled(Features::registration()),
         'events' => \Domain\EventManagement\Models\Event::query()
             ->where('status', \Domain\EventManagement\Enums\EventStatus::PUBLISHED)
+            ->where('is_featured', true)
             ->orderBy('start_date', 'asc')
             ->take(4)
             ->get(),

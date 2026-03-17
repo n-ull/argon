@@ -28,7 +28,7 @@ class EventIndexController extends Controller
                     ->orWhere('end_date', null);
             })
             ->where('status', EventStatus::PUBLISHED)
-            // ->where('is_featured', true)
+            ->where('is_featured', true)
             ->paginate(10);
 
         return Inertia::render('events/Index', [

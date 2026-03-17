@@ -84,6 +84,7 @@ class Event extends Model
         'slug',
         'cover_image_path',
         'poster_image_path',
+        'is_featured',
     ];
 
     protected $casts = [
