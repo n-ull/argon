@@ -72,6 +72,7 @@ class ManageOrganizations extends Controller
             'organizer' => $organizer,
             'events' => $query->paginate(10)->withQueryString(),
             'filters' => $request->only(['search', 'status', 'sort_by', 'sort_direction']),
+            'categories' => \Domain\EventManagement\Models\EventCategory::all(),
         ]);
     }
 

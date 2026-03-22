@@ -63,6 +63,13 @@ export interface User {
 
 export type EventStatus = 'draft' | 'published' | 'ended' | 'cancelled' | 'deleted' | 'archived';
 
+export interface EventCategory {
+    id: number;
+    name: string;
+    color: string | null;
+    icon: string | null;
+}
+
 export interface TaxAndFeeSnapshot {
     id: number | null;
     type: 'tax' | 'fee';
@@ -110,6 +117,7 @@ export interface Event {
     orders_count?: number | null;
     taxes_and_fees?: TaxAndFee[];
     widget_stats?: WidgetStats;
+    category?: EventCategory | null;
 }
 
 export interface EventForm extends Omit<Event, 'organizer' | 'products' | 'taxes_and_fees'> {
@@ -117,6 +125,7 @@ export interface EventForm extends Omit<Event, 'organizer' | 'products' | 'taxes
     taxes_and_fees: number[];
     cover_image?: File | null;
     poster_image?: File | null;
+    event_category_id: number | null;
 }
 
 export interface WidgetStats {

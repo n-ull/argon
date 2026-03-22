@@ -41,6 +41,7 @@ class CreateEvent
             'description' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date',
+            'event_category_id' => 'required|exists:event_categories,id',
         ]);
 
         $event = $this->handle($organizer, $data);

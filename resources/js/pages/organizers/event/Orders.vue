@@ -233,8 +233,6 @@ const handleRowClick = (row: Order) => {
     selectedOrder.value = row;
     activate('right');
 }
-
-console.log(props.orders);
 </script>
 
 <template>

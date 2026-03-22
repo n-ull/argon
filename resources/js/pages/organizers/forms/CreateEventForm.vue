@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NInput, NButton, NDatePicker } from 'naive-ui';
+import { NInput, NButton, NDatePicker, NSelect } from 'naive-ui';
 import {
     DialogContent,
     DialogDescription,
@@ -19,6 +19,7 @@ interface Props {
     organizer: Organizer;
     title: string;
     description?: string;
+    categories: Array<{ id: number; name: string }>;
 }
 
 const props = defineProps<Props>();
@@ -30,6 +31,7 @@ const form = useForm({
     description: '',
     start_date: null,
     end_date: null,
+    event_category_id: null,
 });
 
 const handleClose = () => {
@@ -74,6 +76,16 @@ const handleSubmit = () => {
                             :status="form.errors.description ? 'error' : 'success'" />
                         <p v-if="form.errors.description" class="text-xs text-red-500 mt-1">{{ form.errors.description
                         }}</p>
+                    </div>
+
+                    <div>
+                        <span class="block mb-1 text-md font-medium required">Categoría</span>
+                        <NSelect v-model:value="form.event_category_id" 
+                            :options="categories.map(c => ({ label: c.name, value: c.id }))" 
+                            placeholder="Seleccionar categoría..." 
+                            :to="false"
+                            :status="form.errors.event_category_id ? 'error' : 'success'" />
+                        <p v-if="form.errors.event_category_id" class="text-xs text-red-500 mt-1">{{ form.errors.event_category_id }}</p>
                     </div>
 
                     <div class="flex items-center gap-2">

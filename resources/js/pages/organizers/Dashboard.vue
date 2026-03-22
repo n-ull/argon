@@ -26,8 +26,6 @@ const breadcrumbItems: BreadcrumbItem[] = [
     },
 ];
 
-console.log(props.last_orders);
-
 </script>
 
 <template>

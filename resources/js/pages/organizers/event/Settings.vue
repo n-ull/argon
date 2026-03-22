@@ -23,6 +23,7 @@ interface Props {
         value: number;
         calculation_type: string;
     }>;
+    categories: Array<{ id: number; name: string }>;
 }
 
 const { event, availableTaxes } = defineProps<Props>();
@@ -56,6 +57,7 @@ const form = useForm<SettingsForm>({
     taxes_and_fees: event.taxes_and_fees?.map(tax => tax.id) || [],
     cover_image: null,
     poster_image: null,
+    event_category_id: event.category?.id || (event as any).event_category_id || null,
 });
 
 </script>
@@ -67,7 +69,7 @@ const form = useForm<SettingsForm>({
                 <h1>{{ $t('argon.settings') }}</h1>
                 <n-tabs type="line" animated>
                     <n-tab-pane name="general" :tab="$t('event.manage.settings.general')">
-                        <GeneralInformationForm :event="form" />
+                        <GeneralInformationForm :event="form" :categories="categories" />
                     </n-tab-pane>
                     <n-tab-pane name="location" :tab="$t('event.manage.settings.location')">
                         <LocationForm :event="form" />

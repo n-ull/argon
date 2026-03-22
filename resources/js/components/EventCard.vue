@@ -44,6 +44,13 @@ const isMobile = computed(() => {
                 <span class="text-[0.65rem] font-bold uppercase tracking-wider">{{ monthShort }}</span>
             </div>
 
+            <!-- Category Badge (Top Left) -->
+            <div v-if="event.category"
+                class="absolute left-2 top-2 flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold backdrop-blur-md border border-white/20"
+                :style="{ backgroundColor: event.category.color ? `${event.category.color}40` : 'rgba(255,255,255,0.1)', color: '#fff' }">
+                {{ event.category.name }}
+            </div>
+
             <!-- Overlay Gradient for text readability if title is on image (optional, forcing title below as requested 'simple title') -->
         </Link>
 

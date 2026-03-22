@@ -18,8 +18,13 @@ class EventIndexController extends Controller
         $query = EventModel::query();
 
         // Search title
-        if (request()->has('search')) {
+        if (request()->filled('search')) {
             $query->where('title', 'like', '%'.request('search').'%');
+        }
+
+        // Filter by category
+        if (request()->filled('category')) {
+            $query->where('event_category_id', request('category'));
         }
 
         $events = $query->orderBy('start_date', 'desc')
@@ -29,10 +34,13 @@ class EventIndexController extends Controller
             })
             ->where('status', EventStatus::PUBLISHED)
             ->where('is_featured', true)
+            ->with('category')
             ->paginate(10);
 
         return Inertia::render('events/Index', [
             'events' => Inertia::scroll($events),
+            'categories' => \Domain\EventManagement\Models\EventCategory::all(),
+            'filters' => request()->only(['search', 'category']),
         ]);
     }
 }

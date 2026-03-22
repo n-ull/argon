@@ -26,6 +26,14 @@ class EventResource extends JsonResource
             'status' => $this->status,
             'cover_image_path' => $this->cover_image_path,
             'poster_image_path' => $this->poster_image_path,
+            'category' => $this->whenLoaded('category', function () {
+                return [
+                    'id' => $this->category->id,
+                    'name' => $this->category->name,
+                    'color' => $this->category->color,
+                    'icon' => $this->category->icon,
+                ];
+            }),
             'organizer' => $this->whenLoaded('organizer', function () {
                 return [
                     'name' => $this->organizer->name,

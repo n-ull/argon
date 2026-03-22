@@ -12,8 +12,6 @@ import { trans as t } from 'laravel-vue-i18n';
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 
-console.log(user.value);
-
 watch(() => page.props.flash, (flash) => {
     if (flash.message) {
         switch (flash.message.type) {

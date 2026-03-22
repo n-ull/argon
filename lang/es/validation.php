@@ -206,6 +206,7 @@ return [
         'location_info.phone' => 'Teléfono',
         'commission_type' => 'Tipo de comisión',
         'commission_value' => 'Valor de la comisión',
+        'event_category_id' => 'Categoría del Evento'
     ],
 
 ];

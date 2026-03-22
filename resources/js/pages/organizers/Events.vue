@@ -23,6 +23,7 @@ interface Props {
         sort_by?: string;
         sort_direction?: 'asc' | 'desc';
     };
+    categories: Array<{ id: number; name: string }>;
 }
 
 const { open: openDialog } = useDialog();
@@ -150,6 +151,7 @@ const openCreateEventDialog = () => {
             organizer: props.organizer,
             title: t('organizer.create_event'),
             description: t('organizer.create_event_description'),
+            categories: props.categories,
         }
     })
 }

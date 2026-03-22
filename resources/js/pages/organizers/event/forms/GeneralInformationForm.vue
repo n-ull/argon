@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { InertiaForm } from '@inertiajs/vue3';
 import type { EventForm } from '@/types';
-import { NInput, NDatePicker, NUpload, NIcon, NText } from 'naive-ui';
+import { NInput, NDatePicker, NUpload, NIcon, NText, NSelect } from 'naive-ui';
 import { computed, watch } from 'vue';
 import { Image as ImageIcon } from 'lucide-vue-next';
 
 interface Props {
     event: InertiaForm<EventForm>;
+    categories: Array<{ id: number; name: string }>;
 }
 
 const { event } = defineProps<Props>();
@@ -77,6 +78,14 @@ watch(visualSlug, (newSlug) => {
                 maxRows: 6,
             }" v-model:value="event.description" id="description"></n-input>
             <p v-if="event.errors.description" class="text-xs text-red-500">{{ event.errors.description }}</p>
+        </div>
+
+        <div class="space-y-2">
+            <label for="event_category_id" class="required">Categoría</label>
+            <n-select :options="categories.map(c => ({ label: c.name, value: c.id }))" 
+                v-model:value="event.event_category_id" id="event_category_id" 
+                placeholder="Seleccione una categoría"></n-select>
+            <p v-if="event.errors.event_category_id" class="text-xs text-red-500">{{ event.errors.event_category_id }}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

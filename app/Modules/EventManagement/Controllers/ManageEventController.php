@@ -151,6 +151,7 @@ class ManageEventController extends Controller
         return Inertia::render('organizers/event/Settings', [
             'event' => $event,
             'availableTaxes' => $availableTaxes,
+            'categories' => \Domain\EventManagement\Models\EventCategory::all(),
         ]);
     }
 

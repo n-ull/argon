@@ -19,7 +19,7 @@ class EventDetailsController extends Controller
     {
         Gate::authorize('view', $event);
 
-        $event->load(['organizer', 'taxesAndFees']);
+        $event->load(['organizer', 'taxesAndFees', 'category']);
 
         $products = $event->products()
             ->withGlobalScope('available', new AvailableProductsScope)

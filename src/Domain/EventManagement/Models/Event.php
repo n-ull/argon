@@ -149,7 +149,7 @@ class Event extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(EventCategory::class);
+        return $this->belongsTo(EventCategory::class, 'event_category_id');
     }
 
     public function tickets(): HasMany

@@ -217,6 +217,12 @@ const filterProductWithPrices = products.filter(product => product.product_price
                         Calendar,
                         formatDate(event.start_date),
                     ]" />
+                    <div v-if="event.category" class="px-4 pt-4 flex">
+                        <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold backdrop-blur-md border border-white/20"
+                            :style="{ backgroundColor: event.category.color ? `${event.category.color}40` : 'rgba(255,255,255,0.1)', color: '#fff' }">
+                            {{ event.category.name }}
+                        </span>
+                    </div>
                     <div class="flex flex-col p-4 gap-2">
                         <span v-if="event.description" v-html="event.description.replace(/\n/g, '<br>')"></span>
                         <span v-else class="text-neutral-500">{{ t('event.description_not_available') }}</span>

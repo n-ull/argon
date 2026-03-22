@@ -5,12 +5,28 @@ import { Event } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { trans as t } from 'laravel-vue-i18n';
 import { Palette, Percent, ShieldCheck, Headset, ArrowRight, Sparkles } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 interface Props {
     events: Event[];
+    categories: Array<{ id: number; name: string; color: string; icon: string }>;
 }
 
-const { events } = defineProps<Props>();
+const props = defineProps<Props>();
+
+console.log(props.events);
+
+const selectedCategory = ref<number | null>(null);
+
+const filteredEvents = computed(() => {
+    if (!selectedCategory.value) return props.events;
+    return props.events.filter(event => event.category?.id === selectedCategory.value);
+});
+
+const selectedCategoryData = computed(() => {
+    if (!selectedCategory.value) return null;
+    return props.categories.find(c => c.id === selectedCategory.value) || null;
+});
 </script>
 
 <template>
@@ -19,8 +35,12 @@ const { events } = defineProps<Props>();
 
     <SimpleLayout>
         <!-- Main Content -->
-        <div class="relative min-h-screen bg-neutral-950">
-            <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="relative min-h-screen bg-neutral-950 overflow-hidden">
+            <!-- Full Page Aurora Background Effect -->
+            <div class="absolute top-0 left-0 right-0 h-[80vh] opacity-20 blur-[120px] pointer-events-none transition-all duration-1000 origin-top"
+                :style="{ backgroundColor: selectedCategoryData?.color || 'transparent' }"></div>
+
+            <div class="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
                 <!-- Header -->
                 <div class="mb-12 flex items-center justify-between">
                     <div>
@@ -38,10 +58,31 @@ const { events } = defineProps<Props>();
                     </Link>
                 </div>
 
+                <!-- Category Tabs -->
+                <div v-if="categories.length > 0"
+                    class="mb-8 flex overflow-x-auto gap-2 no-scrollbar border-b border-neutral-800 pb-4 relative">
+                    <button @click="selectedCategory = null" :class="[
+                        'px-4 py-2 rounded-full font-semibold transition-colors text-sm whitespace-nowrap z-10',
+                        selectedCategory === null ? 'bg-white text-black' : 'bg-neutral-900 border border-white/5 text-neutral-400 hover:bg-neutral-800 hover:text-white'
+                    ]">
+                        Todos
+                    </button>
+                    <button v-for="category in categories" :key="category.id" @click="selectedCategory = category.id"
+                        class="px-5 py-2 rounded-full font-semibold transition-all duration-300 text-sm whitespace-nowrap flex items-center gap-2 border border-white/5 z-10 hover:scale-105"
+                        :style="{
+                            backgroundColor: selectedCategory === category.id ? (category.color ? `${category.color}40` : '#333') : 'rgb(23 23 23)',
+                            color: selectedCategory === category.id ? (category.color || '#fff') : '#9ca3af',
+                            borderColor: selectedCategory === category.id ? (category.color || '#fff') : 'rgba(255,255,255,0.05)',
+                            boxShadow: selectedCategory === category.id && category.color ? `0 0 20px ${category.color}40` : 'none'
+                        }">
+                        {{ category.name }}
+                    </button>
+                </div>
+
                 <!-- Events Grid -->
-                <div v-if="events.length > 0"
+                <div v-if="filteredEvents.length > 0"
                     class="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-6 md:grid md:gap-6 md:pb-0 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:overflow-visible no-scrollbar">
-                    <div v-for="event in events" :key="event.id"
+                    <div v-for="event in filteredEvents" :key="event.id"
                         class="w-[85vw] sm:w-[350px] shrink-0 snap-center md:w-auto pl-4 first:pl-0 last:pr-4 md:pl-0 md:last:pr-0">
                         <EventCard :event="event" />
                     </div>

@@ -19,11 +19,13 @@ Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
         'events' => \Domain\EventManagement\Models\Event::query()
+            ->with('category')
             ->where('status', \Domain\EventManagement\Enums\EventStatus::PUBLISHED)
             ->where('is_featured', true)
             ->orderBy('start_date', 'asc')
             ->take(4)
             ->get(),
+        'categories' => \Domain\EventManagement\Models\EventCategory::all(),
     ]);
 })->name('home');
 
