@@ -23,47 +23,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Event Model
- *
- * Represents an event in the event management system.
- *
- * @property int $id
- * @property string $title The title of the event
- * @property string|null $description The description of the event
- * @property array $location_info JSON object containing location information
- * @property EventStatus $status The current status of the event
- * @property \Carbon\Carbon $start_date The start date and time of the event
- * @property \Carbon\Carbon $end_date The end date and time of the event
- * @property int $organizer_id The ID of the organizer
- * @property bool $is_featured Whether the event is featured
- * @property string $slug The URL slug for the event
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property \Carbon\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Order> $orders
- * @property-read int|null $orders_count
- * @property-read Organizer $organizer
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Ticket> $tickets
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Product> $products
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Doormen> $doormen
- * @property-read int|null $products_count
- *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereEndDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereIsFeatured($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereLocationInfo($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereOrganizerId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereStartDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Event whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
 #[UsePolicy(EventPolicy::class)]
 class Event extends Model
@@ -165,6 +124,11 @@ class Event extends Model
     public function courtesies()
     {
         return $this->tickets()->where('is_courtesy', true);
+    }
+
+    public function questions(): HasMany
+    {
+        return $this->hasMany(EventFormQuestion::class);
     }
     
     public function taxesAndFees(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

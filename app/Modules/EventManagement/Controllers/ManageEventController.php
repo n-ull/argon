@@ -155,12 +155,33 @@ class ManageEventController extends Controller
         ]);
     }
 
-    public function attendees(int $eventId)
+    public function attendees(Request $request, int $eventId)
     {
-        $event = Event::where('id', $eventId)->first()->load('organizer');
+        $event = Event::where('id', $eventId)->first()->load(['organizer', 'questions']);
+        Gate::authorize('update', $event);
+
+        $query = $event->tickets()->with(['product:id,name', 'user:id,name,email', 'order:id,reference_id']);
+
+        // Search by user name or email
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by product
+        if ($request->filled('product_id')) {
+            $query->where('product_id', $request->input('product_id'));
+        }
+
+        $attendees = $query->paginate(20)->withQueryString();
 
         return Inertia::render('organizers/event/Attendees', [
             'event' => $event,
+            'attendees' => $attendees,
+            'products' => $event->products()->select('id', 'name')->get(),
         ]);
     }
 

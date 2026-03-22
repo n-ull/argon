@@ -68,7 +68,13 @@ class GenerateTickets implements ShouldQueue
             return;
         }
 
+        $allAnswers = $orderItem->order->question_answers['items'] ?? [];
+        // Filter answers for this specific product to match them correctly by index
+        $productAnswers = array_values(array_filter($allAnswers, fn($a) => ($a['productId'] ?? null) == $orderItem->product_id));
+
         for ($i = 0; $i < $orderItem->quantity; $i++) {
+            $answers = $productAnswers[$i]['answers'] ?? null;
+
             Ticket::create([
                 'token' => \Domain\Ticketing\Facades\TokenGenerator::generate($orderItem->product->ticket_type ?? TicketType::STATIC),
                 'event_id' => $orderItem->order->event_id,
@@ -81,6 +87,7 @@ class GenerateTickets implements ShouldQueue
                 'is_courtesy' => false,
                 'used_at' => null,
                 'expired_at' => null,
+                'question_answers' => $answers,
             ]);
         }
     }

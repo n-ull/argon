@@ -63,6 +63,7 @@ class Order extends Model
         'expires_at',
         'service_fee_snapshot',
         'referral_code',
+        'question_answers',
     ];
 
     protected $casts = [
@@ -75,6 +76,7 @@ class Order extends Model
         'taxes_total' => 'decimal:2',
         'fees_total' => 'decimal:2',
         'service_fee_snapshot' => 'float',
+        'question_answers' => 'array',
     ];
 
     protected $appends = [

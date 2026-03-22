@@ -2,6 +2,47 @@ import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
 import { VNode } from 'vue';
 
+export type FormFieldType = 'text' | 'number' | 'select' | 'checkbox' | 'radio';
+
+export interface FormField {
+    id: string;
+    label: string;
+    type: FormFieldType;
+    required: boolean;
+    options: string[];
+}
+
+export interface PaginatedData<T> {
+    data: T[];
+    links: {
+        url: string | null;
+        label: string;
+        active: boolean;
+    }[];
+    current_page: number;
+    first_page_url: string;
+    from: number | null;
+    last_page: number;
+    last_page_url: string;
+    next_page_url: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: number | null;
+    total: number;
+}
+
+export interface EventFormQuestion {
+    id: number;
+    event_id: number;
+    product_id: number | null;
+    applies_to: 'order' | 'product';
+    is_active: boolean;
+    fields: FormField[];
+    created_at?: string | null;
+    updated_at?: string | null;
+}
+
 export interface Auth {
     user: User;
 }
@@ -118,6 +159,7 @@ export interface Event {
     taxes_and_fees?: TaxAndFee[];
     widget_stats?: WidgetStats;
     category?: EventCategory | null;
+    questions?: EventFormQuestion[];
 }
 
 export interface EventForm extends Omit<Event, 'organizer' | 'products' | 'taxes_and_fees'> {

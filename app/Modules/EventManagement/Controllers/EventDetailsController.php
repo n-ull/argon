@@ -96,6 +96,7 @@ class EventDetailsController extends Controller
             'userIsOrganizer' => auth()->check() && $event->organizer->users->contains(auth()->user()->id),
             'referralCode' => session('referral_code_'.$event->id),
             'promoter' => $promoter ?? null,
+            'questions' => $event->questions()->where('is_active', true)->with('product')->get(),
         ]);
     }
 }

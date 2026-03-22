@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MercadoPagoWebhookController;
 use App\Modules\EventManagement\Controllers\DoormenPanelController;
+use App\Modules\EventManagement\Controllers\EventQuestionsController;
 use App\Modules\OrganizerManagement\Controllers\DashboardController;
 use App\Modules\Ticketing\Controllers\ScannerController;
 use App\Modules\Ticketing\Controllers\TicketDetailsController;
@@ -257,6 +258,9 @@ Route::group([
             ->name('courtesies.delete');
 
         Route::post('{event}/scan', ScanTicket::class)->name('scan');
+
+        Route::get('{event}/questions', [EventQuestionsController::class, 'index'])->name('questions');
+        Route::post('{event}/questions', [EventQuestionsController::class, 'store'])->name('questions.store');
     });
 
 });

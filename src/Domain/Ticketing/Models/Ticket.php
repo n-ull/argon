@@ -30,6 +30,7 @@ class Ticket extends Model
         'given_by',
         'used_at',
         'expired_at',
+        'question_answers',
     ];
 
     protected $casts = [
@@ -39,6 +40,7 @@ class Ticket extends Model
         'expired_at' => 'datetime',
         'type' => TicketType::class,
         'status' => TicketStatus::class,
+        'question_answers' => 'array',
     ];
 
     public function event(): BelongsTo

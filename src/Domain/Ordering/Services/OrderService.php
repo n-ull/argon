@@ -79,6 +79,7 @@ class OrderService
                 'expires_at' => now()->addMinutes(15),
                 'status' => $status,
                 'referral_code' => $orderData->referral_code ?? null,
+                'question_answers' => $orderData->question_answers ?? null,
             ]);
 
             // Create order items and increment quantity_sold

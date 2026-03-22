@@ -2,12 +2,12 @@
 import TicketShapedCardHeader from '@/components/TicketShapedCardHeader.vue';
 import Button from '@/components/ui/button/Button.vue';
 import SimpleLayout from '@/layouts/SimpleLayout.vue';
-import { Event, Product, ProductPrice, Promoter, Combo } from '@/types';
+import { Event, Product, ProductPrice, Promoter, Combo, EventFormQuestion, FormField } from '@/types';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import { Calendar, LucideShoppingCart, MapPin, Minus, Pencil, Plus, X } from 'lucide-vue-next';
+import { Calendar, LucideShoppingCart, MapPin, Minus, Pencil, Plus, X, ChevronRight, ChevronLeft } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { cancel, checkout, store } from '@/routes/orders';
-import { NButton, NEmpty } from 'naive-ui';
+import { NButton, NEmpty, NModal, NCard, NForm, NFormItem, NInput, NInputNumber, NSelect, NCheckbox, NRadioGroup, NRadioButton, NSteps, NStep } from 'naive-ui';
 import { useDialog } from '@/composables/useDialog';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 import { formatDate, formatDateDiff } from '@/lib/utils';
@@ -21,10 +21,11 @@ interface Props {
     combos: Combo[],
     userIsOrganizer: boolean,
     referralCode?: string,
-    promoter?: Promoter
+    promoter?: Promoter,
+    questions?: EventFormQuestion[],
 }
 
-const { event, products, combos, userIsOrganizer, referralCode, promoter } = defineProps<Props>();
+const { event, products, combos, userIsOrganizer, referralCode, promoter, questions } = defineProps<Props>();
 
 interface CartItem {
     productId?: number;
@@ -38,11 +39,71 @@ interface Cart {
     items: CartItem[];
     referral_code?: string | null;
 }
+// Kept for reference but not used with the updated useForm below
 
-const form = useForm<Cart>({
+const hasActiveQuestions = computed(() => (questions ?? []).length > 0);
+
+// Wizard state
+const showQuestionsModal = ref(false);
+const questionAnswers = ref<{
+    order: Record<string, any>,
+    items: Array<{ productPriceId: number, productId: number, answers: Record<string, any> }>
+}>({
+    order: {},
+    items: []
+});
+
+const attendeesToFill = computed(() => {
+    const list: Array<{ 
+        type: 'order' | 'product', 
+        qSet: EventFormQuestion, 
+        label: string,
+        productPriceId?: number,
+        productId?: number,
+        ticketNum?: number,
+        itemIdx?: number // index in questionAnswers.items
+    }> = [];
+    
+    // 1. Order-level questions
+    const orderSet = (questions ?? []).find(q => q.applies_to === 'order' && q.is_active);
+    if (orderSet) {
+        list.push({ type: 'order', qSet: orderSet, label: 'Order Information' });
+    }
+    
+    // 2. Per-product questions
+    let currentItemIdx = 0;
+    form.items.forEach((item) => {
+        const productSet = (questions ?? []).find(q => q.applies_to === 'product' && q.product_id === item.productId && q.is_active);
+        if (productSet) {
+            for (let i = 0; i < item.quantity; i++) {
+                list.push({ 
+                    type: 'product', 
+                    qSet: productSet, 
+                    productPriceId: item.productPriceId,
+                    productId: item.productId,
+                    ticketNum: i + 1,
+                    itemIdx: currentItemIdx++,
+                    label: `${products.find(p => p.id === item.productId)?.name} - Attendee #${i+1}`
+                });
+            }
+        }
+    });
+
+    return list;
+});
+
+// For checkbox fields (multi-value) we track them as arrays
+const getCheckboxAnswer = (type: 'order' | 'product', fieldId: string, itemIdx?: number): string[] => {
+    const target = type === 'order' ? questionAnswers.value.order : questionAnswers.value.items[itemIdx!].answers;
+    if (!Array.isArray(target[fieldId])) target[fieldId] = [];
+    return target[fieldId] as string[];
+};
+
+const form = useForm({
     eventId: event.id,
-    items: [],
-    referral_code: referralCode ?? null
+    items: [] as { productId?: number; productPriceId?: number; comboId?: number; quantity: number }[],
+    referral_code: referralCode ?? null,
+    question_answers: null as any,
 });
 
 const addToCart = (product: Product, price: ProductPrice) => {
@@ -121,7 +182,7 @@ const isLoading = ref(false);
 
 const { open: openDialog } = useDialog();
 
-const handleCheckout = () => {
+const submitOrder = () => {
     form.post(store().url, {
         preserveScroll: true,
         preserveState: true,
@@ -152,7 +213,34 @@ const handleCheckout = () => {
             isLoading.value = false;
         }
     });
-}
+};
+
+const handleCheckout = () => {
+    if (hasActiveQuestions.value && attendeesToFill.value.length > 0) {
+        // Initialize questionAnswers.items with empty objects for each required attendee form
+        const productAttendeesCount = attendeesToFill.value.filter(a => a.type === 'product').length;
+        
+        // We only reset if count changed or it's empty to preserve some input if they close/reopen
+        if (questionAnswers.value.items.length !== productAttendeesCount) {
+             const productAttendees = attendeesToFill.value.filter(a => a.type === 'product');
+             questionAnswers.value.items = productAttendees.map(a => ({
+                productPriceId: a.productPriceId!,
+                productId: a.productId!,
+                answers: {}
+            }));
+        }
+        
+        showQuestionsModal.value = true;
+    } else {
+        submitOrder();
+    }
+};
+
+const handleQuestionsSubmit = () => {
+    form.question_answers = { ...questionAnswers.value };
+    showQuestionsModal.value = false;
+    submitOrder();
+};
 
 const mapUrl = computed(() => {
     if (!event.location_info) {
@@ -372,6 +460,111 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                 color="hsl(264, 100%, 84%)" size="large" text-color="hsl(242, 32%, 15%)"
                                 :block="true">{{ t('event.checkout') }}</n-button>
                         </form>
+
+                        <!-- Additional Questions Modal -->
+                        <NModal v-model:show="showQuestionsModal" preset="card" style="width: 600px; max-width: 95vw;" title="Additional Information" :bordered="false" class="bg-neutral-900">
+                            <div class="space-y-6 max-h-[70vh] overflow-y-auto px-1">
+                                <p class="text-neutral-400 text-sm">Please provide the following information to proceed with your order.</p>
+                                
+                                <NForm label-placement="top">
+                                    <div v-for="(attendee, index) in attendeesToFill" :key="index" class="space-y-4 mb-8">
+                                        <div class="border-b border-neutral-800 pb-2 mb-4">
+                                            <h3 class="font-bold text-neutral-200">
+                                                {{ attendee.label }}
+                                            </h3>
+                                        </div>
+
+                                        <NFormItem v-for="field in attendee.qSet.fields" :key="field.id" 
+                                            :label="field.label" 
+                                            :required="field.required"
+                                            :show-require-mark="field.required">
+                                            
+                                            <!-- Order Level Fields -->
+                                            <template v-if="attendee.type === 'order'">
+                                                <NInput v-if="field.type === 'text'"
+                                                    v-model:value="questionAnswers.order[field.id]"
+                                                    :placeholder="field.label"
+                                                />
+                                                <NInputNumber v-else-if="field.type === 'number'"
+                                                    v-model:value="questionAnswers.order[field.id]"
+                                                    :placeholder="field.label"
+                                                    class="w-full"
+                                                />
+                                                <NSelect v-else-if="field.type === 'select'"
+                                                    v-model:value="questionAnswers.order[field.id]"
+                                                    :options="field.options.map(o => ({ label: o, value: o }))"
+                                                    :placeholder="'Select ' + field.label"
+                                                />
+                                                <NRadioGroup v-else-if="field.type === 'radio'" 
+                                                    v-model:value="questionAnswers.order[field.id]">
+                                                    <div class="flex flex-col gap-2 mt-1">
+                                                        <NRadioButton v-for="option in field.options" :key="option"
+                                                            :value="option" :label="option"
+                                                        />
+                                                    </div>
+                                                </NRadioGroup>
+                                            </template>
+
+                                            <!-- Product/Attendee Level Fields -->
+                                            <template v-else>
+                                                <NInput v-if="field.type === 'text'"
+                                                    v-model:value="questionAnswers.items[attendee.itemIdx!].answers[field.id]"
+                                                    :placeholder="field.label"
+                                                />
+                                                <NInputNumber v-else-if="field.type === 'number'"
+                                                    v-model:value="questionAnswers.items[attendee.itemIdx!].answers[field.id]"
+                                                    :placeholder="field.label"
+                                                    class="w-full"
+                                                />
+                                                <NSelect v-else-if="field.type === 'select'"
+                                                    v-model:value="questionAnswers.items[attendee.itemIdx!].answers[field.id]"
+                                                    :options="field.options.map(o => ({ label: o, value: o }))"
+                                                    :placeholder="'Select ' + field.label"
+                                                />
+                                                <NRadioGroup v-else-if="field.type === 'radio'" 
+                                                    v-model:value="questionAnswers.items[attendee.itemIdx!].answers[field.id]">
+                                                    <div class="flex flex-col gap-2 mt-1">
+                                                        <NRadioButton v-for="option in field.options" :key="option"
+                                                            :value="option" :label="option"
+                                                        />
+                                                    </div>
+                                                </NRadioGroup>
+                                            </template>
+
+                                            <!-- Checkbox is handled via @update:checked so it's fine as is (except for the target assignment) -->
+                                            <div v-if="field.type === 'checkbox'" class="flex flex-col gap-2">
+                                                <NCheckbox v-for="option in field.options" :key="option"
+                                                    :label="option"
+                                                    :checked="getCheckboxAnswer(attendee.type, field.id, attendee.itemIdx).includes(option)"
+                                                    @update:checked="(val) => {
+                                                        const arr = getCheckboxAnswer(attendee.type, field.id, attendee.itemIdx);
+                                                        if (val) {
+                                                            if (!arr.includes(option)) arr.push(option);
+                                                        } else {
+                                                            const idx = arr.indexOf(option);
+                                                            if (idx > -1) arr.splice(idx, 1);
+                                                        }
+                                                        
+                                                        const target = attendee.type === 'order' ? questionAnswers.order : questionAnswers.items[attendee.itemIdx!].answers;
+                                                        target[field.id] = [...arr];
+                                                    }"
+                                                />
+                                            </div>
+                                        </NFormItem>
+                                    </div>
+                                </NForm>
+                            </div>
+
+                            <template #footer>
+                                <div class="flex justify-end gap-3">
+                                    <NButton quaternary @click="showQuestionsModal = false">Cancel</NButton>
+                                    <NButton type="primary" @click="handleQuestionsSubmit">
+                                        Proceed to Checkout
+                                        <template #icon><ChevronRight :size="16" /></template>
+                                    </NButton>
+                                </div>
+                            </template>
+                        </NModal>
 
                         <!-- <n-button @click="dialogTest" color="hsl(264, 100%, 84%)" size="large"
                             text-color="hsl(242, 32%, 15%)" :block="true">Dialog Test</n-button> -->
