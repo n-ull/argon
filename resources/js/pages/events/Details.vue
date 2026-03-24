@@ -61,7 +61,8 @@ const attendeesToFill = computed(() => {
         productPriceId?: number,
         productId?: number,
         ticketNum?: number,
-        itemIdx?: number // index in questionAnswers.items
+        itemIdx?: number, // index in questionAnswers.items
+        productName?: string
     }> = [];
     
     // 1. Order-level questions
@@ -83,6 +84,7 @@ const attendeesToFill = computed(() => {
                     productId: item.productId,
                     ticketNum: i + 1,
                     itemIdx: currentItemIdx++,
+                    productName: products.find(p => p.id === item.productId)?.name,
                     label: `${products.find(p => p.id === item.productId)?.name} - Attendee #${i+1}`
                 });
             }
@@ -462,15 +464,20 @@ const filterProductWithPrices = products.filter(product => product.product_price
                         </form>
 
                         <!-- Additional Questions Modal -->
-                        <NModal v-model:show="showQuestionsModal" preset="card" style="width: 600px; max-width: 95vw;" title="Additional Information" :bordered="false" class="bg-neutral-900">
+                        <NModal v-model:show="showQuestionsModal" preset="card" style="width: 600px; max-width: 95vw;" :title="t('argon.additional_information')" :bordered="false" class="bg-neutral-900">
                             <div class="space-y-6 max-h-[70vh] overflow-y-auto px-1">
-                                <p class="text-neutral-400 text-sm">Please provide the following information to proceed with your order.</p>
+                                <p class="text-neutral-400 text-sm">{{ t('event.manage.questions.wizard.info') }}</p>
                                 
                                 <NForm label-placement="top">
                                     <div v-for="(attendee, index) in attendeesToFill" :key="index" class="space-y-4 mb-8">
                                         <div class="border-b border-neutral-800 pb-2 mb-4">
                                             <h3 class="font-bold text-neutral-200">
-                                                {{ attendee.label }}
+                                                {{ attendee.label.includes('#') 
+                                                    ? t('event.manage.questions.wizard.attendee_label', { 
+                                                        product: attendee.productName || '', 
+                                                        index: attendee.label.split('#')[1] 
+                                                      }) 
+                                                    : t('argon.order') }}
                                             </h3>
                                         </div>
 
@@ -493,11 +500,11 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                                 <NSelect v-else-if="field.type === 'select'"
                                                     v-model:value="questionAnswers.order[field.id]"
                                                     :options="field.options.map(o => ({ label: o, value: o }))"
-                                                    :placeholder="'Select ' + field.label"
+                                                    :placeholder="t('argon.select') + ' ' + field.label"
                                                 />
                                                 <NRadioGroup v-else-if="field.type === 'radio'" 
                                                     v-model:value="questionAnswers.order[field.id]">
-                                                    <div class="flex flex-col gap-2 mt-1">
+                                                    <div class="flex flex-row flex-wrap mt-1">
                                                         <NRadioButton v-for="option in field.options" :key="option"
                                                             :value="option" :label="option"
                                                         />
@@ -519,11 +526,11 @@ const filterProductWithPrices = products.filter(product => product.product_price
                                                 <NSelect v-else-if="field.type === 'select'"
                                                     v-model:value="questionAnswers.items[attendee.itemIdx!].answers[field.id]"
                                                     :options="field.options.map(o => ({ label: o, value: o }))"
-                                                    :placeholder="'Select ' + field.label"
+                                                    :placeholder="t('argon.select') + ' ' + field.label"
                                                 />
                                                 <NRadioGroup v-else-if="field.type === 'radio'" 
                                                     v-model:value="questionAnswers.items[attendee.itemIdx!].answers[field.id]">
-                                                    <div class="flex flex-col gap-2 mt-1">
+                                                    <div class="flex flex-row flex-wrap mt-1">
                                                         <NRadioButton v-for="option in field.options" :key="option"
                                                             :value="option" :label="option"
                                                         />
@@ -557,9 +564,9 @@ const filterProductWithPrices = products.filter(product => product.product_price
 
                             <template #footer>
                                 <div class="flex justify-end gap-3">
-                                    <NButton quaternary @click="showQuestionsModal = false">Cancel</NButton>
+                                    <NButton quaternary @click="showQuestionsModal = false">{{ t('argon.cancel') }}</NButton>
                                     <NButton type="primary" @click="handleQuestionsSubmit">
-                                        Proceed to Checkout
+                                        {{ t('argon.proceed_to_checkout') }}
                                         <template #icon><ChevronRight :size="16" /></template>
                                     </NButton>
                                 </div>

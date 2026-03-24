@@ -72,5 +72,15 @@ return [
     'end_to' => 'Hasta',
     'confirm' => 'Confirmar',
     'create_product' => 'Crear Producto',
-    'save_changes' => 'Guardar Cambios'
+    'save_changes' => 'Guardar Cambios',
+    'search_attendee' => 'Buscar Asistente',
+    'filter_product' => 'Filtrar Producto',
+    'all_products' => 'Todos los Productos',
+    'additional_information' => 'Información Adicional',
+    'no_additional_info' => 'No se proporcionó información adicional.',
+    'proceed_to_checkout' => 'Continuar al Pago',
+    'attendee' => 'Asistente',
+    'order' => 'Orden',
+    'id' => 'ID',
+    'select' => 'Seleccionar',
 ];

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import GlobalDialog from '@/components/GlobalDialog.vue';
 import AppLayout from '@/layouts/app/AppSidebarManageEventLayout.vue';
-import { analytics, dashboard, settings, products, orders, attendees, doormen, vouchers, courtesies } from '@/routes/manage/event';
-import questions from '@/routes/manage/event/questions';
+import { analytics, dashboard, settings, products, orders, attendees, doormen, vouchers, courtesies, questions } from '@/routes/manage/event';
 import type { BreadcrumbItemType, Event, NavItem } from '@/types';
 import { BookA, ChartLine, DiamondPercent, Gift, LayoutGrid, LucideMessageCircleQuestion, MessageSquareHeart, Settings, ShieldAlert, Tickets, User, Users } from 'lucide-vue-next';
 import { darkTheme, NConfigProvider } from 'naive-ui';
@@ -115,7 +114,7 @@ const mainNavItems = computed<NavItem[]>(() => {
         },
         {
             title: t('argon.questions'),
-            href: questions.index(props.event.id).url,
+            href: questions(props.event.id).url,
             icon: LucideMessageCircleQuestion,
             group: t('argon.manage'),
         }

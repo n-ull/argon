@@ -52,7 +52,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard(props.event.id).url,
     },
     {
-        title: 'Attendees',
+        title: t('argon.attendees'),
         href: attendeesRoute(props.event.id).url,
     }
 ];
@@ -68,7 +68,7 @@ const handleSearch = () => {
 };
 
 const productOptions = computed(() => [
-    { label: 'All Products', value: null as any },
+    { label: t('event.manage.questions.attendees.all'), value: null as any },
     ...props.products.map(p => ({ label: p.name, value: p.id }))
 ]);
 
@@ -87,7 +87,7 @@ const columns = [
         type: 'expand' as const,
         renderExpand: (row: Attendee) => {
             if (!row.question_answers || Object.keys(row.question_answers).length === 0) {
-                return h('div', { class: 'p-4 text-neutral-500 italic' }, 'No additional information provided.');
+                return h('div', { class: 'p-4 text-neutral-500 italic' }, t('event.manage.questions.attendees.no_info'));
             }
             
             return h(
@@ -106,20 +106,20 @@ const columns = [
         }
     },
     {
-        title: 'Attendee',
+        title: t('argon.attendee'),
         key: 'user.name',
         render: (row: Attendee) => h('div', [
-            h('div', { class: 'font-bold text-neutral-200' }, row.user?.name || 'Guest'),
+            h('div', { class: 'font-bold text-neutral-200' }, row.user?.name || t('event.manage.questions.attendees.guest')),
             h('div', { class: 'text-xs text-neutral-500' }, row.user?.email || '-')
         ])
     },
     {
-        title: 'Product',
+        title: t('argon.product'),
         key: 'product.name',
         render: (row: Attendee) => h('div', row.product?.name)
     },
     {
-        title: 'Status',
+        title: t('argon.status'),
         key: 'status',
         render: (row: Attendee) => h(NTag, { 
             type: row.status === 'active' ? 'success' : 'warning',
@@ -128,12 +128,12 @@ const columns = [
         }, { default: () => row.status.toUpperCase() })
     },
     {
-        title: 'ID',
+        title: t('argon.id'),
         key: 'token',
         render: (row: Attendee) => h('code', { class: 'text-xs opacity-60' }, row.token.substring(0, 8))
     },
     {
-        title: 'Order',
+        title: t('argon.order'),
         key: 'order.reference_id',
         render: (row: Attendee) => h('div', { class: 'text-xs' }, row.order?.reference_id)
     }
@@ -153,9 +153,9 @@ const handlePageChange = (page: number) => {
         <div class="m-6 space-y-6">
             <div class="flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-neutral-100 italic flex items-center gap-2">
-                    Attendees
+                    {{ t('argon.attendees') }}
                     <span class="text-sm font-normal text-neutral-500 not-italic">
-                        ({{ attendees.total }} total)
+                        ({{ attendees.total }} {{ t('argon.total') }})
                     </span>
                 </h1>
             </div>
@@ -163,10 +163,10 @@ const handlePageChange = (page: number) => {
             <NCard class="bg-neutral-900 border-neutral-800">
                 <div class="flex flex-col md:flex-row gap-4 mb-6 items-end">
                     <div class="flex-1 w-full">
-                        <div class="text-xs text-neutral-500 mb-1 ml-1 opacity-70">Search Attendee</div>
+                        <div class="text-xs text-neutral-500 mb-1 ml-1 opacity-70">{{ t('argon.search_attendee') }}</div>
                         <NInput 
                             v-model:value="search" 
-                            placeholder="Name or email..." 
+                            :placeholder="t('event.manage.questions.attendees.search_placeholder')" 
                             @keyup.enter="handleSearch"
                         >
                             <template #prefix><Search :size="16" class="text-neutral-500" /></template>
@@ -174,18 +174,18 @@ const handlePageChange = (page: number) => {
                     </div>
                     
                     <div class="w-full md:w-64">
-                        <div class="text-xs text-neutral-500 mb-1 ml-1 opacity-70">Filter Product</div>
+                        <div class="text-xs text-neutral-500 mb-1 ml-1 opacity-70">{{ t('event.manage.questions.attendees.product_filter') }}</div>
                         <NSelect 
                             v-model:value="selectedProduct" 
                             :options="productOptions" 
-                            placeholder="All Products"
+                            :placeholder="t('event.manage.questions.attendees.all')"
                             @update:value="handleSearch"
                         />
                     </div>
 
                     <NButton type="primary" size="large" @click="handleSearch" class="px-8">
                         <template #icon><Search :size="16" /></template>
-                        Search
+                        {{ t('event.manage.questions.attendees.search_button') }}
                     </NButton>
                 </div>
 
@@ -201,6 +201,8 @@ const handlePageChange = (page: number) => {
                         onChange: handlePageChange
                     }"
                     :bordered="false"
+                    :striped="true"
+                    :scroll-x="1200"
                     class="bg-neutral-900"
                 />
             </NCard>
