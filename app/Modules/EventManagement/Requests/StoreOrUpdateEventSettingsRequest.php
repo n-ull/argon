@@ -35,8 +35,8 @@ class StoreOrUpdateEventSettingsRequest extends FormRequest
             'location_info.mapLink' => 'nullable|string|max:255',
             'taxes_and_fees' => 'nullable|array',
             'taxes_and_fees.*' => 'required|exists:taxes_and_fees,id',
-            'cover_image' => 'nullable|image|max:10240', // 10MB max
-            'poster_image' => 'nullable|image|max:10240', // 10MB max
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max
+            'poster_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max
         ];
     }
 }

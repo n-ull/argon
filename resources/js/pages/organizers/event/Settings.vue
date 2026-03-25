@@ -26,59 +26,67 @@ interface Props {
     categories: Array<{ id: number; name: string }>;
 }
 
-const { event, availableTaxes } = defineProps<Props>();
+const props = defineProps<Props>();
 
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
     {
-        title: event.organizer.name,
-        href: show(event.organizer.id).url,
+        title: props.event.organizer.name,
+        href: show(props.event.organizer.id).url,
     },
     {
-        title: event.title,
-        href: dashboard(event.id).url,
+        title: props.event.title,
+        href: dashboard(props.event.id).url,
     },
     {
         title: t('argon.settings'),
-        href: settings(event.id).url,
+        href: settings(props.event.id).url,
     }
 ]);
 
 type SettingsForm = EventForm;
 
 const form = useForm<SettingsForm>({
-    ...event,
-    organizer_id: event.organizer_id!,
-    start_date: formatDateForPicker(event.start_date)!,
-    end_date: formatDateForPicker(event.end_date),
+    ...props.event,
+    organizer_id: props.event.organizer_id!,
+    start_date: formatDateForPicker(props.event.start_date)!,
+    end_date: formatDateForPicker(props.event.end_date),
     location_info: {
-        ...event.location_info,
-        country: event.location_info?.country || 'Argentina',
+        ...props.event.location_info,
+        country: props.event.location_info?.country || 'Argentina',
     },
-    taxes_and_fees: event.taxes_and_fees?.map(tax => tax.id) || [],
+    taxes_and_fees: props.event.taxes_and_fees?.map(tax => tax.id) || [],
     cover_image: null,
     poster_image: null,
-    event_category_id: event.category?.id || (event as any).event_category_id || null,
+    event_category_id: props.event.category?.id || (props.event as any).event_category_id || null,
 });
 
 </script>
 
 <template>
-    <ManageEventLayout :event="event" :breadcrumbs="breadcrumbs">
-        <form method="POST" @submit.prevent="form.post(settings(event.id).url)">
+    <ManageEventLayout :event="props.event" :breadcrumbs="breadcrumbs">
+        <form method="POST" @submit.prevent="form.post(settings(props.event.id).url, {
+            onSuccess: () => {
+                form.cover_image = null;
+                form.poster_image = null;
+                // Sync paths from updated props
+                form.cover_image_path = props.event.cover_image_path;
+                form.poster_image_path = props.event.poster_image_path;
+            }
+        })">
             <div class="m-4 space-y-4">
                 <h1>{{ $t('argon.settings') }}</h1>
                 <n-tabs type="line" animated>
                     <n-tab-pane name="general" :tab="$t('event.manage.settings.general')">
-                        <GeneralInformationForm :event="form" :categories="categories" />
+                        <GeneralInformationForm :event="form" :categories="props.categories" />
                     </n-tab-pane>
                     <n-tab-pane name="location" :tab="$t('event.manage.settings.location')">
                         <LocationForm :event="form" />
                     </n-tab-pane>
                     <n-tab-pane name="payment" :tab="$t('event.manage.settings.payment')">
-                        <PaymentForm :event="form" :available-taxes="availableTaxes" />
+                        <PaymentForm :event="form" :available-taxes="props.availableTaxes" />
                     </n-tab-pane>
                     <n-tab-pane name="status" :tab="$t('event.manage.settings.status')">
-                        <StatusForm :event="event" />
+                        <StatusForm :event="props.event" />
                     </n-tab-pane>
                     <n-tab-pane disabled name="misc" :tab="$t('event.manage.settings.misc')">
                         <MiscellaneousForm :event="form" />

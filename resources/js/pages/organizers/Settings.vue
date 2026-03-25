@@ -101,10 +101,20 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.transform((data) => ({
-        ...data,
-        _method: 'PUT',
-    })).post(settings(props.organizer.id).url, {
+    form.transform((data) => {
+        const transformedData = {
+            ...data,
+            _method: 'PUT',
+        };
+
+        // If logo is not a File (i.e., it's null because it hasn't been changed),
+        // remove it from the payload to avoid erasing the existing logo on the backend.
+        if (!(data.logo instanceof File)) {
+            delete (transformedData as any).logo;
+        }
+
+        return transformedData;
+    }).post(settings(props.organizer.id).url, {
         preserveScroll: true,
     });
 };
