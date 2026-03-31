@@ -10,11 +10,16 @@ use Illuminate\Support\Str;
 
 class UpdateEventSettingsController extends Controller
 {
+    public function __construct(
+        private \Domain\EventManagement\Services\EventManagerService $eventManager
+    ) {
+    }
+
     public function __invoke(StoreOrUpdateEventSettingsRequest $request, int $eventId)
     {
 
         $validated = $request->validated();
-        $validated['slug'] = Str::slug($validated['title'], '-', 'es');
+        $validated['slug'] = $this->eventManager->generateUniqueSlug($validated['title'], $eventId);
 
         if ($request->hasFile('cover_image')) {
             $validated['cover_image_path'] = $request->file('cover_image')->store('events/covers', 'public');
