@@ -20,21 +20,55 @@ class BulkDeleteCourtesyTickets
     {
         $validated = $request->validate([
             'ids' => 'required|array',
-            'ids.*' => 'required|integer|exists:tickets,id',
+            'ids.*' => 'required|string',
         ]);
 
-        // Security check: ensure all tickets belong to this event and are courtesies
-        $count = Ticket::whereIn('id', $validated['ids'], 'and', false)
-            ->where('event_id', $eventId)
-            ->where('is_courtesy', true)
-            ->count();
+        $ticketIds = [];
+        $invitationIds = [];
 
-        if ($count !== count($validated['ids'])) {
-            abort(403, 'Unauthorized deletion attempt.');
+        foreach ($validated['ids'] as $key) {
+            if (str_starts_with($key, 'i-')) {
+                $invitationIds[] = (int) substr($key, 2);
+            } elseif (str_starts_with($key, 't-')) {
+                $ticketIds[] = (int) substr($key, 2);
+            } else {
+                // Backward compatibility just in case or assume it's a ticket
+                $ticketIds[] = (int) $key;
+            }
         }
 
-        $this->handle($validated['ids']);
+        // Security check for real tickets
+        if (!empty($ticketIds)) {
+            $ticketCount = Ticket::whereIn('id', $ticketIds)
+                ->where('event_id', $eventId)
+                ->where('is_courtesy', true)
+                ->count();
 
-        return back()->with('message', flash_success('Tickets deleted successfully', count($validated['ids']) . ' courtesy tickets deleted.'));
+            if ($ticketCount !== count($ticketIds)) {
+                abort(403, 'Intento de eliminación no autorizado (tickets)');
+            }
+        }
+
+        // Security check for invitations
+        if (!empty($invitationIds)) {
+            $invitationCount = \Domain\Ticketing\Models\TicketInvitation::whereIn('id', $invitationIds)
+                ->where('event_id', $eventId)
+                ->count();
+
+            if ($invitationCount !== count($invitationIds)) {
+                abort(403, 'Intento de eliminación no autorizado (invitaciones)');
+            }
+        }
+
+        // Perform deletions
+        if (!empty($ticketIds)) {
+            \Domain\Ticketing\Jobs\DeleteCourtesyTickets::dispatch($ticketIds);
+        }
+
+        if (!empty($invitationIds)) {
+            \Domain\Ticketing\Models\TicketInvitation::whereIn('id', $invitationIds)->delete();
+        }
+
+        return back()->with('message', flash_success('Eliminado exitosamente', 'Los registros seleccionados han sido eliminados.'));
     }
 }

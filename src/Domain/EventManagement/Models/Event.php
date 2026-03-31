@@ -121,6 +121,11 @@ class Event extends Model
         return $this->hasMany(Doormen::class);
     }
 
+    public function ticketInvitations(): HasMany
+    {
+        return $this->hasMany(\Domain\Ticketing\Models\TicketInvitation::class);
+    }
+
     public function courtesies()
     {
         return $this->tickets()->where('is_courtesy', true);

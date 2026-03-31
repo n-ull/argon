@@ -14,7 +14,7 @@ import { trans as t } from 'laravel-vue-i18n';
 
 interface Props {
     event: Event;
-    courtesies: PaginatedResponse<Ticket & { given_by: User }>;
+    courtesies: PaginatedResponse<(Ticket & { given_by: User, is_invitation: boolean, expires_at?: string })>;
     products: Product[];
 }
 
@@ -43,7 +43,7 @@ const form = useForm({
 });
 
 const selectedRowKeys = ref<number[]>([]);
-const courtesiesList = ref<(Ticket & { given_by: User })[]>(props.courtesies.data);
+const courtesiesList = ref<(Ticket & { given_by: User, is_invitation: boolean, expires_at?: string })[]>(props.courtesies.data);
 
 watch(() => props.courtesies, (newVal) => {
     courtesiesList.value = newVal.data;
@@ -80,9 +80,10 @@ const handleRowAction = (key: string | number, row: Ticket) => {
     if (key === 'delete') {
         if (!confirm(t('event.manage.courtesies.confirm_deletion'))) return;
         router.delete((deleteMethod({ event: props.event.id, courtesy: row.id })).url, {
+            data: { is_invitation: row.is_invitation },
             preserveScroll: true,
             onSuccess: () => {
-                courtesiesList.value = courtesiesList.value.filter(t => t.id !== row.id);
+                courtesiesList.value = courtesiesList.value.filter(t => (t.is_invitation ? 'i-' : 't-') + t.id !== (row.is_invitation ? 'i-' : 't-') + row.id);
             }
         });
     }
@@ -99,7 +100,7 @@ const handleBulkDelete = () => {
         },
         preserveScroll: true,
         onSuccess: () => {
-            courtesiesList.value = courtesiesList.value.filter(t => !selectedRowKeys.value.includes(t.id));
+            courtesiesList.value = courtesiesList.value.filter(t => !selectedRowKeys.value.includes((t.is_invitation ? 'i-' : 't-') + t.id));
             selectedRowKeys.value = [];
         }
     });
@@ -153,7 +154,7 @@ const renderProductLabel = (option: any) => {
     ]);
 };
 
-const columns: DataTableColumns<Ticket & { given_by: User }> = [
+const columns: DataTableColumns<Ticket & { given_by: User, is_invitation: boolean, expires_at?: string }> = [
     {
         type: 'selection',
         width: 48,
@@ -196,8 +197,16 @@ const columns: DataTableColumns<Ticket & { given_by: User }> = [
     {
         title: t('event.manage.courtesies.status'),
         key: 'status',
-        minWidth: 120,
+        minWidth: 150,
         render(row) {
+            if (row.is_invitation) {
+                return h('div', { class: 'flex flex-col gap-1' }, [
+                    h(NTag, { type: 'warning', size: 'small', bordered: false }, () => t('event.manage.courtesies.invitation')),
+                    h('div', { class: 'text-[10px] text-gray-500' }, 
+                        t('event.manage.courtesies.expires') + ': ' + (row.expires_at ? new Date(row.expires_at).toLocaleDateString() : 'N/A')
+                    )
+                ]);
+            }
             const statusType = row.status === 'active' ? 'success' : 'default';
             return h(NTag, { type: statusType, size: 'small', bordered: false }, () => t('tickets.status.' + row.status));
         }
@@ -349,7 +358,7 @@ watch(() => form.errors, () => {
                         :columns="columns" 
                         :data="courtesiesList"
                         :pagination="pagination" 
-                        :row-key="(row: any) => row.id"
+                        :row-key="(row: any) => (row.is_invitation ? 'i-' : 't-') + row.id"
                         :scroll-x="1000"
                         v-model:checked-row-keys="selectedRowKeys" 
                     />

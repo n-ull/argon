@@ -286,6 +286,14 @@ Route::group([
 
 Route::get('mercado-pago/callback', \App\Modules\OrganizerManagement\Controllers\MercadoPagoOAuthController::class)->middleware(['auth'])->name('mp.oauth');
 
+Route::group([
+    'prefix' => 'courtesy-tickets',
+    'as' => 'courtesy-tickets.',
+], function () {
+    Route::match(['get', 'post'], 'invitation/accept', \Domain\Ticketing\Actions\AcceptCourtesyTicketInvitation::class)
+        ->name('invitation.accept');
+});
+
 Route::post('webhooks/mercadopago', MercadoPagoWebhookController::class)->name('mp.webhook');
 
 require __DIR__.'/settings.php';

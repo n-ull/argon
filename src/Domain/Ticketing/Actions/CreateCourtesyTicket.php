@@ -7,6 +7,7 @@ use Domain\ProductCatalog\Enums\ProductType;
 use Domain\ProductCatalog\Models\Product;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -32,7 +33,7 @@ class CreateCourtesyTicket
     {
         $validated = $request->validate([
             'emails' => 'required|array|min:1',
-            'emails.*' => 'required|email|exists:users,email',
+            'emails.*' => 'required|email',
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|numeric|min:1|max:10',
             'transfersLeft' => 'required|numeric|min:0|max:10',
@@ -47,19 +48,43 @@ class CreateCourtesyTicket
             ]);
         }
 
-        // Find or create users for each email
+        // Separate existing users from non-registered emails
         $userIds = [];
         foreach ($validated['emails'] as $email) {
-            $user = \App\Models\User::firstOrCreate(
-                ['email' => $email],
-                ['name' => explode('@', $email)[0]] // Use email prefix as default name
-            );
-            $userIds[] = $user->id;
+            $user = \App\Models\User::where('email', $email)->first();
+            
+            if ($user) {
+                $userIds[] = $user->id;
+            } else {
+                // Check if there is already an active (unexpired, unaccepted) invitation for this email
+                $activeInvitation = \Domain\Ticketing\Models\TicketInvitation::where('email', $email)
+                    ->whereNull('accepted_at')
+                    ->where('expires_at', '>', now())
+                    ->exists();
+
+                // Create the invitation record
+                $invitation = \Domain\Ticketing\Models\TicketInvitation::create([
+                    'email' => $email,
+                    'event_id' => $event->id,
+                    'product_id' => $product->id,
+                    'quantity' => $validated['quantity'],
+                    'transfers_left' => $validated['transfersLeft'],
+                    'given_by' => auth()->id(),
+                    'ticket_type' => $product->ticket_type->value,
+                    'expires_at' => now()->addDays(7), // Default to 7 days
+                ]);
+
+                // Only send the invitation email if there isn't an active one already
+                if (!$activeInvitation) {
+                    Mail::to($email)->send(new \Domain\Ticketing\Mail\CourtesyTicketInvitationGenerated($invitation));
+                }
+            }
         }
 
-        $this->handle($event, $product, $validated['quantity'], $userIds, auth()->id(), $validated['transfersLeft']);
+        if (!empty($userIds)) {
+            $this->handle($event, $product, $validated['quantity'], $userIds, auth()->id(), $validated['transfersLeft']);
+        }
 
-        $totalTickets = count($userIds) * $validated['quantity'];
         return back();
     }
 }

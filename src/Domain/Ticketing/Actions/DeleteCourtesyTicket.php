@@ -4,25 +4,32 @@ namespace Domain\Ticketing\Actions;
 
 use Domain\EventManagement\Models\Event;
 use Domain\Ticketing\Models\Ticket;
+use Illuminate\Http\Request;
 use Lorisleiva\Actions\Concerns\AsAction;
 
 class DeleteCourtesyTicket
 {
     use AsAction;
 
-    public function handle(Ticket $ticket)
+    public function asController(int $eventId, int $courtesyId, Request $request)
     {
-        \Domain\Ticketing\Jobs\DeleteCourtesyTicket::dispatch($ticket);
-    }
+        $isInvitation = $request->boolean('is_invitation');
 
-    public function asController(int $eventId, Ticket $courtesy)
-    {
-        if ($courtesy->event_id !== $eventId || !$courtesy->is_courtesy) {
-            abort(404);
+        if ($isInvitation) {
+            $invitation = \Domain\Ticketing\Models\TicketInvitation::where('id', $courtesyId)
+                ->where('event_id', $eventId)
+                ->firstOrFail();
+            
+            $invitation->delete();
+        } else {
+            $ticket = Ticket::where('id', $courtesyId)
+                ->where('event_id', $eventId)
+                ->where('is_courtesy', true)
+                ->firstOrFail();
+
+            \Domain\Ticketing\Jobs\DeleteCourtesyTicket::dispatch($ticket);
         }
 
-        $this->handle($courtesy);
-
-        return back()->with('message', flash_success('Ticket deleted successfully', 'The courtesy ticket has been deleted.'));
+        return back()->with('message', flash_success('Eliminado exitosamente', 'El registro ha sido eliminado.'));
     }
 }

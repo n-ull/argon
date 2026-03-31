@@ -164,6 +164,16 @@ return [
             "confirm_bulk_delete" => "¿Estás seguro de que quieres eliminar :count entradas?",
             "ticket_creation_processing" => "Las entradas se estan procesando, pronto aparecerán en el historial de entradas.",
             "found_error_emails" => "Se encontraron :count correos electrónicos con errores, revisar los correos marcados.",
+            "invitation" => "Invitación a cortesía",
+            "invitation_description" => "Has recibido :count invitación(es) para obtener tus tickets de cortesía.",
+            "invitation_for" => "Invitación para",
+            "already_registered_notice" => "Ya tienes una cuenta con este correo. Al aceptar, los tickets se añadirán a tu cuenta actual.",
+            "register_notice" => "Al aceptar esta invitación, se creará una cuenta de invitado para ti y recibirás tus tickets automáticamente.",
+            "invitation_summary" => "Resumen de la invitación",
+            "invitation_expires_at" => "Esta invitación expira el :date",
+            "accept_invitation" => "Aceptar Invitación",
+            "terms_notice" => "Al aceptar, confirmas que has leído y aceptas nuestros términos y condiciones.",
+            "expires" => "Expira",
         ],
         'questions' => [
             'index' => [
