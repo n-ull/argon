@@ -33,26 +33,26 @@ const formatDate = (dateString: string) => {
 
 <template>
     <AuthLayout 
-        :title="t('event.courtesies.invitation')" 
-        :description="t('event.courtesies.invitation_description', { count: totalQuantity })"
+        :title="t('event.manage.courtesies.invitation')" 
+        :description="t('event.manage.courtesies.invitation_description', { count: totalQuantity.toFixed() })"
     >
-        <Head :title="t('event.courtesies.invitation')" />
+        <Head :title="t('event.manage.courtesies.invitation')" />
 
         <div class="space-y-6">
             <div class="space-y-2 text-center">
                 <p class="text-sm text-neutral-400">
-                    {{ t('event.courtesies.invitation_for') }}: <strong class="text-white">{{ email }}</strong>
+                    {{ t('event.manage.courtesies.invitation_for') }}: <strong class="text-white">{{ email }}</strong>
                 </p>
                 <div v-if="isEmailRegistered" class="rounded-md bg-blue-500/10 p-3 text-sm text-blue-500 border border-blue-500/20">
-                    {{ t('event.courtesies.already_registered_notice') }}
+                    {{ t('event.manage.courtesies.already_registered_notice') }}
                 </div>
                 <div v-else class="rounded-md bg-green-500/10 p-3 text-sm text-green-500 border border-green-500/20">
-                    {{ t('event.courtesies.register_notice') }}
+                    {{ t('event.manage.courtesies.register_notice') }}
                 </div>
             </div>
 
             <div class="space-y-4">
-                <h3 class="font-semibold text-lg text-white text-center">{{ t('event.courtesies.invitation_summary') }}</h3>
+                <h3 class="font-semibold text-lg text-white text-center">{{ t('event.manage.courtesies.invitation_summary') }}</h3>
                 <div v-for="event in events" :key="event.id" class="flex items-center gap-4 p-4 rounded-lg bg-neutral-900 border border-neutral-800">
                     <img v-if="event.poster_url" :src="event.poster_url" class="h-16 w-12 object-cover rounded shadow" />
                     <div class="flex-1 min-w-0">
@@ -63,18 +63,18 @@ const formatDate = (dateString: string) => {
             </div>
 
             <div class="text-center p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-[11px]">
-                {{ t('event.courtesies.invitation_expires_at', { date: formatDate(expiresAt) }) }}
+                {{ t('event.manage.courtesies.invitation_expires_at', { date: formatDate(expiresAt) }) }}
             </div>
 
             <form @submit.prevent="submit">
                 <Button type="submit" class="w-full" size="lg" :disabled="form.processing">
                     <Spinner v-if="form.processing" class="mr-2" />
-                    {{ t('event.courtesies.accept_invitation') }}
+                    {{ t('event.manage.courtesies.accept_invitation') }}
                 </Button>
             </form>
             
             <p class="text-[10px] text-center text-neutral-500">
-                {{ t('event.courtesies.terms_notice') }}
+                {{ t('event.manage.courtesies.terms_notice') }}
             </p>
         </div>
     </AuthLayout>
