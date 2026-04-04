@@ -13,7 +13,7 @@ class DeleteTicketsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'delete:tickets {user_id} {product_id=*} {--except=* : Product IDs to exclude from deletion} {--except-ticket=* : Specific Ticket IDs to exclude}';
+    protected $signature = 'delete:tickets {user_id} {ticket_type_id=*} {--except=* : Product IDs to exclude from deletion} {--except-ticket=* : Specific Ticket IDs to exclude}';
 
     /**
      * The console command description.
@@ -28,7 +28,7 @@ class DeleteTicketsCommand extends Command
     public function handle()
     {
         $userId = $this->argument('user_id');
-        $productId = $this->argument('product_id');
+        $productIdOrStar = $this->argument('ticket_type_id'); // Using the name in the signature
         $exceptProducts = $this->option('except');
         $exceptTickets = $this->option('except-ticket');
 
@@ -41,10 +41,11 @@ class DeleteTicketsCommand extends Command
 
         $query = Ticket::where('user_id', $userId);
 
-        // Filter by product_id if specified (and not '*')
-        if ($productId !== '*') {
-            $query->where('product_id', $productId);
+        // Filter by ticket_type_id/product_id if specified (and not '*')
+        if ($productIdOrStar !== '*') {
+            $query->where('product_id', $productIdOrStar);
         }
+
 
         // Apply product exceptions
         if (!empty($exceptProducts)) {
