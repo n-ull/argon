@@ -131,6 +131,9 @@ Route::group([
         Route::put('{organizer}/settings', \Domain\OrganizerManagement\Actions\SaveSettings::class)
             ->name('settings.update');
 
+        Route::delete('{organizer}/settings/mercado-pago/account', \Domain\OrganizerManagement\Actions\UnlinkMercadoPagoAccount::class)
+            ->name('settings.unlink-mercado-pago-account');
+
         Route::post('{organizer}/taxes-and-fees', [\App\Modules\OrganizerManagement\Controllers\TaxAndFeeController::class, 'store'])
             ->name('taxes-and-fees.store');
 
@@ -296,7 +299,7 @@ Route::group([
 
 Route::post('webhooks/mercadopago', MercadoPagoWebhookController::class)->name('mp.webhook');
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';
 
 
 Route::get('/test-error/{code}', function ($code) {

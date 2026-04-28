@@ -127,6 +127,12 @@ const handleLinkAccount = async () => {
     window.location.href = "https://auth.mercadopago.com/authorization?client_id=3662159661325622&redirect_uri=https%3A%2F%2Fmoovin.ar%2Fmercado-pago%2Fcallback&response_type=code&platform_id=mp";
 };
 
+const handleUnlinkAccount = async () => {
+    useForm({}).delete(`/manage/organizer/${props.organizer.id}/settings/mercado-pago/account`, {
+        preserveScroll: true,
+    });
+};
+
 const raiseMoneyOptions = computed(() => [
     { label: t('organizer.settings.raise_methods.internal'), value: 'internal' },
     { label: t('organizer.settings.raise_methods.split'), value: 'split' },
@@ -361,7 +367,7 @@ const deleteTax = (tax: TaxAndFee) => {
                                                             @click="handleLinkAccount">
                                                             {{ t('organizer.settings.link_account_button') }}
                                                         </n-button>
-                                                        <n-button v-else size="small" type="error" secondary>
+                                                        <n-button v-else size="small" type="error" secondary @click="handleUnlinkAccount">
                                                             {{ t('organizer.settings.unlink_account_button') }}
                                                         </n-button>
                                                     </div>
